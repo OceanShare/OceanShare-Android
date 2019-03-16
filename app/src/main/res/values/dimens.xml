@@ -1,0 +1,9 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="regular_margin">16dp</dimen>
+    <dimen name="regular_padding">16dp</dimen>
+
+    <dimen name="form_field_hint_text_size">20sp</dimen>
+    <dimen name="connection_form_title_size">30sp</dimen>
+    <dimen name="connection_button_text_size">20sp</dimen>
+</resources>

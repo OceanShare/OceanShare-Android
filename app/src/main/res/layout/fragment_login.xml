@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_form"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:overScrollMode="never"
+    tools:context=".authentication.LoginFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/logo_placeholder"
+            android:textSize="100sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/email_login_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="45dp"
+                android:background="@drawable/rounded_layout"
+                android:elevation="15dp"
+                android:orientation="vertical"
+                android:padding="@dimen/regular_padding">
+
+                <!-- Email text field -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="5dp"
+                        android:layout_toStartOf="@+id/email_ic"
+                        android:labelFor="@+id/email"
+                        android:text="@string/prompt_email"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/form_field_hint_text_size" />
+
+                    <ImageView
+                        android:id="@+id/email_ic"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="5dp"
+                        android:contentDescription="@string/prompt_email"
+                        android:src="@drawable/ic_mail" />
+
+                </RelativeLayout>
+
+                <com.oceanshare.oceanshare.CustomTextInputLayout
+                    android:id="@+id/email_til"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:errorEnabled="true"
+                    app:errorTextAppearance="@style/til_error_appearance">
+
+                    <EditText
+                        android:id="@+id/email"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:autofillHints=".AUTOFILL_HINT_EMAIL_ADDRESS"
+                        android:background="@drawable/rounded_edit_text"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/white"
+                        tools:targetApi="o" />
+                </com.oceanshare.oceanshare.CustomTextInputLayout>
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="10dp" />
+
+                <!-- Password text field -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginStart="5dp"
+                        android:layout_toStartOf="@+id/password_ic"
+                        android:labelFor="@+id/password"
+                        android:text="@string/prompt_password"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/form_field_hint_text_size" />
+
+                    <ImageView
+                        android:id="@+id/password_ic"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="5dp"
+                        android:contentDescription="@string/prompt_password"
+                        android:src="@drawable/ic_password" />
+
+                </RelativeLayout>
+
+                <com.oceanshare.oceanshare.CustomTextInputLayout
+                    android:id="@+id/password_til"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleTint="@color/white"
+                    app:errorEnabled="true"
+                    app:errorTextAppearance="@style/til_error_appearance">
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:autofillHints=".AUTOFILL_HINT_PASSWORD"
+                        android:background="@drawable/rounded_edit_text"
+                        android:imeActionId="6"
+                        android:imeActionLabel="@string/action_login"
+                        android:imeOptions="actionUnspecified"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/white"
+                        tools:targetApi="o" />
+
+                </com.oceanshare.oceanshare.CustomTextInputLayout>
+
+                <com.dd.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="16dp"
+                    app:sl_cornerRadius="60dp"
+                    app:sl_dx="0dp"
+                    app:sl_dy="3dp"
+                    app:sl_shadowColor="#46939393"
+                    app:sl_shadowRadius="8dp">
+
+                    <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                        android:id="@+id/forgot_password_button"
+                        android:layout_width="150dp"
+                        android:layout_height="30dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="@drawable/forgot_password_button"
+                        android:text="@string/action_forgot_password"
+                        android:textColor="@color/gradient_end"
+                        android:textSize="13sp"
+                        app:initialCornerAngle="100dp"
+                        app:spinning_bar_color="@color/white"
+                        app:spinning_bar_padding="6dp"
+                        app:spinning_bar_width="4dp" />
+                </com.dd.ShadowLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="40dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:elevation="40dp"
+                android:orientation="horizontal">
+
+                <com.dd.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:sl_cornerRadius="60dp"
+                    app:sl_dx="0dp"
+                    app:sl_dy="6dp"
+                    app:sl_shadowColor="#50939393"
+                    app:sl_shadowRadius="8dp">
+
+                    <ImageButton
+                        android:id="@+id/google_login_button"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/ic_google"
+                        android:contentDescription="@string/description_google_button" />
+                </com.dd.ShadowLayout>
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="5dp" />
+
+                <com.dd.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:sl_cornerRadius="60dp"
+                    app:sl_dx="0dp"
+                    app:sl_dy="6dp"
+                    app:sl_shadowColor="#50939393"
+                    app:sl_shadowRadius="8dp">
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+
+                        <com.facebook.login.widget.LoginButton
+                            android:id="@+id/facebook_login_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginBottom="30dp"
+                            android:visibility="gone" />
+
+                        <ImageButton
+                            android:id="@+id/true_facebook_login_button"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:background="@drawable/ic_facebook"
+                            android:contentDescription="@string/description_facebook_button" />
+
+                    </FrameLayout>
+
+                </com.dd.ShadowLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+
+        <com.dd.ShadowLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            app:sl_cornerRadius="60dp"
+            app:sl_dx="0dp"
+            app:sl_dy="4dp"
+            app:sl_shadowColor="#46939393"
+            app:sl_shadowRadius="8dp">
+
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                android:id="@+id/email_login_button"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/request_button"
+                android:text="@string/action_login"
+                android:textColor="@color/white"
+                android:textSize="@dimen/connection_button_text_size"
+                android:textStyle="bold"
+                app:initialCornerAngle="100dp"
+                app:spinning_bar_color="@color/white"
+                app:spinning_bar_padding="6dp"
+                app:spinning_bar_width="4dp" />
+        </com.dd.ShadowLayout>
+
+        <TextView
+            android:id="@+id/swap_to_register_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/don_t_have_an_account_register"
+            android:textSize="@dimen/form_field_hint_text_size" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,62 @@
+<resources>
+    <!-- Facebook credentials -->
+    <string name="facebook_app_id">169506053959899</string>
+    <string name="fb_login_protocol_scheme">fb169506053959899</string>
+
+    <!-- MapBox credentials -->
+
+    <string name="mapbox_access_token">pk.eyJ1Ijoib2NlYW5zaGFyZSIsImEiOiJjanA3MzBsb2UxY3Q1M3ZtbndyZWJlazduIn0.-SSawSdhpQMdpvCwp-JQ3A</string>
+
+    <!-- Titles -->
+    <string name="app_name">Oceanshare</string>
+    <string name="title_activity_connection">Connection</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Profile</string>
+
+    <!-- Strings related to registration and login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_settings">Settings</string>
+    <!-- Errors related to registration and login -->
+    <string name="error_field_required">This field is required</string>
+
+
+    <!-- Strings related to registration -->
+    <string name="prompt_name">Name</string>
+    <string name="prompt_password_confirmation">Password confirmation</string>
+    <string name="action_register">Register</string>
+    <!-- Errors related to registration -->
+    <string name="error_email_already_exist">This email is already in use</string>
+    <string name="error_email_invalid">This email address is invalid</string>
+    <string name="error_password_too_short">This password is too short, it must be at least 10 characters long</string>
+    <string name="error_bad_password">Bad password</string>
+    <!--
+    <string name="error_password_missing_special">The password must contain at least one special character</string>
+    <string name="error_password_missing_number">The password must contain at least one number</string>
+    <string name="error_password_missing_capital">The password must contain at least one capital letter</string>
+    -->
+    <string name="error_password_confirmation_different">The password don\'t match</string>
+
+
+    <!-- Strings related to login -->
+    <string name="action_login">Login</string>
+
+    <!-- Strings related to profile -->
+    <string name="action_logout">Logout</string>
+
+    <!-- Content descriptions -->
+    <string name="description_google_button">Google logo</string>
+    <string name="description_facebook_button">Facebook logo</string>
+
+    <!-- Tmp Strings -->
+    <string name="home_tmp">Home - Coming soon</string>
+    <string name="dashboard_tmp">Dashboard - Coming soon</string>
+    <string name="placeholder_name">Sonny Fournier</string>
+    <string name="placeholder_username">Username</string>
+    <string name="action_forgot_password">Forgot password?</string>
+    <string name="oceanshare_logo">Oceanshare logo</string>
+    <string name="don_t_have_an_account_register">Don\'t have an account? REGISTER</string>
+    <string name="logo_placeholder">LOGO</string>
+</resources>
