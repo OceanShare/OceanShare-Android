@@ -7,10 +7,13 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.ViewCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
@@ -69,10 +72,12 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         mapView.getMapAsync { mapboxMap ->
             map = mapboxMap
             map.setStyle(Style.OUTDOORS)
+
             enableLocation()
 
             map.addOnMapClickListener {
                 if (currentMarker != null) {
+
                     val iconFactory = IconFactory.getInstance(context!!)
                     val icon = iconFactory.fromResource(currentMarker!!.markerImage)
 
@@ -80,11 +85,27 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             .position(LatLng(it.latitude, it.longitude))
                             .icon(icon)
                             .title(currentMarker!!.name)
-                            .snippet("Description")
+                            .snippet(currentMarker!!.description)
                     )
                     currentMarker = null
                 }
             }
+
+            map.setOnMarkerClickListener {
+                if (!it.isInfoWindowShown) {
+                    it.showInfoWindow(map, mapView)
+                    true
+                } else {
+                    it.hideInfoWindow()
+                 false
+                }
+            }
+
+            map.setOnInfoWindowLongClickListener {
+                setupEditingMarkerMenu(it)
+            }
+
+
         }
         setupFadeAnimations()
         setupMarkerMenu()
@@ -138,6 +159,55 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         loadingView.visibility = View.GONE
     }
 
+    private fun setupEditingMarkerMenu(mark: com.mapbox.mapboxsdk.annotations.Marker) {
+        contextualMarkerMenu.background.alpha = 128
+        contextualMarkerMenu.visibility = View.VISIBLE
+
+        //to delete
+
+        showHideMarkerMenuButton.hide()
+        centerCameraButton.hide()
+
+        deletingMarkerButton.setOnClickListener {
+            mark.remove()
+
+            //to delete
+
+            showHideMarkerMenuButton.show()
+            centerCameraButton.show()
+            contextualMarkerMenu.visibility = View.GONE
+        }
+    }
+
+    private fun setupDescriptionScreen() {
+        markerDescription.background.alpha = 128
+        markerDescription.visibility = View.VISIBLE
+
+        //to delete
+
+        showHideMarkerMenuButton.hide()
+        centerCameraButton.hide()
+
+            submitMarkerDescription.setOnClickListener {
+                val description = markerTextDescription.text.toString()
+                if (description.trim().isNotEmpty()) {
+                    currentMarker?.description = description
+                    markerTextDescription.text.clear()
+                    val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+
+                    //to delete
+
+                    showHideMarkerMenuButton.show()
+                    centerCameraButton.show()
+
+                    markerDescription.visibility = View.GONE
+                } else {
+                    Toast.makeText(mContext, "Invalid description", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
     private fun setupMarkerMenu() {
         markerView.alpha = 0.8F
         showHideMarkerMenuButton.setOnClickListener {
@@ -151,12 +221,12 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         }
 
         val markersList = ArrayList<Marker>()
-        markersList.add(Marker("Medusa", R.drawable.medusa, R.drawable.medusa_marker))
-        markersList.add(Marker("Diver", R.drawable.diver, R.drawable.diver_marker))
-        markersList.add(Marker("Waste", R.drawable.waste, R.drawable.waste_marker))
-        markersList.add(Marker("SOS",R.drawable.lifesaver, R.drawable.lifesaver_marker))
-        markersList.add(Marker("Dolphin", R.drawable.dolphin, R.drawable.dolphin_marker))
-        markersList.add(Marker("Soon", R.drawable.soon, R.drawable.soon_marker))
+        markersList.add(Marker("Medusa", R.drawable.medusa, R.drawable.medusa_marker, ""))
+        markersList.add(Marker("Diver", R.drawable.diver, R.drawable.diver_marker, ""))
+        markersList.add(Marker("Waste", R.drawable.waste, R.drawable.waste_marker, ""))
+        markersList.add(Marker("SOS",R.drawable.lifesaver, R.drawable.lifesaver_marker, ""))
+        markersList.add(Marker("Dolphin", R.drawable.dolphin, R.drawable.dolphin_marker, ""))
+        markersList.add(Marker("Soon", R.drawable.soon, R.drawable.soon_marker, ""))
         val adapter = MarkerAdapter(context!!, markersList)
 
         markerGridView.adapter = adapter
@@ -164,6 +234,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             markerMenu.startAnimation(fadeOutAnimation)
             markerMenu.visibility = View.GONE
             currentMarker = markersList[position]
+            setupDescriptionScreen()
         }
     }
 
