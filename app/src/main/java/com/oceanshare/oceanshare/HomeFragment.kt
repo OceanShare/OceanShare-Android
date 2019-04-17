@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.util.Log
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,6 +69,15 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+    private fun showDialogWith(message: String) {
+        val builder = AlertDialog.Builder(context!!)
+        builder.setTitle("Error")
+        builder.setMessage(message)
+        builder.setPositiveButton("Ok"){_, _ -> }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
     override fun onViewCreated(view: View ,savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -86,6 +96,19 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             initMarker()
 
             map.addOnMapClickListener {
+                //var center = map.cameraPosition.target
+                val pixel = map.projection.toScreenLocation(it)
+                val features = map.queryRenderedFeatures(pixel, "water")
+
+                if (features.isEmpty()) {
+                    showDialogWith("You can't place a marker on the land.")
+                    return@addOnMapClickListener
+                }
+                if (it.distanceTo(LatLng(originLocation.latitude, originLocation.longitude)) > 4000) {
+                    showDialogWith("You can't place a marker this far away.")
+                    return@addOnMapClickListener
+                }
+
                 if (currentMarker != null) {
 
                     val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.name,
