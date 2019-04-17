@@ -6,6 +6,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -117,6 +119,16 @@ class LoginFragment : Fragment() {
         rootView.swap_to_register_button.setOnClickListener {
             mCallback?.showRegistrationPage()
         }
+
+        rootView.password_til.isPasswordVisibilityToggleEnabled = false
+        rootView.password.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                rootView.password_til.isPasswordVisibilityToggleEnabled = !rootView.password.text.isEmpty()
+            }
+        })
     }
 
     override fun onAttach(context: Context) {
