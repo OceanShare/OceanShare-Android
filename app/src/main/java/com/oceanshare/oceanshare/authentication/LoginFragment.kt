@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -129,6 +130,21 @@ class LoginFragment : Fragment() {
                 rootView.password_til.isPasswordVisibilityToggleEnabled = !rootView.password.text.isEmpty()
             }
         })
+
+        rootView.forgot_password_button.setOnClickListener {
+            if (rootView.email.text.isEmpty() || rootView.email.text.isBlank()) {
+                Toast.makeText(context, "Renseignez votre email dans le champ email avant de cliquer sur ce boutton.", Toast.LENGTH_LONG).show()
+            } else {
+                fbAuth!!.sendPasswordResetEmail(rootView.email.text.toString())
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(context, "Un lien vous à été envoyé.", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(context, "Il semble que votre adresse email ne corresponde pas à un compte OceanShare", Toast.LENGTH_LONG).show()
+                            }
+                        }
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -175,10 +191,15 @@ class LoginFragment : Fragment() {
             focusView?.requestFocus()
         } else {
             email_login_button.startAnimation()
-
             fbAuth.signInWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(activity as Activity) { task ->
                 if (task.isSuccessful) {
-                    connectUserAndRedirectToHomePage()
+                    val user = fbAuth!!.currentUser
+                    if (user!!.isEmailVerified) {
+                        connectUserAndRedirectToHomePage()
+                    } else {
+                        Toast.makeText(context, "Vous devez d'abord confirmer votre adresse en cliquant sur le lien dans l'email", Toast.LENGTH_LONG).show()
+                        email_login_button.revertAnimation()
+                    }
                 } else {
                     Toast.makeText(context, task.exception?.message, Toast.LENGTH_LONG).show()
                     email_login_button.revertAnimation()

@@ -96,25 +96,31 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             initMarker()
 
             map.addOnMapClickListener {
-                //var center = map.cameraPosition.target
-                val pixel = map.projection.toScreenLocation(it)
-                val features = map.queryRenderedFeatures(pixel, "water")
-
-                if (features.isEmpty()) {
-                    showDialogWith("You can't place a marker on the land.")
-                    return@addOnMapClickListener
-                }
-                if (it.distanceTo(LatLng(originLocation.latitude, originLocation.longitude)) > 4000) {
-                    showDialogWith("You can't place a marker this far away.")
-                    return@addOnMapClickListener
-                }
-
                 if (currentMarker != null) {
+                    val pixel = map.projection.toScreenLocation(it)
+                    val features = map.queryRenderedFeatures(pixel, "water")
 
                     val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.name,
                                             currentMarker!!.description, getHour())
                     database.child("markers").push().setValue(storedMarker)
 
+                    if (features.isEmpty()) {
+                        showDialogWith("You can't place a marker on the land.")
+                        return@addOnMapClickListener
+                    }
+                    if (it.distanceTo(LatLng(originLocation.latitude, originLocation.longitude)) > 4000) {
+                        showDialogWith("You can't place a marker this far away.")
+                        return@addOnMapClickListener
+                    }
+
+                    val iconFactory = IconFactory.getInstance(context!!)
+                    val icon = iconFactory.fromResource(currentMarker!!.markerImage)
+                    map.addMarker(MarkerOptions()
+                            .position(LatLng(it.latitude, it.longitude))
+                            .icon(icon)
+                            .title(currentMarker!!.name)
+                            .snippet(currentMarker!!.description)
+                    )
                     currentMarker = null
                 }
             }

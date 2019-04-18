@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_connection.*
 class AuthenticationActivity : AppCompatActivity(),
         RegisterFragment.OnFragmentInteractionListener,
         LoginFragment.OnFragmentInteractionListener,
-        LoginFragment.Callback {
+        LoginFragment.Callback, RegisterFragment.Callback {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -66,6 +66,10 @@ class AuthenticationActivity : AppCompatActivity(),
 
     override fun showRegistrationPage() {
         container.setCurrentItem(1, true)
+    }
+
+    override fun showLoginPage() {
+        container.setCurrentItem(0, true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
