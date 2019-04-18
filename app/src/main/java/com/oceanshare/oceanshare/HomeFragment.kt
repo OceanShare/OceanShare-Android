@@ -7,13 +7,14 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import com.google.firebase.database.*
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
@@ -45,11 +46,14 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     private lateinit var permissionManager: PermissionsManager
     private lateinit var originLocation: Location
     private lateinit var mContext: Context
+    private lateinit var database: DatabaseReference
+
 
     private var currentMarker: Marker? = null
 
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
+    private var  hashMap : HashMap<String, MarkerData> = HashMap<String, MarkerData>()
 
     private lateinit var fadeInAnimation: AlphaAnimation
     private lateinit var fadeOutAnimation: AlphaAnimation
@@ -73,20 +77,19 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             map = mapboxMap
             map.setStyle(Style.OUTDOORS)
 
+            database = FirebaseDatabase.getInstance().reference
+
             enableLocation()
+
+            initMarker()
 
             map.addOnMapClickListener {
                 if (currentMarker != null) {
 
-                    val iconFactory = IconFactory.getInstance(context!!)
-                    val icon = iconFactory.fromResource(currentMarker!!.markerImage)
+                    val storedMarker = MarkerData(it.latitude, it.longitude, currentMarker!!.name,
+                                            currentMarker!!.description, currentMarker!!.markerImage)
+                    database.child("markers").push().setValue(storedMarker)
 
-                    map.addMarker(MarkerOptions()
-                            .position(LatLng(it.latitude, it.longitude))
-                            .icon(icon)
-                            .title(currentMarker!!.name)
-                            .snippet(currentMarker!!.description)
-                    )
                     currentMarker = null
                 }
             }
@@ -118,6 +121,54 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
         }
+    }
+
+    private fun initMarker () {
+        database.child("markers").addChildEventListener(
+                object : ChildEventListener {
+
+                    override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                        val key = p0.key.toString()
+                        if (!hashMap.containsKey(key) && p0.exists()) {
+                            hashMap.put(key, MarkerData(p0.child("latitude").value.toString().toDouble(),
+                                    p0.child("longitude").value.toString().toDouble(),
+                                    p0.child("title").value.toString(),
+                                    p0.child("description").value.toString(),
+                                    p0.child("markerImage").value.toString().toInt()))
+
+                            val marker = hashMap[key]
+
+                            Log.d("TAG", marker!!.description)
+
+                            val iconFactory = IconFactory.getInstance(context!!)
+                            val icon = iconFactory.fromResource(marker.markerImage)
+
+                            map.addMarker(MarkerOptions()
+                                    .position(LatLng(marker.latitude, marker.longitude))
+                                    .icon(icon)
+                                    .title(marker.title)
+                                    .snippet(marker.description)
+                            )
+
+                        }
+                    }
+
+                    override fun onChildRemoved(p0: DataSnapshot) {
+                        Log.d("TAG", "removed")
+                    }
+
+                    override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onCancelled(p0: DatabaseError) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+                })
     }
 
     private fun setupFadeAnimations() {
@@ -169,6 +220,18 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         centerCameraButton.hide()
 
         deletingMarkerButton.setOnClickListener {
+
+            var markerKey = ""
+
+            for ((k) in hashMap) {
+                if (LatLng(hashMap[k]!!.latitude, hashMap[k]!!.longitude) == mark.position) {
+                    markerKey = k
+                    break
+                }
+            }
+
+            database.child("markers").child(markerKey).removeValue()
+            hashMap.remove(markerKey)
             mark.remove()
 
             //to delete
