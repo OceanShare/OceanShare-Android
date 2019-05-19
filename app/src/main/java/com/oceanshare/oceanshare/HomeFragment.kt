@@ -35,6 +35,8 @@ import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import kotlinx.android.synthetic.main.fragment_home.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 interface LoadingImplementation {
     fun onFinishedLoading()
@@ -86,8 +88,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             map.addOnMapClickListener {
                 if (currentMarker != null) {
 
-                    val storedMarker = MarkerData(it.latitude, it.longitude, currentMarker!!.name,
-                                            currentMarker!!.description, currentMarker!!.markerImage)
+                    val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.name,
+                                            currentMarker!!.description, getHour())
                     database.child("markers").push().setValue(storedMarker)
 
                     currentMarker = null
@@ -123,6 +125,10 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         }
     }
 
+    private fun getHour() : String {
+        return SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH).format(Date())
+    }
+
     private fun initMarker () {
         database.child("markers").addChildEventListener(
                 object : ChildEventListener {
@@ -130,31 +136,43 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
                         if (!hashMap.containsKey(key) && p0.exists()) {
-                            hashMap.put(key, MarkerData(p0.child("latitude").value.toString().toDouble(),
-                                    p0.child("longitude").value.toString().toDouble(),
-                                    p0.child("title").value.toString(),
-                                    p0.child("description").value.toString(),
-                                    p0.child("markerImage").value.toString().toInt()))
 
-                            val marker = hashMap[key]
+                            val markerLatitude = p0.child("latitude").value.toString().toDouble()
+                            val markerLongitude = p0.child("longitude").value.toString().toDouble()
+                            val markerTitle = p0.child("title").value.toString()
+                            val markerDesc = p0.child("description").value.toString()
+                            val markerTime = p0.child("time").value.toString()
 
-                            Log.d("TAG", marker!!.description)
+
+                            Log.d("TAG", markerDesc)
 
                             val iconFactory = IconFactory.getInstance(context!!)
-                            val icon = iconFactory.fromResource(marker.markerImage)
+                            val icon = iconFactory.fromResource(findImagetoMarker(markerTitle))
 
-                            map.addMarker(MarkerOptions()
-                                    .position(LatLng(marker.latitude, marker.longitude))
+                            val markerMap = map.addMarker(MarkerOptions()
+                                    .position(LatLng(markerLatitude, markerLongitude))
                                     .icon(icon)
-                                    .title(marker.title)
-                                    .snippet(marker.description)
+                                    .title(markerTitle)
+                                    .snippet(markerDesc)
                             )
 
+                            hashMap.put(key,
+                                        MarkerData(markerMap.id,
+                                            markerLatitude,
+                                            markerLongitude,
+                                            markerTitle,
+                                            markerDesc,
+                                                markerTime))
                         }
                     }
 
                     override fun onChildRemoved(p0: DataSnapshot) {
-                        Log.d("TAG", "removed")
+                        val key = p0.key.toString()
+
+                        if (hashMap.containsKey(key) && p0.exists()){
+                            map.getAnnotation(hashMap[key]?.id!!)?.remove()
+                            hashMap.remove(key)
+                        }
                     }
 
                     override fun onChildChanged(p0: DataSnapshot, p1: String?) {
@@ -169,6 +187,19 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
                     }
                 })
+    }
+
+    private fun findImagetoMarker(markerName: String) : Int{
+        val markerImage : HashMap<String, Int> = HashMap<String, Int>()
+
+        markerImage.put("Medusa", R.drawable.medusa_marker)
+        markerImage.put("Diver", R.drawable.diver_marker)
+        markerImage.put("Waste", R.drawable.waste_marker)
+        markerImage.put("SOS", R.drawable.lifesaver_marker)
+        markerImage.put("Dolphin", R.drawable.dolphin_marker)
+        markerImage.put("Soon", R.drawable.soon_marker)
+
+        return markerImage[markerName]!!
     }
 
     private fun setupFadeAnimations() {
@@ -224,15 +255,13 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             var markerKey = ""
 
             for ((k) in hashMap) {
-                if (LatLng(hashMap[k]!!.latitude, hashMap[k]!!.longitude) == mark.position) {
+                if (hashMap[k]?.id == mark.id) {
                     markerKey = k
                     break
                 }
             }
 
             database.child("markers").child(markerKey).removeValue()
-            hashMap.remove(markerKey)
-            mark.remove()
 
             //to delete
 
@@ -253,21 +282,18 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
             submitMarkerDescription.setOnClickListener {
                 val description = markerTextDescription.text.toString()
-                if (description.trim().isNotEmpty()) {
-                    currentMarker?.description = description
-                    markerTextDescription.text.clear()
-                    val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
 
-                    //to delete
+                currentMarker?.description = description
+                markerTextDescription.text.clear()
+                val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
 
-                    showHideMarkerMenuButton.show()
-                    centerCameraButton.show()
+                //to delete
 
-                    markerDescription.visibility = View.GONE
-                } else {
-                    Toast.makeText(mContext, "Invalid description", Toast.LENGTH_SHORT).show()
-                }
+                showHideMarkerMenuButton.show()
+                centerCameraButton.show()
+
+                markerDescription.visibility = View.GONE
         }
     }
 
