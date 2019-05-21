@@ -73,4 +73,5 @@
     <string name="marker_waste">Déchêts</string>
     <string name="marker_sos">SOS</string>
     <string name="marker_dolphin">Dauphins</string>
+    <string name="marker_position">Position</string>
 </resources>

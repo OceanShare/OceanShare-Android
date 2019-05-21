@@ -236,11 +236,12 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     private fun findMarkerImage(markerName: String) : Int{
         val markerImages: HashMap<String, Int> = HashMap()
 
-        markerImages[getString(R.string.marker_medusa)] = R.drawable.medusa_marker
-        markerImages[getString(R.string.marker_diver)] = R.drawable.diver_marker
-        markerImages[getString(R.string.marker_waste)] = R.drawable.waste_marker
-        markerImages[getString(R.string.marker_sos)] = R.drawable.lifesaver_marker
-        markerImages[getString(R.string.marker_dolphin)] = R.drawable.dolphin_marker
+        markerImages[getString(R.string.marker_medusa)] = R.drawable.marker_map_medusa
+        markerImages[getString(R.string.marker_diver)] = R.drawable.marker_map_diver
+        markerImages[getString(R.string.marker_waste)] = R.drawable.marker_map_waste
+        markerImages[getString(R.string.marker_sos)] = R.drawable.marker_map_warning
+        markerImages[getString(R.string.marker_dolphin)] = R.drawable.marker_map_dolphin
+        markerImages[getString(R.string.marker_position)] = R.drawable.marker_map_position
 
         return markerImages[markerName]!!
     }
@@ -374,11 +375,11 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         }
 
         val markersList = ArrayList<Marker>()
-        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.medusa, R.drawable.medusa_marker, ""))
-        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.diver, R.drawable.diver_marker, ""))
-        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.waste, R.drawable.waste_marker, ""))
-        markersList.add(Marker(getString(R.string.marker_sos),R.drawable.lifesaver, R.drawable.lifesaver_marker, ""))
-        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.dolphin, R.drawable.dolphin_marker, ""))
+        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.marker_menu_medusa, R.drawable.marker_map_medusa, ""))
+        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.marker_menu_diver, R.drawable.marker_map_diver, ""))
+        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.marker_menu_waste, R.drawable.marker_map_waste, ""))
+        markersList.add(Marker(getString(R.string.marker_sos),R.drawable.marker_menu_warning, R.drawable.marker_map_warning, ""))
+        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, R.drawable.marker_map_dolphin, ""))
         val adapter = MarkerAdapter(context!!, markersList)
 
         markerGridView.adapter = adapter

@@ -73,4 +73,5 @@
     <string name="marker_waste">Waste</string>
     <string name="marker_sos">SOS</string>
     <string name="marker_dolphin">Dolphin</string>
+    <string name="marker_position">Position</string>
 </resources>
