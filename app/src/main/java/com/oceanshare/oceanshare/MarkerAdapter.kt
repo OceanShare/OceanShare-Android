@@ -31,8 +31,8 @@ class MarkerAdapter(context: Context, foodsList: ArrayList<Marker>) : BaseAdapte
 
         val inflater = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val markerView = inflater.inflate(R.layout.marker_entry, null)
-        markerView.markerImage.setImageResource(marker.image!!)
-        markerView.markerName.text = marker.name!!
+        markerView.markerImage.setImageResource(marker.image)
+        markerView.markerName.text = marker.name
 
         return markerView
     }

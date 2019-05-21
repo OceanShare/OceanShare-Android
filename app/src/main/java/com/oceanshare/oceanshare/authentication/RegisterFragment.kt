@@ -68,14 +68,14 @@ class RegisterFragment : Fragment() {
             override fun afterTextChanged(p0: Editable?) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                rootView.password_til.isPasswordVisibilityToggleEnabled = !rootView.password.text.isEmpty()
+                rootView.password_til.isPasswordVisibilityToggleEnabled = rootView.password.text.isNotEmpty()
             }
         })
         rootView.password_confirmation.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                rootView.password_confirmation_til.isPasswordVisibilityToggleEnabled = !rootView.password_confirmation.text.isEmpty()
+                rootView.password_confirmation_til.isPasswordVisibilityToggleEnabled = rootView.password_confirmation.text.isNotEmpty()
             }
         })
     }
@@ -85,7 +85,7 @@ class RegisterFragment : Fragment() {
         if (context is OnFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
