@@ -129,6 +129,19 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         return SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH).format(Date())
     }
 
+    private fun getMarkerKey(markerid : Long) : String {
+        var markerKey = ""
+
+        for ((k) in hashMap) {
+            if (hashMap[k]?.id == markerid) {
+                markerKey = k
+                break
+            }
+        }
+
+        return markerKey
+    }
+
     private fun initMarker () {
         database.child("markers").addChildEventListener(
                 object : ChildEventListener {
@@ -157,12 +170,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             )
 
                             hashMap.put(key,
-                                        MarkerData(markerMap.id,
-                                            markerLatitude,
-                                            markerLongitude,
-                                            markerTitle,
-                                            markerDesc,
-                                                markerTime))
+                                        MarkerData(markerMap.id, markerLatitude,
+                                            markerLongitude, markerTitle,
+                                            markerDesc, markerTime))
                         }
                     }
 
@@ -176,7 +186,18 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     }
 
                     override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        val key = p0.key.toString()
+
+                        if (hashMap.containsKey(key) && p0.exists() &&
+                                (p0.child("description").value.toString() != hashMap[key]?.description)) {
+                            map.getMarkers()?.forEach {
+                                if (getMarkerKey(it.id) == key )
+                                {
+                                    it.snippet = p0.child("description").value.toString()
+                                    hashMap[key]?.description = p0.child("description").value.toString()
+                                }
+                            }
+                        }
                     }
 
                     override fun onChildMoved(p0: DataSnapshot, p1: String?) {
@@ -252,16 +273,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
         deletingMarkerButton.setOnClickListener {
 
-            var markerKey = ""
-
-            for ((k) in hashMap) {
-                if (hashMap[k]?.id == mark.id) {
-                    markerKey = k
-                    break
-                }
-            }
-
-            database.child("markers").child(markerKey).removeValue()
+            database.child("markers").child(getMarkerKey(mark.id)).removeValue()
 
             //to delete
 
@@ -269,6 +281,36 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             centerCameraButton.show()
             contextualMarkerMenu.visibility = View.GONE
         }
+
+        editingMarkerButton.setOnClickListener {
+
+            contextualMarkerMenu.visibility = View.GONE
+
+            markerDescription.background.alpha = 128
+            markerDescription.visibility = View.VISIBLE
+
+            //to delete
+
+            showHideMarkerMenuButton.hide()
+            centerCameraButton.hide()
+
+            submitMarkerDescription.setOnClickListener {
+                database.child("markers").child(getMarkerKey(mark.id)).child("description")
+                        .setValue(markerTextDescription.text.toString())
+
+                markerTextDescription.text.clear()
+                val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+
+                //to delete
+
+                showHideMarkerMenuButton.show()
+                centerCameraButton.show()
+
+                markerDescription.visibility = View.GONE
+            }
+        }
+
     }
 
     private fun setupDescriptionScreen() {
