@@ -7,14 +7,13 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import com.google.firebase.database.*
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
@@ -56,7 +55,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
-    private var  hashMap : HashMap<String, MarkerData> = HashMap<String, MarkerData>()
+    private var  hashMap : HashMap<String, MarkerData> = HashMap()
 
     private lateinit var fadeInAnimation: AlphaAnimation
     private lateinit var fadeOutAnimation: AlphaAnimation
@@ -71,7 +70,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     private fun showDialogWith(message: String) {
         val builder = AlertDialog.Builder(context!!)
-        builder.setTitle("Error")
+        builder.setTitle(R.string.error)
         builder.setMessage(message)
         builder.setPositiveButton("Ok"){_, _ -> }
         val dialog: AlertDialog = builder.create()
@@ -105,11 +104,11 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     database.child("markers").push().setValue(storedMarker)
 
                     if (features.isEmpty()) {
-                        showDialogWith("You can't place a marker on the land.")
+                        showDialogWith(getString(R.string.error_marker_land))
                         return@addOnMapClickListener
                     }
                     if (it.distanceTo(LatLng(originLocation.latitude, originLocation.longitude)) > 4000) {
-                        showDialogWith("You can't place a marker this far away.")
+                        showDialogWith(getString(R.string.error_marker_too_far))
                         return@addOnMapClickListener
                     }
 
@@ -185,11 +184,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             val markerDesc = p0.child("description").value.toString()
                             val markerTime = p0.child("time").value.toString()
 
-
-                            Log.d("TAG", markerDesc)
-
                             val iconFactory = IconFactory.getInstance(context!!)
-                            val icon = iconFactory.fromResource(findImagetoMarker(markerTitle))
+                            val icon = iconFactory.fromResource(findMarkerImage(markerTitle))
 
                             val markerMap = map.addMarker(MarkerOptions()
                                     .position(LatLng(markerLatitude, markerLongitude))
@@ -198,10 +194,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                                     .snippet(markerDesc)
                             )
 
-                            hashMap.put(key,
-                                        MarkerData(markerMap.id, markerLatitude,
-                                            markerLongitude, markerTitle,
-                                            markerDesc, markerTime))
+                            hashMap[key] = MarkerData(markerMap.id, markerLatitude,
+                                    markerLongitude, markerTitle,
+                                    markerDesc, markerTime)
                         }
                     }
 
@@ -219,9 +214,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
                         if (hashMap.containsKey(key) && p0.exists() &&
                                 (p0.child("description").value.toString() != hashMap[key]?.description)) {
-                            map.getMarkers()?.forEach {
-                                if (getMarkerKey(it.id) == key )
-                                {
+                            map.markers.forEach {
+                                if (getMarkerKey(it.id) == key ) {
                                     it.snippet = p0.child("description").value.toString()
                                     hashMap[key]?.description = p0.child("description").value.toString()
                                 }
@@ -239,17 +233,16 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                 })
     }
 
-    private fun findImagetoMarker(markerName: String) : Int{
-        val markerImage : HashMap<String, Int> = HashMap<String, Int>()
+    private fun findMarkerImage(markerName: String) : Int{
+        val markerImages: HashMap<String, Int> = HashMap()
 
-        markerImage.put("Medusa", R.drawable.medusa_marker)
-        markerImage.put("Diver", R.drawable.diver_marker)
-        markerImage.put("Waste", R.drawable.waste_marker)
-        markerImage.put("SOS", R.drawable.lifesaver_marker)
-        markerImage.put("Dolphin", R.drawable.dolphin_marker)
-        markerImage.put("Soon", R.drawable.soon_marker)
+        markerImages[getString(R.string.marker_medusa)] = R.drawable.medusa_marker
+        markerImages[getString(R.string.marker_diver)] = R.drawable.diver_marker
+        markerImages[getString(R.string.marker_waste)] = R.drawable.waste_marker
+        markerImages[getString(R.string.marker_sos)] = R.drawable.lifesaver_marker
+        markerImages[getString(R.string.marker_dolphin)] = R.drawable.dolphin_marker
 
-        return markerImage[markerName]!!
+        return markerImages[markerName]!!
     }
 
     private fun setupFadeAnimations() {
@@ -381,12 +374,11 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         }
 
         val markersList = ArrayList<Marker>()
-        markersList.add(Marker("Medusa", R.drawable.medusa, R.drawable.medusa_marker, ""))
-        markersList.add(Marker("Diver", R.drawable.diver, R.drawable.diver_marker, ""))
-        markersList.add(Marker("Waste", R.drawable.waste, R.drawable.waste_marker, ""))
-        markersList.add(Marker("SOS",R.drawable.lifesaver, R.drawable.lifesaver_marker, ""))
-        markersList.add(Marker("Dolphin", R.drawable.dolphin, R.drawable.dolphin_marker, ""))
-        markersList.add(Marker("Soon", R.drawable.soon, R.drawable.soon_marker, ""))
+        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.medusa, R.drawable.medusa_marker, ""))
+        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.diver, R.drawable.diver_marker, ""))
+        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.waste, R.drawable.waste_marker, ""))
+        markersList.add(Marker(getString(R.string.marker_sos),R.drawable.lifesaver, R.drawable.lifesaver_marker, ""))
+        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.dolphin, R.drawable.dolphin_marker, ""))
         val adapter = MarkerAdapter(context!!, markersList)
 
         markerGridView.adapter = adapter

@@ -68,7 +68,7 @@ class LoginFragment : Fragment() {
             if (result.isSuccess) {
                 connectUserAndRedirectToHomePage()
             } else {
-                Toast.makeText(activity, "Authentication failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, R.string.error_auth_failed, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -133,14 +133,14 @@ class LoginFragment : Fragment() {
 
         rootView.forgot_password_button.setOnClickListener {
             if (rootView.email.text.isEmpty() || rootView.email.text.isBlank()) {
-                Toast.makeText(context, "Renseignez votre email dans le champ email avant de cliquer sur ce boutton.", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, R.string.enter_email, Toast.LENGTH_LONG).show()
             } else {
                 fbAuth!!.sendPasswordResetEmail(rootView.email.text.toString())
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                Toast.makeText(context, "Un lien vous à été envoyé.", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, R.string.info_link_send, Toast.LENGTH_LONG).show()
                             } else {
-                                Toast.makeText(context, "Il semble que votre adresse email ne corresponde pas à un compte OceanShare", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, R.string.error_no_account, Toast.LENGTH_LONG).show()
                             }
                         }
             }
@@ -197,7 +197,7 @@ class LoginFragment : Fragment() {
                     if (user!!.isEmailVerified) {
                         connectUserAndRedirectToHomePage()
                     } else {
-                        Toast.makeText(context, "Vous devez d'abord confirmer votre adresse en cliquant sur le lien dans l'email", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, R.string.error_confirm_account, Toast.LENGTH_LONG).show()
                         email_login_button.revertAnimation()
                     }
                 } else {

@@ -53,10 +53,24 @@
     <!-- Tmp Strings -->
     <string name="home_tmp">Home - Coming soon</string>
     <string name="dashboard_tmp">Dashboard - Coming soon</string>
-    <string name="placeholder_name">Sonny Fournier</string>
+    <string name="placeholder_name">Username (click to change)</string>
     <string name="placeholder_username">Username</string>
     <string name="action_forgot_password">Forgot password?</string>
     <string name="oceanshare_logo">Oceanshare logo</string>
     <string name="don_t_have_an_account_register">Don\'t have an account? REGISTER</string>
     <string name="logo_placeholder">LOGO</string>
+    <string name="error_auth_failed">Authentication failed</string>
+    <string name="enter_email">Put your email in the mail field before click on that button</string>
+    <string name="info_link_send">We send you a link</string>
+    <string name="error_no_account">Your email address is not an Oceanshare account</string>
+    <string name="error_confirm_account">You must confirm your email first by clicking on the link we\'ve send to you</string>
+    <string name="info_mail_confirm">We\'ve send to you a confirmation email</string>
+    <string name="error">Error</string>
+    <string name="error_marker_land">You can\'t place a marker on the land</string>
+    <string name="error_marker_too_far">You can\'t place a marker this far away</string>
+    <string name="marker_medusa">Medusa</string>
+    <string name="marker_diver">Diver</string>
+    <string name="marker_waste">Waste</string>
+    <string name="marker_sos">SOS</string>
+    <string name="marker_dolphin">Dolphin</string>
 </resources>

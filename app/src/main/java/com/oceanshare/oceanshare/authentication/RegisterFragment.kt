@@ -146,7 +146,7 @@ class RegisterFragment : Fragment() {
                     val user = fbAuth!!.currentUser
                     user!!.sendEmailVerification().addOnCompleteListener(activity as Activity) { mailTask ->
                         if (mailTask.isSuccessful) {
-                            Toast.makeText(context, "Un email de confirmation vient de vous être envoyé, veuillez vérifier votre email avant de vous connectez.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, R.string.info_mail_confirm, Toast.LENGTH_LONG).show()
                             email_register_button.dispose()
                             fbAuth.signOut()
                             mCallback?.showLoginPage()
