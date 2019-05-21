@@ -59,8 +59,10 @@ dependencies {
     implementation 'com.github.dmytrodanylyk.shadow-layout:library:1.0.3'
 
     // Firebase
-    implementation 'com.google.firebase:firebase-core:16.0.6'
-    implementation 'com.google.firebase:firebase-auth:16.0.5'
+    implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.google.firebase:firebase-auth:16.2.1'
+    implementation 'com.google.firebase:firebase-database:16.1.0'
+
 
     //Mapbox (map)
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:6.7.2'

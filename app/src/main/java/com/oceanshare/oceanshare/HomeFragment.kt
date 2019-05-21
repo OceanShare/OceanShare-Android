@@ -7,10 +7,13 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
+import android.view.inputmethod.InputMethodManager
+import com.google.firebase.database.*
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
@@ -31,6 +34,8 @@ import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import kotlinx.android.synthetic.main.fragment_home.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 interface LoadingImplementation {
     fun onFinishedLoading()
@@ -42,11 +47,14 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     private lateinit var permissionManager: PermissionsManager
     private lateinit var originLocation: Location
     private lateinit var mContext: Context
+    private lateinit var database: DatabaseReference
+
 
     private var currentMarker: Marker? = null
 
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
+    private var  hashMap : HashMap<String, MarkerData> = HashMap()
 
     private lateinit var fadeInAnimation: AlphaAnimation
     private lateinit var fadeOutAnimation: AlphaAnimation
@@ -59,6 +67,15 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+    private fun showDialogWith(message: String) {
+        val builder = AlertDialog.Builder(context!!)
+        builder.setTitle(R.string.error)
+        builder.setMessage(message)
+        builder.setPositiveButton("Ok"){_, _ -> }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
     override fun onViewCreated(view: View ,savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -69,22 +86,58 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         mapView.getMapAsync { mapboxMap ->
             map = mapboxMap
             map.setStyle(Style.OUTDOORS)
+
+            database = FirebaseDatabase.getInstance().reference
+
             enableLocation()
+
+            initMarker()
 
             map.addOnMapClickListener {
                 if (currentMarker != null) {
+                    val pixel = map.projection.toScreenLocation(it)
+                    val features = map.queryRenderedFeatures(pixel, "water")
+
+                    val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.name,
+                                            currentMarker!!.description, getHour())
+                    database.child("markers").push().setValue(storedMarker)
+
+                    if (features.isEmpty()) {
+                        showDialogWith(getString(R.string.error_marker_land))
+                        return@addOnMapClickListener
+                    }
+                    if (it.distanceTo(LatLng(originLocation.latitude, originLocation.longitude)) > 4000) {
+                        showDialogWith(getString(R.string.error_marker_too_far))
+                        return@addOnMapClickListener
+                    }
+
                     val iconFactory = IconFactory.getInstance(context!!)
                     val icon = iconFactory.fromResource(currentMarker!!.markerImage)
-
                     map.addMarker(MarkerOptions()
                             .position(LatLng(it.latitude, it.longitude))
                             .icon(icon)
                             .title(currentMarker!!.name)
-                            .snippet("Description")
+                            .snippet(currentMarker!!.description)
                     )
                     currentMarker = null
                 }
             }
+
+            map.setOnMarkerClickListener {
+                if (!it.isInfoWindowShown) {
+                    it.showInfoWindow(map, mapView)
+                    true
+                } else {
+                    it.hideInfoWindow()
+                 false
+                }
+            }
+
+            map.setOnInfoWindowLongClickListener {
+                setupEditingMarkerMenu(it)
+            }
+
+
         }
         setupFadeAnimations()
         setupMarkerMenu()
@@ -97,6 +150,99 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
         }
+    }
+
+    private fun getHour() : String {
+        return SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH).format(Date())
+    }
+
+    private fun getMarkerKey(markerid : Long) : String {
+        var markerKey = ""
+
+        for ((k) in hashMap) {
+            if (hashMap[k]?.id == markerid) {
+                markerKey = k
+                break
+            }
+        }
+
+        return markerKey
+    }
+
+    private fun initMarker () {
+        database.child("markers").addChildEventListener(
+                object : ChildEventListener {
+
+                    override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                        val key = p0.key.toString()
+                        if (!hashMap.containsKey(key) && p0.exists()) {
+
+                            val markerLatitude = p0.child("latitude").value.toString().toDouble()
+                            val markerLongitude = p0.child("longitude").value.toString().toDouble()
+                            val markerTitle = p0.child("title").value.toString()
+                            val markerDesc = p0.child("description").value.toString()
+                            val markerTime = p0.child("time").value.toString()
+
+                            val iconFactory = IconFactory.getInstance(context!!)
+                            val icon = iconFactory.fromResource(findMarkerImage(markerTitle))
+
+                            val markerMap = map.addMarker(MarkerOptions()
+                                    .position(LatLng(markerLatitude, markerLongitude))
+                                    .icon(icon)
+                                    .title(markerTitle)
+                                    .snippet(markerDesc)
+                            )
+
+                            hashMap[key] = MarkerData(markerMap.id, markerLatitude,
+                                    markerLongitude, markerTitle,
+                                    markerDesc, markerTime)
+                        }
+                    }
+
+                    override fun onChildRemoved(p0: DataSnapshot) {
+                        val key = p0.key.toString()
+
+                        if (hashMap.containsKey(key) && p0.exists()){
+                            map.getAnnotation(hashMap[key]?.id!!)?.remove()
+                            hashMap.remove(key)
+                        }
+                    }
+
+                    override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                        val key = p0.key.toString()
+
+                        if (hashMap.containsKey(key) && p0.exists() &&
+                                (p0.child("description").value.toString() != hashMap[key]?.description)) {
+                            map.markers.forEach {
+                                if (getMarkerKey(it.id) == key ) {
+                                    it.snippet = p0.child("description").value.toString()
+                                    hashMap[key]?.description = p0.child("description").value.toString()
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onCancelled(p0: DatabaseError) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+                })
+    }
+
+    private fun findMarkerImage(markerName: String) : Int{
+        val markerImages: HashMap<String, Int> = HashMap()
+
+        markerImages[getString(R.string.marker_medusa)] = R.drawable.marker_map_medusa
+        markerImages[getString(R.string.marker_diver)] = R.drawable.marker_map_diver
+        markerImages[getString(R.string.marker_waste)] = R.drawable.marker_map_waste
+        markerImages[getString(R.string.marker_sos)] = R.drawable.marker_map_warning
+        markerImages[getString(R.string.marker_dolphin)] = R.drawable.marker_map_dolphin
+        markerImages[getString(R.string.marker_position)] = R.drawable.marker_map_position
+
+        return markerImages[markerName]!!
     }
 
     private fun setupFadeAnimations() {
@@ -138,6 +284,83 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         loadingView.visibility = View.GONE
     }
 
+    private fun setupEditingMarkerMenu(mark: com.mapbox.mapboxsdk.annotations.Marker) {
+        contextualMarkerMenu.background.alpha = 128
+        contextualMarkerMenu.visibility = View.VISIBLE
+
+        //to delete
+
+        showHideMarkerMenuButton.hide()
+        centerCameraButton.hide()
+
+        deletingMarkerButton.setOnClickListener {
+
+            database.child("markers").child(getMarkerKey(mark.id)).removeValue()
+
+            //to delete
+
+            showHideMarkerMenuButton.show()
+            centerCameraButton.show()
+            contextualMarkerMenu.visibility = View.GONE
+        }
+
+        editingMarkerButton.setOnClickListener {
+
+            contextualMarkerMenu.visibility = View.GONE
+
+            markerDescription.background.alpha = 128
+            markerDescription.visibility = View.VISIBLE
+
+            //to delete
+
+            showHideMarkerMenuButton.hide()
+            centerCameraButton.hide()
+
+            submitMarkerDescription.setOnClickListener {
+                database.child("markers").child(getMarkerKey(mark.id)).child("description")
+                        .setValue(markerTextDescription.text.toString())
+
+                markerTextDescription.text.clear()
+                val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+
+                //to delete
+
+                showHideMarkerMenuButton.show()
+                centerCameraButton.show()
+
+                markerDescription.visibility = View.GONE
+            }
+        }
+
+    }
+
+    private fun setupDescriptionScreen() {
+        markerDescription.background.alpha = 128
+        markerDescription.visibility = View.VISIBLE
+
+        //to delete
+
+        showHideMarkerMenuButton.hide()
+        centerCameraButton.hide()
+
+            submitMarkerDescription.setOnClickListener {
+                val description = markerTextDescription.text.toString()
+
+                currentMarker?.description = description
+                markerTextDescription.text.clear()
+                val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+
+                //to delete
+
+                showHideMarkerMenuButton.show()
+                centerCameraButton.show()
+
+                markerDescription.visibility = View.GONE
+        }
+    }
+
     private fun setupMarkerMenu() {
         markerView.alpha = 0.8F
         showHideMarkerMenuButton.setOnClickListener {
@@ -151,12 +374,11 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         }
 
         val markersList = ArrayList<Marker>()
-        markersList.add(Marker("Medusa", R.drawable.medusa, R.drawable.medusa_marker))
-        markersList.add(Marker("Diver", R.drawable.diver, R.drawable.diver_marker))
-        markersList.add(Marker("Waste", R.drawable.waste, R.drawable.waste_marker))
-        markersList.add(Marker("SOS",R.drawable.lifesaver, R.drawable.lifesaver_marker))
-        markersList.add(Marker("Dolphin", R.drawable.dolphin, R.drawable.dolphin_marker))
-        markersList.add(Marker("Soon", R.drawable.soon, R.drawable.soon_marker))
+        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.marker_menu_medusa, R.drawable.marker_map_medusa, ""))
+        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.marker_menu_diver, R.drawable.marker_map_diver, ""))
+        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.marker_menu_waste, R.drawable.marker_map_waste, ""))
+        markersList.add(Marker(getString(R.string.marker_sos),R.drawable.marker_menu_warning, R.drawable.marker_map_warning, ""))
+        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, R.drawable.marker_map_dolphin, ""))
         val adapter = MarkerAdapter(context!!, markersList)
 
         markerGridView.adapter = adapter
@@ -164,6 +386,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             markerMenu.startAnimation(fadeOutAnimation)
             markerMenu.visibility = View.GONE
             currentMarker = markersList[position]
+            setupDescriptionScreen()
         }
     }
 

@@ -41,6 +41,57 @@
         app:backgroundTint="@color/deep_blue"
         app:fabSize= "normal" />
 
+    <LinearLayout
+        android:id="@+id/markerDescription"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/gradient_background" >
+
+        <EditText
+            android:id="@+id/markerTextDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="What's happening ?"
+            android:background="@drawable/rounded_edit_text"/>
+        
+        <Button
+            android:id="@+id/submitMarkerDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Submit"
+            android:background="@drawable/request_button"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/contextualMarkerMenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="bottom"
+        android:background="@drawable/gradient_background"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/deletingMarkerButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:text="Delete" />
+
+        <Button
+            android:id="@+id/editingMarkerButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:text="Edit" />
+
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/markerMenu"
         android:visibility="gone"

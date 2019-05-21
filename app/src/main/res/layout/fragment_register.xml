@@ -13,14 +13,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
+        <ImageView
+            android:layout_marginTop="30dp"
             android:layout_marginBottom="20dp"
-            android:text="@string/logo_placeholder"
-            android:textSize="100sp" />
+            android:src="@drawable/logo"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="100dp" />
 
         <LinearLayout
             android:id="@+id/email_register_form"

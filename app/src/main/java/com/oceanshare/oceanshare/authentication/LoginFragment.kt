@@ -6,6 +6,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,7 +67,7 @@ class LoginFragment : Fragment() {
             if (result.isSuccess) {
                 connectUserAndRedirectToHomePage()
             } else {
-                Toast.makeText(activity, "Authentication failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, R.string.error_auth_failed, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -117,6 +119,31 @@ class LoginFragment : Fragment() {
         rootView.swap_to_register_button.setOnClickListener {
             mCallback?.showRegistrationPage()
         }
+
+        rootView.password_til.isPasswordVisibilityToggleEnabled = false
+        rootView.password.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                rootView.password_til.isPasswordVisibilityToggleEnabled = rootView.password.text.isNotEmpty()
+            }
+        })
+
+        rootView.forgot_password_button.setOnClickListener {
+            if (rootView.email.text.isEmpty() || rootView.email.text.isBlank()) {
+                Toast.makeText(context, R.string.enter_email, Toast.LENGTH_LONG).show()
+            } else {
+                fbAuth!!.sendPasswordResetEmail(rootView.email.text.toString())
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(context, R.string.info_link_send, Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(context, R.string.error_no_account, Toast.LENGTH_LONG).show()
+                            }
+                        }
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -124,7 +151,7 @@ class LoginFragment : Fragment() {
         if (context is OnFragmentInteractionListener) {
             listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
@@ -163,10 +190,15 @@ class LoginFragment : Fragment() {
             focusView?.requestFocus()
         } else {
             email_login_button.startAnimation()
-
             fbAuth.signInWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(activity as Activity) { task ->
                 if (task.isSuccessful) {
-                    connectUserAndRedirectToHomePage()
+                    val user = fbAuth!!.currentUser
+                    if (user!!.isEmailVerified) {
+                        connectUserAndRedirectToHomePage()
+                    } else {
+                        Toast.makeText(context, R.string.error_confirm_account, Toast.LENGTH_LONG).show()
+                        email_login_button.revertAnimation()
+                    }
                 } else {
                     Toast.makeText(context, task.exception?.message, Toast.LENGTH_LONG).show()
                     email_login_button.revertAnimation()
