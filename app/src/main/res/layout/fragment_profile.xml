@@ -51,7 +51,7 @@
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-light"
             android:gravity="center_horizontal"
-            android:text="Ahoy Denis B !"
+            android:text="@string/placeholder_username"
             android:textColor="@color/gradient_end"
             android:textSize="35sp"
             android:textStyle="bold" />
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:gravity="center_horizontal"
-                android:text="el bato"
+                android:text="@string/placeholder_ship_name"
                 android:textColor="@color/gradient_end"
                 android:textSize="25sp"
                 android:textStyle="bold" />
@@ -101,44 +101,6 @@
 
         </LinearLayout>
     </LinearLayout>
-    <!--
-        <LinearLayout
-            android:id="@+id/user_information"
-            android:layout_below="@id/background"
-            android:gravity="center_horizontal"
-            android:layout_marginTop="-100dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:layout_marginBottom="24dp"
-                android:layout_gravity="bottom">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-light"
-                    android:text="@string/placeholder_name"
-                    android:textSize="18sp"
-                    android:textColor="@android:color/black"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-light"
-                    android:text="@string/placeholder_username"
-                    android:gravity="center_horizontal"
-                    android:textSize="12sp"/>
-
-            </LinearLayout>
-        </LinearLayout>
-    -->
-
     <LinearLayout
         android:id="@+id/profile_buttons"
         android:layout_width="match_parent"
@@ -156,6 +118,7 @@
             android:orientation="vertical">
 
             <ImageButton
+                android:id="@+id/settings_button"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:background="@drawable/round_grey_button"

@@ -3,6 +3,7 @@ package com.oceanshare.oceanshare
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
 import com.oceanshare.oceanshare.authentication.AuthenticationActivity
 import com.oceanshare.oceanshare.authentication.GoogleAuthentication
+import kotlinx.android.synthetic.main.dialog_not_implemented.view.*
 
 class ProfileFragment : Fragment() {
 
@@ -33,6 +35,16 @@ class ProfileFragment : Fragment() {
     private fun setupProfilePage(view: View) {
         view.logout_button.setOnClickListener {
             logout()
+        }
+
+        view.settings_button.setOnClickListener {
+            val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_not_implemented, null)
+            val mBuilder = AlertDialog.Builder(context!!, R.style.DialogTheme)
+                    .setView(mDialogView)
+            val  mAlertDialog = mBuilder.show()
+            mDialogView.dialogCancelBtn.setOnClickListener {
+                mAlertDialog.dismiss()
+            }
         }
     }
 

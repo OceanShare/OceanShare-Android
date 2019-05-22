@@ -53,7 +53,7 @@
     <!-- Tmp Strings -->
     <string name="home_tmp">Home - Coming soon</string>
     <string name="dashboard_tmp">Dashboard - Coming soon</string>
-    <string name="placeholder_name">Username (click to change)</string>
+    <string name="placeholder_ship_name">Ship name</string>
     <string name="placeholder_username">Username</string>
     <string name="action_forgot_password">Forgot password?</string>
     <string name="oceanshare_logo">Oceanshare logo</string>
@@ -80,4 +80,6 @@
     <string name="button_add_media_description">Add media icon</string>
     <string name="button_edit_infos">EDIT INFOS</string>
     <string name="button_edit_infos_description">Edit infos icon</string>
+    <string name="dialog_not_implemented_text">This feature is not yet available, please check our website and subscribe to our newsletter to know about the future of OceanShare.</string>
+    <string name="action_dismiss">Dismiss</string>
 </resources>
