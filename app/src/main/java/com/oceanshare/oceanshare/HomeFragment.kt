@@ -334,6 +334,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             showHideMarkerMenuButton.hide()
             centerCameraButton.hide()
 
+            markerTextDescription.setText(mark.snippet)
+
             submitMarkerDescription.setOnClickListener {
                 database.child("markers").child(getMarkerKey(mark.id)).child("description")
                         .setValue(markerTextDescription.text.toString())
