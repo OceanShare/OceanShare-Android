@@ -1,5 +1,6 @@
 package com.oceanshare.oceanshare
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -15,13 +16,16 @@ import com.facebook.HttpMethod
 import kotlinx.android.synthetic.main.fragment_profile.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import com.oceanshare.oceanshare.authentication.AuthenticationActivity
 import com.oceanshare.oceanshare.authentication.GoogleAuthentication
+import com.oceanshare.oceanshare.authentication.User
 import kotlinx.android.synthetic.main.dialog_not_implemented.view.*
 
 class ProfileFragment : Fragment() {
 
     private var fbAuth = FirebaseAuth.getInstance()
+    private var mDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -32,7 +36,29 @@ class ProfileFragment : Fragment() {
         return rootView
     }
 
+    @SuppressLint("InflateParams")
     private fun setupProfilePage(view: View) {
+        val userListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val user = dataSnapshot.getValue(User::class.java)
+                if (user?.name != null) {
+                    username_text_view.text = user.name
+                }
+                if (user?.shipName != null) {
+                    ship_name_text_view.text = user.shipName
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                println("loadPost:onCancelled ${databaseError.toException()}")
+            }
+        }
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val uid = currentUser?.uid
+        if (uid != null) {
+            mDatabase.child("users").child(uid).addListenerForSingleValueEvent(userListener)
+        }
+
         view.logout_button.setOnClickListener {
             logout()
         }
