@@ -74,4 +74,10 @@
     <string name="marker_sos">SOS</string>
     <string name="marker_dolphin">Dolphin</string>
     <string name="marker_position">Position</string>
+    <string name="button_settings">SETTINGS</string>
+    <string name="button_settings_description">Settings icon</string>
+    <string name="button_add_media">ADD MEDIA</string>
+    <string name="button_add_media_description">Add media icon</string>
+    <string name="button_edit_infos">EDIT INFOS</string>
+    <string name="button_edit_infos_description">Edit infos icon</string>
 </resources>
