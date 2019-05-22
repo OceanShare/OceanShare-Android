@@ -53,7 +53,7 @@
     <!-- Tmp Strings -->
     <string name="home_tmp">Accueil - Bientôt</string>
     <string name="dashboard_tmp">Dashboard - Bientôt</string>
-    <string name="placeholder_name">Nom d\'utilisateur (cliquer pour changer)</string>
+    <string name="placeholder_ship_name">Nom du bateau</string>
     <string name="placeholder_username">Nom d\'utilisateur</string>
     <string name="action_forgot_password">Mot de passe oublié?</string>
     <string name="oceanshare_logo">Logo d\'Oceanshare</string>
@@ -65,7 +65,7 @@
     <string name="error_no_account">Il semble que votre adresse email ne corresponde pas à un compte OceanShare</string>
     <string name="error_confirm_account">Vous devez d\'abord confirmer votre adresse en cliquant sur le lien dans l\'email</string>
     <string name="info_mail_confirm">Un email de confirmation vient de vous être envoyé, veuillez vérifier votre email avant de vous connectez</string>
-    <string name="error">Erreurr</string>
+    <string name="error">Erreur</string>
     <string name="error_marker_land">Vous ne pouvez pas placer de marqueurs sur la terre ferme</string>
     <string name="error_marker_too_far">Vous ne pouvez pas placer de marqueurs si loin</string>
     <string name="marker_medusa">Méduse</string>
@@ -74,4 +74,15 @@
     <string name="marker_sos">SOS</string>
     <string name="marker_dolphin">Dauphins</string>
     <string name="marker_position">Position</string>
+    <string name="button_settings">PARAMETRES</string>
+    <string name="button_add_media">AJOUT PHOTO</string>
+    <string name="button_edit_infos">MODIF INFOS</string>
+    <string name="button_settings_description">Icon parametres</string>
+    <string name="button_add_media_description">Icon ajout photo</string>
+    <string name="button_edit_infos_description">Icon modif infos</string>
+    <string name="dialog_not_implemented_text">Cette fonctionnalité n\'est pas encore disponible, n\'hésitez pas à vous inscrire à notre newsletter pour être au courant des dernières nouveautés.</string>
+    <string name="action_dismiss">Fermer</string>
+    <string name="button_back"><![CDATA[<]]></string>
+    <string name="informations">Informations</string>
+    <string name="delete_my_account">Supprimer mon compte</string>
 </resources>

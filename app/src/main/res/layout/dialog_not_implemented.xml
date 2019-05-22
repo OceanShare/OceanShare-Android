@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="30dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_marginTop="150dp"
+        android:elevation="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/round_white_background"
+        android:padding="30dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_horizontal"
+            android:text="Hum Hum..."
+            android:textColor="@color/black"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="@string/dialog_not_implemented_text"
+            android:textSize="35sp"/>
+
+    </LinearLayout>
+
+        <Button
+            android:layout_margin="10dp"
+            android:layout_marginTop="5dp"
+            android:elevation="10dp"
+            android:id="@+id/dialogCancelBtn"
+            android:background="@drawable/round_white_background"
+            android:text="@string/action_dismiss"
+            android:textColor="@color/profile_red_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="60dp" />
+
+</LinearLayout>

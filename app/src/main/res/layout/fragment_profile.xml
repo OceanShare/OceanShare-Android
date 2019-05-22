@@ -1,88 +1,248 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/profile_page"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#fafafa"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile_page"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ffffff">
 
     <RelativeLayout
         android:id="@+id/background"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="@drawable/profile_page_shape" />
+        android:layout_height="200dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@drawable/profile_page_background" />
+
+    <LinearLayout
+        android:id="@+id/user_picture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/background"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-150dp">
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/profile_picture_placeholder"
+            app:civ_border_width="0dp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/user_information"
-        android:layout_below="@id/background"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="-100dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/user_picture"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
 
-        <com.mikhaellopez.circularimageview.CircularImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:src="@drawable/profile_picture_placeholder"
-            app:civ_border_color="#BCffffff"
-            app:civ_border_width="10dp" />
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="10dp" />
+
+        <TextView
+            android:id="@+id/username_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center_horizontal"
+            android:text="@string/placeholder_username"
+            android:textColor="@color/gradient_end"
+            android:textSize="35sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="10dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="24dp"
-            android:layout_gravity="bottom">
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-light"
-                android:text="@string/placeholder_name"
-                android:textSize="18sp"
-                android:textColor="@android:color/black"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
-                android:text="@string/placeholder_username"
                 android:gravity="center_horizontal"
-                android:textSize="12sp"/>
+                android:text="'' "
+                android:textColor="@color/gradient_end"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/ship_name_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_horizontal"
+                android:text="@string/placeholder_ship_name"
+                android:textColor="@color/gradient_end"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_horizontal"
+                android:text=" ''"
+                android:textColor="@color/gradient_end"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
 
         </LinearLayout>
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/profile_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@id/user_information"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="110dp"
+            android:layout_height="130dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/settings_button"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:background="@drawable/round_grey_button"
+                android:src="@drawable/ic_settings"
+                android:elevation="10dp"
+                android:contentDescription="@string/button_settings_description" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_horizontal"
+                android:text="@string/button_settings"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="30dp"
+            android:layout_height="wrap_content" />
+
+
+        <LinearLayout
+            android:layout_width="110dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="60dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/add_media_button"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:background="@drawable/round_blue_button"
+                android:src="@drawable/ic_media"
+                android:elevation="10dp"
+                android:contentDescription="@string/button_add_media_description" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_horizontal"
+                android:text="@string/button_add_media"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="30dp"
+            android:layout_height="wrap_content" />
+
+
+        <LinearLayout
+            android:layout_width="110dp"
+            android:layout_height="130dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/edit_infos_button"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:src="@drawable/ic_edit"
+                android:background="@drawable/round_grey_button"
+                android:elevation="10dp"
+                android:contentDescription="@string/button_edit_infos_description" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_horizontal"
+                android:text="@string/button_edit_infos"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/bottom"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_below="@id/profile_buttons"
+        android:background="@drawable/profile_page_bottom" />
+
 
     <ScrollView
-        android:fillViewport="true"
-        android:layout_below="@id/user_information"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#f5f8fd"
+        android:layout_below="@id/bottom"
+        android:fillViewport="true">
 
         <RelativeLayout
-            android:layout_gravity="top"
-            android:padding="@dimen/regular_padding"
-            android:clipToPadding="false"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="#f5f8fd"
+            android:clipToPadding="false"
+            android:padding="@dimen/regular_padding">
 
             <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
                 android:id="@+id/logout_button"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/request_button"
-                android:layout_marginTop="@dimen/regular_margin"
-                android:text="@string/action_logout"
-                android:textColor="@color/white"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/regular_margin"
+                android:background="@drawable/request_button"
                 android:elevation="10dp"
+                android:text="@string/action_logout"
+                android:textColor="@color/white"
                 app:initialCornerAngle="100dp"
-                app:spinning_bar_width="4dp"
                 app:spinning_bar_color="@color/white"
-                app:spinning_bar_padding="6dp" />
+                app:spinning_bar_padding="6dp"
+                app:spinning_bar_width="4dp" />
 
         </RelativeLayout>
     </ScrollView>

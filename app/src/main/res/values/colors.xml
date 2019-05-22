@@ -9,6 +9,10 @@
     <color name="red">#ff3232</color>
 
     <color name="gradient_start">#36D1DC</color>
-    <color name="gradient_end">#5B86E5</color>
+    <color name="gradient_end">#4e93ff</color>
     <color name="deep_blue">#003343</color>
+
+    <color name="profile_grey_buttons">#f5f8fc</color>
+    <color name="profile_blue_buttons">#65b3fd</color>
+    <color name="profile_red_buttons">#fb605e</color>
 </resources>
