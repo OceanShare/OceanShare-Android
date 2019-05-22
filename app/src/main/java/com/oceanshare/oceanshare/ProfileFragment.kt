@@ -46,6 +46,21 @@ class ProfileFragment : Fragment() {
                 mAlertDialog.dismiss()
             }
         }
+
+        view.add_media_button.setOnClickListener {
+            val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_not_implemented, null)
+            val mBuilder = AlertDialog.Builder(context!!, R.style.DialogTheme)
+                    .setView(mDialogView)
+            val  mAlertDialog = mBuilder.show()
+            mDialogView.dialogCancelBtn.setOnClickListener {
+                mAlertDialog.dismiss()
+            }
+        }
+
+        view.edit_infos_button.setOnClickListener {
+            val settingsIntent = Intent(activity, SettingsActivity::class.java)
+            startActivity(settingsIntent)
+        }
     }
 
     private fun logout() {

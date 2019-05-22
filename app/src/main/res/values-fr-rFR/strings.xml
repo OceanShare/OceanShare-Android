@@ -82,4 +82,7 @@
     <string name="button_edit_infos_description">Icon modif infos</string>
     <string name="dialog_not_implemented_text">Cette fonctionnalité n\'est pas encore disponible, n\'hésitez pas à vous inscrire à notre newsletter pour être au courant des dernières nouveautés.</string>
     <string name="action_dismiss">Fermer</string>
+    <string name="button_back"><![CDATA[<]]></string>
+    <string name="informations">Informations</string>
+    <string name="delete_my_account">Supprimer mon compte</string>
 </resources>

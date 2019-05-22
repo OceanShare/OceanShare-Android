@@ -82,4 +82,7 @@
     <string name="button_edit_infos_description">Edit infos icon</string>
     <string name="dialog_not_implemented_text">This feature is not yet available, please check our website and subscribe to our newsletter to know about the future of OceanShare.</string>
     <string name="action_dismiss">Dismiss</string>
+    <string name="button_back"><![CDATA[<]]></string>
+    <string name="informations">Informations</string>
+    <string name="delete_my_account">Delete my account</string>
 </resources>

@@ -150,6 +150,7 @@
             android:orientation="vertical">
 
             <ImageButton
+                android:id="@+id/add_media_button"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:background="@drawable/round_blue_button"
@@ -180,6 +181,7 @@
             android:orientation="vertical">
 
             <ImageButton
+                android:id="@+id/edit_infos_button"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:src="@drawable/ic_edit"
