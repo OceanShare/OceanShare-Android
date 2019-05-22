@@ -68,6 +68,8 @@
     <string name="error">Erreur</string>
     <string name="error_marker_land">Vous ne pouvez pas placer de marqueurs sur la terre ferme</string>
     <string name="error_marker_too_far">Vous ne pouvez pas placer de marqueurs si loin</string>
+    <string name="error_marker_limit">Vous ne pouvez pas poser plus de 5 marqueurs</string>
+    <string name="error_contextual_menu">Vous ne pouvez pas éditer les marqueurs des autres navigateurs</string>
     <string name="marker_medusa">Méduse</string>
     <string name="marker_diver">Plongeur</string>
     <string name="marker_waste">Déchêts</string>

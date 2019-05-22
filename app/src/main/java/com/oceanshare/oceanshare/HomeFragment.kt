@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
@@ -56,6 +57,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     private var locationComponent: LocationComponent? = null
     private var  hashMap : HashMap<String, MarkerData> = HashMap()
 
+    private var fbAuth = FirebaseAuth.getInstance()
+
     private lateinit var fadeInAnimation: AlphaAnimation
     private lateinit var fadeOutAnimation: AlphaAnimation
 
@@ -97,10 +100,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                 if (currentMarker != null) {
                     val pixel = map.projection.toScreenLocation(it)
                     val features = map.queryRenderedFeatures(pixel, "water")
-
-                    val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.name,
-                                            currentMarker!!.description, getHour())
-                    database.child("markers").push().setValue(storedMarker)
+                    //var error = false
 
                     if (features.isEmpty()) {
                         showDialogWith(getString(R.string.error_marker_land))
@@ -111,14 +111,15 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                         return@addOnMapClickListener
                     }
 
-                    val iconFactory = IconFactory.getInstance(context!!)
-                    val icon = iconFactory.fromResource(currentMarker!!.markerImage)
-                    map.addMarker(MarkerOptions()
-                            .position(LatLng(it.latitude, it.longitude))
-                            .icon(icon)
-                            .title(currentMarker!!.name)
-                            .snippet(currentMarker!!.description)
-                    )
+                    if (getMarkerSetCount(fbAuth.currentUser?.uid.toString()) < 5)
+                    {
+                        val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.name,
+                                currentMarker!!.description, getHour(), fbAuth.currentUser?.uid.toString())
+                        database.child("markers").push().setValue(storedMarker)
+                    } else {
+                        showDialogWith(getString(R.string.error_marker_limit))
+                    }
+
                     currentMarker = null
                 }
             }
@@ -134,9 +135,13 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             }
 
             map.setOnInfoWindowLongClickListener {
-                setupEditingMarkerMenu(it)
+                if (fbAuth.currentUser?.uid == hashMap[getMarkerKey(it.id)]?.user) {
+                    setupEditingMarkerMenu(it)
+                }
+                else {
+                    showDialogWith(getString(R.string.error_contextual_menu))
+                }
             }
-
 
         }
         setupFadeAnimations()
@@ -154,6 +159,17 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     private fun getHour() : String {
         return SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH).format(Date())
+    }
+
+    private fun getMarkerSetCount(user: String) : Int {
+        var count = 0
+
+        for ((k) in hashMap) {
+            if (hashMap[k]?.user == user) {
+                count += 1
+            }
+        }
+        return count
     }
 
     private fun getMarkerKey(markerid : Long) : String {
@@ -182,6 +198,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             val markerTitle = p0.child("title").value.toString()
                             val markerDesc = p0.child("description").value.toString()
                             val markerTime = p0.child("time").value.toString()
+                            val markerUser = p0.child("user").value.toString()
+
 
                             val iconFactory = IconFactory.getInstance(context!!)
                             val icon = iconFactory.fromResource(findMarkerImage(markerTitle))
@@ -195,7 +213,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
                             hashMap[key] = MarkerData(markerMap.id, markerLatitude,
                                     markerLongitude, markerTitle,
-                                    markerDesc, markerTime)
+                                    markerDesc, markerTime, markerUser)
                         }
                     }
 

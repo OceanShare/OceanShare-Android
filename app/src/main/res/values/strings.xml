@@ -68,6 +68,8 @@
     <string name="error">Error</string>
     <string name="error_marker_land">You can\'t place a marker on the land</string>
     <string name="error_marker_too_far">You can\'t place a marker this far away</string>
+    <string name="error_marker_limit">You can\'t set more than 5 markers</string>
+    <string name="error_contextual_menu">You can\'t edit markers of other people</string>
     <string name="marker_medusa">Medusa</string>
     <string name="marker_diver">Diver</string>
     <string name="marker_waste">Waste</string>
