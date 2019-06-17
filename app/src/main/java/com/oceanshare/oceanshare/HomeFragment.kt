@@ -113,7 +113,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
                     if (getMarkerSetCount(fbAuth.currentUser?.uid.toString()) < 5)
                     {
-                        val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.name,
+                        val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.groupId,
                                 currentMarker!!.description, getHour(), fbAuth.currentUser?.uid.toString())
                         database.child("markers").push().setValue(storedMarker)
                     } else {
@@ -191,28 +191,28 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
-                        if (!hashMap.containsKey(key) && p0.exists()) {
+                        if (!hashMap.containsKey(key) && p0.exists() && p0.child("groupId").exists()) {
 
                             val markerLatitude = p0.child("latitude").value.toString().toDouble()
                             val markerLongitude = p0.child("longitude").value.toString().toDouble()
-                            val markerTitle = p0.child("title").value.toString()
+                            val groupId = p0.child("groupId").value.toString().toInt()
                             val markerDesc = p0.child("description").value.toString()
                             val markerTime = p0.child("time").value.toString()
                             val markerUser = p0.child("user").value.toString()
 
 
                             val iconFactory = IconFactory.getInstance(context!!)
-                            val icon = iconFactory.fromResource(findMarkerImage(markerTitle))
+                            val icon = iconFactory.fromResource(findMarkerImage(groupId))
 
                             val markerMap = map.addMarker(MarkerOptions()
                                     .position(LatLng(markerLatitude, markerLongitude))
                                     .icon(icon)
-                                    .title(markerTitle)
+                                    .title(findMarkerTitle(groupId))
                                     .snippet(markerDesc)
                             )
 
                             hashMap[key] = MarkerData(markerMap.id, markerLatitude,
-                                    markerLongitude, markerTitle,
+                                    markerLongitude, groupId,
                                     markerDesc, markerTime, markerUser)
                         }
                     }
@@ -250,17 +250,30 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                 })
     }
 
-    private fun findMarkerImage(markerName: String) : Int{
-        val markerImages: HashMap<String, Int> = HashMap()
+    private fun findMarkerImage(groupId: Int) : Int{
+        val markerImage: HashMap<Int, Int> = HashMap()
 
-        markerImages[getString(R.string.marker_medusa)] = R.drawable.marker_map_medusa
-        markerImages[getString(R.string.marker_diver)] = R.drawable.marker_map_diver
-        markerImages[getString(R.string.marker_waste)] = R.drawable.marker_map_waste
-        markerImages[getString(R.string.marker_sos)] = R.drawable.marker_map_warning
-        markerImages[getString(R.string.marker_dolphin)] = R.drawable.marker_map_dolphin
-        markerImages[getString(R.string.marker_position)] = R.drawable.marker_map_position
+        markerImage[0] = R.drawable.marker_map_medusa
+        markerImage[1] = R.drawable.marker_map_diver
+        markerImage[2] = R.drawable.marker_map_waste
+        markerImage[3] = R.drawable.marker_map_warning
+        markerImage[4] = R.drawable.marker_map_dolphin
+        markerImage[5] = R.drawable.marker_map_position
 
-        return markerImages[markerName]!!
+        return markerImage[groupId]!!
+    }
+
+    private fun findMarkerTitle(groupId: Int) : String {
+        val markerTitle: HashMap<Int, String> = HashMap()
+
+        markerTitle[0] = getString(R.string.marker_medusa)
+        markerTitle[1] = getString(R.string.marker_diver)
+        markerTitle[2] = getString(R.string.marker_waste)
+        markerTitle[3] = getString(R.string.marker_sos)
+        markerTitle[4] = getString(R.string.marker_dolphin)
+        markerTitle[5] = getString(R.string.marker_position)
+
+        return markerTitle[groupId]!!
     }
 
     private fun setupFadeAnimations() {
@@ -394,11 +407,12 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         }
 
         val markersList = ArrayList<Marker>()
-        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.marker_menu_medusa, R.drawable.marker_map_medusa, ""))
-        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.marker_menu_diver, R.drawable.marker_map_diver, ""))
-        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.marker_menu_waste, R.drawable.marker_map_waste, ""))
-        markersList.add(Marker(getString(R.string.marker_sos),R.drawable.marker_menu_warning, R.drawable.marker_map_warning, ""))
-        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, R.drawable.marker_map_dolphin, ""))
+        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.marker_menu_medusa, R.drawable.marker_map_medusa, 0, ""))
+        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.marker_menu_diver, R.drawable.marker_map_diver, 1, ""))
+        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.marker_menu_waste, R.drawable.marker_map_waste, 2,""))
+        markersList.add(Marker(getString(R.string.marker_sos),R.drawable.marker_menu_warning, R.drawable.marker_map_warning, 3,""))
+        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, R.drawable.marker_map_dolphin, 4, ""))
+        markersList.add(Marker(getString(R.string.marker_position), R.drawable.marker_menu_position, R.drawable.marker_map_position, 5, ""))
         val adapter = MarkerAdapter(context!!, markersList)
 
         markerGridView.adapter = adapter
