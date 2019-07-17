@@ -52,12 +52,13 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     private lateinit var mContext: Context
     private lateinit var database: DatabaseReference
 
-
     private var currentMarker: Marker? = null
 
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
     private var  markerHashMap : HashMap<String, MarkerData> = HashMap()
+    private var hashMap: HashMap<String, MarkerData> = HashMap()
+    private var isEditingMarkerDescription = false
 
     private var fbAuth = FirebaseAuth.getInstance()
 
@@ -100,7 +101,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             initMarker()
 
             map.addOnMapClickListener {
-                if (currentMarker != null) {
+                if (currentMarker != null && isEditingMarkerDescription == false) {
                     val pixel = map.projection.toScreenLocation(it)
                     val features = map.queryRenderedFeatures(pixel, "water")
                     //var error = false
@@ -619,6 +620,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
 
     private fun setupDescriptionScreen() {
+        isEditingMarkerDescription = true
         markerDescription.background.alpha = 128
         markerDescription.visibility = View.VISIBLE
 
@@ -641,6 +643,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                 centerCameraButton.show()
 
                 markerDescription.visibility = View.GONE
+                isEditingMarkerDescription = false
         }
     }
 

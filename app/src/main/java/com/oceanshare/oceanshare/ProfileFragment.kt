@@ -85,7 +85,7 @@ class ProfileFragment : Fragment() {
 
             mDialogView.dialogLearnMoreButton.setOnClickListener {
                 val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse("https://www.google.com")
+                intent.data = Uri.parse("https://sagotg.github.io/OceanShare/")
                 startActivity(intent)
             }
         }
