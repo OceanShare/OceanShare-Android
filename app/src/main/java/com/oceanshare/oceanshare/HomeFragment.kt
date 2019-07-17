@@ -2,17 +2,24 @@ package com.oceanshare.oceanshare
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.location.Location
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.StrictMode
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
+import android.view.Gravity
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import com.beust.klaxon.Klaxon
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mapbox.android.core.location.LocationEngine
@@ -34,14 +41,134 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import kotlinx.android.synthetic.main.dialog_not_implemented.view.*
+import kotlinx.android.synthetic.main.dialog_not_implemented.view.dialogCancelBtn
+import kotlinx.android.synthetic.main.dialog_tmp.view.*
+import kotlinx.android.synthetic.main.custom_toast.*
+import kotlinx.android.synthetic.main.custom_toast.view.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.marker_manager.*
+import kotlinx.android.synthetic.main.marker_manager.view.*
+import kotlinx.android.synthetic.main.fragment_profile.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.Path
+import retrofit2.http.Query
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
 import java.util.*
 import kotlin.collections.HashMap
 
 interface LoadingImplementation {
     fun onFinishedLoading()
+}
+
+class TP {
+    var dateAndTime: Date? = null
+    var city: String? = null
+    var base: String? = null
+    var longitude: Double? = null
+    var latitude: Double? = null
+    var weatherID: Int? = null
+    var mainWeather: String? = null
+    var weatherDescription: String? = null
+    var weatherIconID: String? = null
+    var humidity: Int? = null
+    var pressure: Int? = null
+    var cloudCover: Int? = null
+    var windSpeed: Double? = null
+    var visibility: Int? = null
+    var windDirection: Double? = null
+    var rainfallInLast3Hours: Double? = null
+    var sunrise: Date? = null
+    var sunset: Date? = null
+    var temp: Double? = null
+    var dt: Double? = null
+    var cod: Int? = null
+    var id: Int? = null
+}
+
+class UV {
+    var lat: Double? = null
+    var lon: Double? = null
+    var date: Int? = null
+    var value: Double? = null
+}
+
+class Weather {
+    var coor: Coord? = null
+    var weather: ArrayList<Weather2>? = null
+    var base: String? = null
+    var main: Main? = null
+    var wind: Wind? = null
+    var clouds: Clouds? = null
+    var dt: Int? = null
+    var sys: Sys? = null
+    var timezone: Int? = null
+    var id: Int? = null
+    var name: String? = null
+    var cod: Int? = null
+}
+
+class Weather2 {
+    var id: Int? = null
+    var main: String? = null
+    var description: String? = null
+    var icon: String? = null
+}
+
+class Coord {
+    var lon: Double? = null
+    var lat: Double? = null
+}
+
+class Main {
+    var temp: Double? = null
+    var pressure: Int? = null
+    var humidity: Int? = null
+    var temp_min: Double? = null
+    var temp_max: Double? = null
+    var sea_level: Int? = null
+    var grnd_level: Int? = null
+}
+
+class Wind {
+    var speed: Double? = null
+    var deg: Double? = null
+}
+
+class Clouds {
+    var all: Int? = null
+}
+
+class FullWeather {
+    var uv: String? = null
+    var weather: String? = null
+}
+
+class Sys {
+    var message: Double? = null
+    var sunrise: Long? = null
+    var sunset: Long? = null
+}
+
+interface IWeatherApi {
+    @Headers(
+            "Accept: application/json",
+            "Content-type: application/json",
+            "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjF9.Vcp2grZ53t_OG3jwSXsRwfc_UUjboNgZarkAGiX0jgM"
+    )
+    @GET("api/weather")
+    fun getWeather(@Query("lat") lat: String?, @Query("lng") lng: String?): Call<FullWeather>
 }
 
 class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, LoadingImplementation {
@@ -151,6 +278,90 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         setupMarkerMenu()
 
         centerCameraButton.setOnClickListener {
+
+
+            Log.e("DEBUG","1")
+            val url = "http://35.198.134.25:5000/"
+            val retrofit = Retrofit.Builder()
+                    .baseUrl(url)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+
+            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
+
+            Log.e("DEBUG","2")
+            val service = retrofit.create(IWeatherApi::class.java)
+            val weather = service.getWeather(originLocation.latitude.toString(), originLocation.longitude.toString())
+            //val okok = weather.execute()
+            //val ok = okok.body()
+            //val okk = okok.raw()
+            //val okkk = okok.errorBody()
+
+            Log.e("DEBUG","3")
+            weather.enqueue(object: Callback<FullWeather> {
+                @SuppressLint("NewApi")
+                override fun onResponse(call: Call<FullWeather>, response: Response<FullWeather>) {
+                    val fullWeather = response.body()
+
+                    val uv = Klaxon().parse<UV>(fullWeather!!.uv!!)
+                    val weather = Klaxon().parse<Weather>(fullWeather!!.weather!!)
+
+
+                        val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_tmp, null)
+                        val mBuilder = AlertDialog.Builder(context!!, R.style.DialogTheme)
+                                .setView(mDialogView)
+                        val  mAlertDialog = mBuilder.show()
+                        mDialogView.dialogCancelBtn.setOnClickListener {
+                            mAlertDialog.dismiss()
+                        }
+
+                    mDialogView.temperatureTextView.text = "Temperature: " + BigDecimal(weather!!.main!!.temp!! - 273.15).setScale(1, RoundingMode.HALF_EVEN) + " °C"
+                    mDialogView.descriptionTextView.text = "Description: " + weather!!.weather!!.first().description
+
+                    mDialogView.longitudeTextView.text = "Longitude: " + uv!!.lon
+                    mDialogView.latitudeTextView.text = "Latitude: " + uv!!.lat
+
+                    val sunriseDate = Instant.ofEpochSecond(weather!!.sys!!.sunrise!!).atZone(ZoneId.systemDefault()).toLocalDateTime()
+                    val sunsetDate = Instant.ofEpochSecond(weather!!.sys!!.sunset!!).atZone(ZoneId.systemDefault()).toLocalDateTime()
+
+                    var sunriseHour = sunriseDate.hour.toString()
+                    if (sunriseDate.hour.toString().length == 1) {
+                        sunriseHour = "0" + sunriseHour
+                    }
+                    var sunriseMinute = sunriseDate.minute.toString()
+                    if (sunriseDate.minute.toString().length == 1) {
+                        sunriseMinute = "0" + sunriseMinute
+                    }
+                    var sunsetHour = sunsetDate.hour.toString()
+                    if (sunsetDate.hour.toString().length == 1) {
+                        sunsetHour = "0" + sunsetHour
+                    }
+                    var sunsetMinute = sunsetDate.minute.toString()
+                    if (sunsetDate.minute.toString().length == 1) {
+                        sunsetMinute = "0" + sunsetMinute
+                    }
+                    mDialogView.sunriseTextView.text = "Sunrise: " + sunriseHour + ":" + sunriseMinute + " AM"
+                    mDialogView.sunsetTextView.text = "Sunset: " + sunsetHour + ":" + sunsetMinute + " PM"
+
+                    mDialogView.cloudCoverTextView.text = "Cloud Cover: " + "0 %"
+                    mDialogView.waterTemperatureTextView.text = "Water Temp.: " + "-- °C"
+
+                    mDialogView.windTextView.text = "Wind: " + weather!!.wind!!.speed + " km/h"
+                    mDialogView.humidityTextView.text = "Humidity: " + weather!!.main!!.humidity + "%"
+
+                    mDialogView.visibilityTextView.text = "Visibility: " + "10.0 km/h"
+                    mDialogView.uvIndiceTextView.text = "UV Indice: " + uv!!.value
+
+                    Log.e("DEBUG", "OKOK")
+                }
+                override fun onFailure(call: Call<FullWeather>, t: Throwable) {
+                    Log.e("TAN", "Error : $t")
+                    Log.e("DEBUG","6")
+                }
+            })
+
+            Log.e("DEBUG","7")
             val position = CameraPosition.Builder()
                     .target(LatLng(originLocation.latitude, originLocation.longitude))
                     .zoom(16.0)

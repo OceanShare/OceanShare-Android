@@ -63,12 +63,19 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:16.2.1'
     implementation 'com.google.firebase:firebase-database:16.1.0'
 
-
     //Mapbox (map)
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:6.7.2'
 
     // Loading view
     implementation 'me.itangqi.waveloadingview:library:0.3.5'
+
+    // Retrofit (HTTP Request)
+    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
+    implementation "com.squareup.retrofit2:converter-gson:2.6.0"
+
+    // JSON
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.beust:klaxon:5.0.1'
 }
 
 // Firebase

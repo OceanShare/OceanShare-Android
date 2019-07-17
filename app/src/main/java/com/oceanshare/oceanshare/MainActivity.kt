@@ -8,7 +8,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private val homeFragment = HomeFragment()
-    //private val tmpFragment = TmpFragment()
+    private val tmpFragment = TmpFragment()
     private val profileFragment = ProfileFragment()
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
             }
             /*
             R.id.navigation_dashboard -> {
-                return@OnNavigationItemSelectedListener loadFragment(tmpFragment)
+                return@OnNavigationItemSelectedListener switchFragments(item.itemId)
             }
             */
             R.id.navigation_profile -> {
