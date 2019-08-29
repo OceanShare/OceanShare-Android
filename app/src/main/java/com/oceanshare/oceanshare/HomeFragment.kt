@@ -8,11 +8,13 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mapbox.android.core.location.LocationEngine
@@ -34,6 +36,8 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import kotlinx.android.synthetic.main.custom_toast.*
+import kotlinx.android.synthetic.main.custom_toast.view.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -115,7 +119,10 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     {
                         val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.groupId,
                                 currentMarker!!.description, getHour(), fbAuth.currentUser?.uid.toString())
-                        database.child("markers").push().setValue(storedMarker)
+                        database.child("Tag").push().setValue(storedMarker)
+
+                        showCustomToast(getString(R.string.validation_marker_added))
+
                     } else {
                         showDialogWith(getString(R.string.error_marker_limit))
                     }
@@ -186,7 +193,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
 
     private fun initMarker () {
-        database.child("markers").addChildEventListener(
+        database.child("Tag").addChildEventListener(
                 object : ChildEventListener {
 
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
@@ -276,6 +283,19 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         return markerTitle[groupId]!!
     }
 
+    private fun showCustomToast(toastMessage: String) {
+        val inflater: LayoutInflater = activity!!.layoutInflater
+        val layout: View = inflater.inflate(R.layout.custom_toast, null)!!
+
+        layout.toast_text.text = toastMessage
+        val toast = Toast(mContext)
+        toast.setGravity(Gravity.BOTTOM, -10, 350)
+        toast.duration = Toast.LENGTH_LONG
+        toast.view = layout
+
+        toast.show()
+    }
+
     private fun setupFadeAnimations() {
         fadeInAnimation = AlphaAnimation(0.0f, 1.0f)
         fadeInAnimation.duration = 500
@@ -326,13 +346,15 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
         deletingMarkerButton.setOnClickListener {
 
-            database.child("markers").child(getMarkerKey(mark.id)).removeValue()
+            database.child("Tag").child(getMarkerKey(mark.id)).removeValue()
 
             //to delete
 
             showHideMarkerMenuButton.show()
             centerCameraButton.show()
             contextualMarkerMenu.visibility = View.GONE
+
+            showCustomToast(getString(R.string.validation_marker_deleted))
         }
 
         editingMarkerButton.setOnClickListener {
@@ -350,7 +372,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             markerTextDescription.setText(mark.snippet)
 
             submitMarkerDescription.setOnClickListener {
-                database.child("markers").child(getMarkerKey(mark.id)).child("description")
+                database.child("Tag").child(getMarkerKey(mark.id)).child("description")
                         .setValue(markerTextDescription.text.toString())
 
                 markerTextDescription.text.clear()
@@ -363,6 +385,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                 centerCameraButton.show()
 
                 markerDescription.visibility = View.GONE
+
+                showCustomToast(getString(R.string.validation_marker_edited))
             }
         }
 

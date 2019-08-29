@@ -87,4 +87,7 @@
     <string name="button_back"><![CDATA[<]]></string>
     <string name="informations">Informations</string>
     <string name="delete_my_account">Delete my account</string>
+    <string name="validation_marker_added">Thank you for your contribution</string>
+    <string name="validation_marker_deleted">You marker has been removed</string>
+    <string name="validation_marker_edited">Your marker has been edited</string>
 </resources>
