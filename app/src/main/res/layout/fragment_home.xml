@@ -67,30 +67,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/contextualMarkerMenu"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="bottom"
-        android:background="@drawable/gradient_background"
-        android:visibility="gone">
-
-        <Button
-            android:id="@+id/deletingMarkerButton"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:text="Delete" />
-
-        <Button
-            android:id="@+id/editingMarkerButton"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:text="Edit" />
-
-    </LinearLayout>
+    <include layout="@layout/marker_manager"/>
 
     <FrameLayout
         android:id="@+id/markerMenu"

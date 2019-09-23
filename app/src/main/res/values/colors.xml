@@ -15,4 +15,10 @@
     <color name="profile_grey_buttons">#f5f8fc</color>
     <color name="profile_blue_buttons">#65b3fd</color>
     <color name="profile_red_buttons">#fb605e</color>
+
+    <color name="like_grey_buttons">#DCDFE2</color>
+
+    <color name="opaque_black">#7F000000</color>
+    <color name="sky_blue">#51A1FF</color>
+    <color name="opaque_deep_blue">#66003343</color>
 </resources>

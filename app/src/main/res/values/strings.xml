@@ -90,4 +90,10 @@
     <string name="validation_marker_added">Thank you for your contribution</string>
     <string name="validation_marker_deleted">You marker has been removed</string>
     <string name="validation_marker_edited">Your marker has been edited</string>
+    <string name="seconds">seconds ago</string>
+    <string name="minutes">minutes ago</string>
+    <string name="marker_placed">Placed</string>
+    <string name="hours">hours ago</string>
+    <string name="days">days ago</string>
+    <string name="user_marker">You placed this event</string>
 </resources>

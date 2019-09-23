@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/markerManager"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:background="@color/opaque_black"
+    android:padding="5dp"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_stroke"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/markerManagerCreationTime"
+            android:text="xx seconds ago"
+            android:textSize="20dp"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="25dp"/>
+
+    </LinearLayout>
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:id="@+id/markerManagerIcon"
+        app:srcCompat="@drawable/profile_picture_placeholder"
+        android:layout_marginBottom="-45dp"
+        android:translationZ="1dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/marker_window_information"
+        android:background="@drawable/rounded_edit_text"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="20dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="35dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/markerManagerTitle"
+                android:textSize="25dp"
+                android:text="Marker"
+                android:textStyle="bold"
+                android:textColor="@color/sky_blue"
+                android:layout_marginLeft="65dp"
+                />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/markerManagerEditButton"
+                android:src="@drawable/ic_edit"
+                android:backgroundTint="#FFFFFF"
+                android:layout_marginLeft="10dp"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/markerManagerEdit"
+                android:orientation="vertical"
+                android:background="@color/opaque_deep_blue"
+                android:padding="5dp"
+                android:visibility="gone">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|left"
+                    android:paddingVertical="2dp"
+                    android:paddingHorizontal="4dp"
+                    android:lines="3"
+                    android:textSize="20dp"
+                    android:id="@+id/editMarkerDescritionField"
+                    android:background="@drawable/edit_text_border"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/submitMarkerEditedDescription"
+                        android:layout_alignParentEnd="true"
+                        android:text="OK"
+                        android:textColor="@color/white"
+                        android:backgroundTint="@color/deep_blue"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/deleteMarkerButton"
+                        android:backgroundTint="@color/red"
+                        android:layout_gravity="right"
+                        android:text="Delete"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/cancelEditMarkerButton"
+                        android:layout_toLeftOf="@id/submitMarkerEditedDescription"
+                        android:text="cancel"/>
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/markerManagerDescription"
+                android:text="I am a marker"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="23dp"
+                />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/markerManagerVoteButtons"
+                android:orientation="horizontal">
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/markerManagerDislikeButton"
+                    android:layout_weight="1"
+                    android:background="@drawable/round_deep_blue_button"
+                    android:gravity="left|center"
+                    android:layout_marginHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:paddingLeft="55dp"
+                    android:drawableStart="@drawable/ic_dislike"
+                    android:drawablePadding="10dp"
+                    android:text="0"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/markerManagerLikeButton"
+                    android:layout_weight="1"
+                    android:background="@drawable/round_deep_blue_button"
+                    android:gravity="left|center"
+                    android:layout_marginHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:paddingLeft="55dp"
+                    android:drawableStart="@drawable/ic_like"
+                    android:drawablePadding="10dp"
+                    android:text="0"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20dp"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/markerManagerOwnMarker"
+            android:text="@string/user_marker"
+            android:layout_gravity="center"
+            android:textColor="@color/mapbox_blue"
+            android:textSize="17dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginBottom="7dp"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/exitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_exit"
+        android:backgroundTint="@color/white"
+        android:layout_marginVertical="15dp"
+        app:fabSize="mini" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/markerManagerId"
+        android:text="123456789"
+        android:visibility="gone"/>
+
+</LinearLayout>

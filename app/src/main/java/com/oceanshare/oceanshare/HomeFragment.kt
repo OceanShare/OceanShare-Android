@@ -39,8 +39,12 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.custom_toast.view.*
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.marker_manager.*
+import kotlinx.android.synthetic.main.marker_manager.view.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
+import kotlin.math.round
 
 interface LoadingImplementation {
     fun onFinishedLoading()
@@ -59,7 +63,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
-    private var  hashMap : HashMap<String, MarkerData> = HashMap()
+    private var  markerHashMap : HashMap<String, MarkerData> = HashMap()
 
     private var fbAuth = FirebaseAuth.getInstance()
 
@@ -118,8 +122,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     if (getMarkerSetCount(fbAuth.currentUser?.uid.toString()) < 5)
                     {
                         val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.groupId,
-                                currentMarker!!.description, getHour(), fbAuth.currentUser?.uid.toString())
-                        database.child("Tag").push().setValue(storedMarker)
+                                currentMarker!!.description, getHour(), fbAuth.currentUser?.uid.toString(),
+                                getTimeStamp())
+                        database.child("markers").push().setValue(storedMarker)
 
                         showCustomToast(getString(R.string.validation_marker_added))
 
@@ -142,12 +147,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             }
 
             map.setOnInfoWindowLongClickListener {
-                if (fbAuth.currentUser?.uid == hashMap[getMarkerKey(it.id)]?.user) {
-                    setupEditingMarkerMenu(it)
-                }
-                else {
-                    showDialogWith(getString(R.string.error_contextual_menu))
-                }
+                setupEditingMarkerMenu(it)
             }
 
         }
@@ -165,14 +165,38 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
 
     private fun getHour() : String {
-        return SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH).format(Date())
+        return SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.ENGLISH).format(Date())
+    }
+
+    private fun getTimeStamp() : Long {
+        return (System.currentTimeMillis())
+    }
+
+    private fun getCreationString(timestamp: Long) : String {
+        val intervalTime = (System.currentTimeMillis() /1000 - timestamp / 1000)
+
+        if ((intervalTime) < 60) {
+            return (getString(R.string.marker_placed) + " " + intervalTime.toString() + " " +
+                    getString(R.string.seconds))
+        }
+        else if ((intervalTime / 60) < 60) {
+            return (getString(R.string.marker_placed) + " " + (intervalTime / 60).toString() + " " +
+                    getString(R.string.minutes))
+        }
+        else if ((intervalTime / 3600) < 24) {
+            return (getString(R.string.marker_placed) + " " + (intervalTime / 3600).toString() + " " +
+                    getString(R.string.hours))
+        }
+
+        return (getString(R.string.marker_placed) + " " + (intervalTime / 86400).toString() + " " +
+                getString(R.string.days))
     }
 
     private fun getMarkerSetCount(user: String) : Int {
         var count = 0
 
-        for ((k) in hashMap) {
-            if (hashMap[k]?.user == user) {
+        for ((k) in markerHashMap) {
+            if (markerHashMap[k]?.user == user) {
                 count += 1
             }
         }
@@ -182,8 +206,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     private fun getMarkerKey(markerid : Long) : String {
         var markerKey = ""
 
-        for ((k) in hashMap) {
-            if (hashMap[k]?.id == markerid) {
+        for ((k) in markerHashMap) {
+            if (markerHashMap[k]?.id == markerid) {
                 markerKey = k
                 break
             }
@@ -193,12 +217,12 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
 
     private fun initMarker () {
-        database.child("Tag").addChildEventListener(
+        database.child("markers").addChildEventListener(
                 object : ChildEventListener {
 
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
-                        if (!hashMap.containsKey(key) && p0.exists() && p0.child("groupId").exists()) {
+                        if (!markerHashMap.containsKey(key) && p0.exists() && p0.child("groupId").exists()) {
 
                             val markerLatitude = p0.child("latitude").value.toString().toDouble()
                             val markerLongitude = p0.child("longitude").value.toString().toDouble()
@@ -206,10 +230,17 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             val markerDesc = p0.child("description").value.toString()
                             val markerTime = p0.child("time").value.toString()
                             val markerUser = p0.child("user").value.toString()
+                            val upvote = p0.child("upvote").value.toString().toInt()
+                            val downvote = p0.child("downvote").value.toString().toInt()
+                            val contributor = p0.child("contributors").value.toString()
+                            val timestamp = p0.child("timestamp").value.toString().toLong()
 
 
+                            val userVotes = fillLikedArray(contributor)
+
+                            val markerIcon = findMarkerIconMenu(groupId)
                             val iconFactory = IconFactory.getInstance(context!!)
-                            val icon = iconFactory.fromResource(findMarkerImage(groupId))
+                            val icon = iconFactory.fromResource(findMarkerIconMap(groupId))
 
                             val markerMap = map.addMarker(MarkerOptions()
                                     .position(LatLng(markerLatitude, markerLongitude))
@@ -218,30 +249,68 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                                     .snippet(markerDesc)
                             )
 
-                            hashMap[key] = MarkerData(markerMap.id, markerLatitude,
+                            markerHashMap[key] = MarkerData(markerMap.id, markerLatitude,
                                     markerLongitude, groupId,
-                                    markerDesc, markerTime, markerUser)
+                                    markerDesc, markerTime, markerUser, timestamp, markerIcon, upvote, downvote,
+                                    userVotes)
                         }
                     }
 
                     override fun onChildRemoved(p0: DataSnapshot) {
                         val key = p0.key.toString()
 
-                        if (hashMap.containsKey(key) && p0.exists()){
-                            map.getAnnotation(hashMap[key]?.id!!)?.remove()
-                            hashMap.remove(key)
+                        if (markerHashMap.containsKey(key) && p0.exists()){
+                            if (markerManagerId.text == key) {
+                                markerManager.visibility = View.GONE
+                                closedMarkerManager()
+                            }
+
+                            map.getAnnotation(markerHashMap[key]?.id!!)?.remove()
+                            markerHashMap.remove(key)
                         }
                     }
 
                     override fun onChildChanged(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
 
-                        if (hashMap.containsKey(key) && p0.exists() &&
-                                (p0.child("description").value.toString() != hashMap[key]?.description)) {
+
+
+                        if (markerHashMap.containsKey(key) && p0.exists() &&
+                                (fillLikedArray(p0.child("contributors").value.toString()) != markerHashMap[key]?.vote)) {
                             map.markers.forEach {
                                 if (getMarkerKey(it.id) == key ) {
+                                    markerHashMap[key]?.vote = fillLikedArray(p0.child("contributors").value.toString())
+                                }
+                            }
+                        }
+
+                        if (markerHashMap.containsKey(key) && p0.exists() &&
+                                (p0.child("description").value.toString() != markerHashMap[key]?.description)) {
+                            map.markers.forEach {
+                                if (getMarkerKey(it.id) == key ) {
+                                    markerHashMap[key]?.description = p0.child("description").value.toString()
                                     it.snippet = p0.child("description").value.toString()
-                                    hashMap[key]?.description = p0.child("description").value.toString()
+                                    markerManagerDescription.text = markerHashMap[key]?.description
+                                }
+                            }
+                        }
+
+                        if (markerHashMap.containsKey(key) && p0.exists() &&
+                                (p0.child("upvote").value.toString().toInt() != markerHashMap[key]?.upvote)) {
+                            map.markers.forEach {
+                                if (getMarkerKey(it.id) == key ) {
+                                    markerHashMap[key]?.upvote = p0.child("upvote").value.toString().toInt()
+                                    markerManagerLikeButton.text = markerHashMap[key]?.upvote.toString()
+                                }
+                            }
+                        }
+
+                        if (markerHashMap.containsKey(key) && p0.exists() &&
+                                (p0.child("downvote").value.toString().toInt() != markerHashMap[key]?.downvote)) {
+                            map.markers.forEach {
+                                if (getMarkerKey(it.id) == key ) {
+                                    markerHashMap[key]?.downvote = p0.child("downvote").value.toString().toInt()
+                                    markerManagerDislikeButton.text = markerHashMap[key]?.downvote.toString()
                                 }
                             }
                         }
@@ -257,7 +326,43 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                 })
     }
 
-    private fun findMarkerImage(groupId: Int) : Int{
+    private fun fillLikedArray(userList: String) : MutableList<MarkerVote>  {
+        val vote: MutableList<MarkerVote> = mutableListOf()
+
+        if (userList != "null") {
+            val lines = userList.lines()
+            lines.forEach {
+
+                var userVotes = it.replace("{", "")
+                userVotes = userVotes.replace("}", "")
+
+                if (userVotes.contains(",")) {
+                    val userVote = userVotes.split(",")
+                    userVote.forEach {
+                        val expl = it.split("=")
+                        vote.add(MarkerVote(expl[0], expl[1].toInt()))
+                    }
+                }
+                else {
+                    val expl = userVotes.split("=")
+                    vote.add(MarkerVote(expl[0], expl[1].toInt()))
+                }
+            }
+        }
+        return vote
+    }
+
+    private fun checkVoteMarker(userList: MutableList<MarkerVote>): Int {
+        val user = fbAuth.currentUser?.uid
+
+        userList.forEach {
+            if (user == it.userId)
+                return it.choice
+        }
+        return 0
+    }
+
+    private fun findMarkerIconMap(groupId: Int) : Int{
         val markerImage: HashMap<Int, Int> = HashMap()
 
         markerImage[0] = R.drawable.marker_map_medusa
@@ -266,6 +371,19 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerImage[3] = R.drawable.marker_map_warning
         markerImage[4] = R.drawable.marker_map_dolphin
         markerImage[5] = R.drawable.marker_map_position
+
+        return markerImage[groupId]!!
+    }
+
+    private fun findMarkerIconMenu(groupId: Int) : Int{
+        val markerImage: HashMap<Int, Int> = HashMap()
+
+        markerImage[0] = R.drawable.marker_menu_medusa
+        markerImage[1] = R.drawable.marker_menu_diver
+        markerImage[2] = R.drawable.marker_menu_waste
+        markerImage[3] = R.drawable.marker_menu_warning
+        markerImage[4] = R.drawable.marker_menu_dolphin
+        markerImage[5] = R.drawable.marker_menu_position
 
         return markerImage[groupId]!!
     }
@@ -335,60 +453,133 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         loadingView.visibility = View.GONE
     }
 
+    private fun closedMarkerManager() {
+        val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+        markerManager.visibility = View.GONE
+        markerManagerEdit.visibility = View.GONE
+        markerManagerDescription.visibility = View.VISIBLE
+        showHideMarkerMenuButton.show()
+        centerCameraButton.show()
+        map.uiSettings.setAllGesturesEnabled(true)
+    }
+
     private fun setupEditingMarkerMenu(mark: com.mapbox.mapboxsdk.annotations.Marker) {
-        contextualMarkerMenu.background.alpha = 128
-        contextualMarkerMenu.visibility = View.VISIBLE
 
-        //to delete
+        val markerInformation = markerHashMap[getMarkerKey(mark.id)]
+        val currentUser = fbAuth.currentUser?.uid.toString()
 
+
+        markerManager.visibility = View.VISIBLE
         showHideMarkerMenuButton.hide()
         centerCameraButton.hide()
+        mark.hideInfoWindow()
+        map.uiSettings.setAllGesturesEnabled(false)
 
-        deletingMarkerButton.setOnClickListener {
 
-            database.child("Tag").child(getMarkerKey(mark.id)).removeValue()
 
-            //to delete
+        markerManagerIcon.setImageResource(markerInformation?.markerIcon!!)
+        markerManagerTitle.text = findMarkerTitle(markerInformation.groupId)
+        markerManagerDescription.text = markerInformation.description
+        markerManagerLikeButton.text = markerInformation.upvote.toString()
+        markerManagerDislikeButton.text = markerInformation.downvote.toString()
+        markerManagerCreationTime.text = getCreationString(markerInformation.timestamp)
+        markerManagerId.text = getMarkerKey(mark.id)
 
-            showHideMarkerMenuButton.show()
-            centerCameraButton.show()
-            contextualMarkerMenu.visibility = View.GONE
+        if (fbAuth.currentUser?.uid.toString() == markerInformation.user) {
+            markerManagerOwnMarker.visibility = View.VISIBLE
+            markerManagerEditButton.visibility = View.VISIBLE
 
-            showCustomToast(getString(R.string.validation_marker_deleted))
+        } else {
+            markerManagerOwnMarker.visibility = View.GONE
+            markerManagerEditButton.visibility = View.INVISIBLE
         }
 
-        editingMarkerButton.setOnClickListener {
-
-            contextualMarkerMenu.visibility = View.GONE
-
-            markerDescription.background.alpha = 128
-            markerDescription.visibility = View.VISIBLE
-
-            //to delete
-
-            showHideMarkerMenuButton.hide()
-            centerCameraButton.hide()
-
-            markerTextDescription.setText(mark.snippet)
-
-            submitMarkerDescription.setOnClickListener {
-                database.child("Tag").child(getMarkerKey(mark.id)).child("description")
-                        .setValue(markerTextDescription.text.toString())
-
-                markerTextDescription.text.clear()
-                val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
-
-                //to delete
-
-                showHideMarkerMenuButton.show()
-                centerCameraButton.show()
-
-                markerDescription.visibility = View.GONE
-
-                showCustomToast(getString(R.string.validation_marker_edited))
+        markerManagerEditButton.setOnClickListener {
+            if (markerManagerEdit.visibility != View.VISIBLE) {
+                editMarkerDescritionField.setText(mark.snippet)
+                markerManagerEdit.visibility = View.VISIBLE
+                markerManagerDescription.visibility = View.GONE
             }
         }
+
+        submitMarkerEditedDescription.setOnClickListener {
+            database.child("markers").child(getMarkerKey(mark.id)).child("description")
+                    .setValue(editMarkerDescritionField.text.toString())
+            val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+            markerManagerEdit.visibility = View.GONE
+            markerManagerDescription.visibility = View.VISIBLE
+            editMarkerDescritionField.text.clear()
+        }
+
+        cancelEditMarkerButton.setOnClickListener {
+            val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+            markerManagerEdit.visibility = View.GONE
+            markerManagerDescription.visibility = View.VISIBLE
+        }
+
+        deleteMarkerButton.setOnClickListener {
+            closedMarkerManager()
+            database.child("markers").child(getMarkerKey(mark.id)).removeValue()
+        }
+
+        markerManagerLikeButton.setOnClickListener {
+
+            if (checkVoteMarker(markerInformation.vote!!) == 2)
+            {
+                database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
+                        .setValue(markerInformation.upvote + 1)
+                database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
+                        .setValue(markerInformation.downvote - 1)
+                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                        .child(currentUser).setValue(1)
+            } else if (checkVoteMarker(markerInformation.vote!!) == 1) {
+                database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
+                        .setValue(markerInformation.upvote - 1)
+                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                        .child(currentUser).setValue(0)
+            } else {
+                database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
+                        .setValue(markerInformation.upvote + 1)
+                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                        .child(currentUser).setValue(1)
+            }
+        }
+
+        markerManagerDislikeButton.setOnClickListener {
+            if (checkVoteMarker(markerInformation.vote!!) == 2)
+            {
+                database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
+                        .setValue(markerInformation.downvote - 1)
+                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                        .child(currentUser).setValue(0)
+            } else if (checkVoteMarker(markerInformation.vote!!) == 1) {
+                database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
+                        .setValue(markerInformation.downvote + 1)
+                database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
+                        .setValue(markerInformation.upvote - 1)
+                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                        .child(currentUser).setValue(2)
+            } else {
+                database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
+                        .setValue(markerInformation.downvote + 1)
+                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                        .child(currentUser).setValue(2)
+            }
+
+            println("toto= " + checkVoteMarker(markerInformation.vote!!))
+        }
+
+        exitButton.setOnClickListener {
+            closedMarkerManager()
+        }
+
+        /*
+            showCustomToast(getString(R.string.validation_marker_deleted))
+            showCustomToast(getString(R.string.validation_marker_edited))
+        */
 
     }
 
