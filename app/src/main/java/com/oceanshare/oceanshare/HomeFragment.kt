@@ -511,6 +511,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             markerManagerEdit.visibility = View.GONE
             markerManagerDescription.visibility = View.VISIBLE
             editMarkerDescritionField.text.clear()
+            showCustomToast(getString(R.string.validation_marker_edited))
         }
 
         cancelEditMarkerButton.setOnClickListener {
@@ -523,6 +524,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         deleteMarkerButton.setOnClickListener {
             closedMarkerManager()
             database.child("markers").child(getMarkerKey(mark.id)).removeValue()
+            showCustomToast(getString(R.string.validation_marker_deleted))
         }
 
         markerManagerLikeButton.setOnClickListener {
@@ -568,18 +570,11 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                 database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
                         .child(currentUser).setValue(2)
             }
-
-            println("toto= " + checkVoteMarker(markerInformation.vote!!))
         }
 
         exitButton.setOnClickListener {
             closedMarkerManager()
         }
-
-        /*
-            showCustomToast(getString(R.string.validation_marker_deleted))
-            showCustomToast(getString(R.string.validation_marker_edited))
-        */
 
     }
 

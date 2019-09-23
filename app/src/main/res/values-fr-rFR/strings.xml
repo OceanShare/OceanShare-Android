@@ -96,4 +96,7 @@
     <string name="hours">heures</string>
     <string name="days">jours</string>
     <string name="user_marker">Vous avez posé cet évènement</string>
+    <string name="button_delete">Supprimer</string>
+    <string name="button_cancel">Annuler</string>
+    <string name="button_submit">Validé</string>
 </resources>

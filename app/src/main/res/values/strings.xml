@@ -96,4 +96,7 @@
     <string name="hours">hours ago</string>
     <string name="days">days ago</string>
     <string name="user_marker">You placed this event</string>
+    <string name="button_delete">Delete</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_submit">Submit</string>
 </resources>
