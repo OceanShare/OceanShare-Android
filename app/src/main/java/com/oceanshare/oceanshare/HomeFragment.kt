@@ -72,31 +72,6 @@ interface LoadingImplementation {
     fun onFinishedLoading()
 }
 
-class TP {
-    var dateAndTime: Date? = null
-    var city: String? = null
-    var base: String? = null
-    var longitude: Double? = null
-    var latitude: Double? = null
-    var weatherID: Int? = null
-    var mainWeather: String? = null
-    var weatherDescription: String? = null
-    var weatherIconID: String? = null
-    var humidity: Int? = null
-    var pressure: Int? = null
-    var cloudCover: Int? = null
-    var windSpeed: Double? = null
-    var visibility: Int? = null
-    var windDirection: Double? = null
-    var rainfallInLast3Hours: Double? = null
-    var sunrise: Date? = null
-    var sunset: Date? = null
-    var temp: Double? = null
-    var dt: Double? = null
-    var cod: Int? = null
-    var id: Int? = null
-}
-
 class UV {
     var lat: Double? = null
     var lon: Double? = null
@@ -315,6 +290,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                         mDialogView.dialogCancelBtn.setOnClickListener {
                             mAlertDialog.dismiss()
                         }
+
+                    mDialogView.nameTextView.text = "City: " + weather!!.name
 
                     mDialogView.temperatureTextView.text = "Temperature: " + BigDecimal(weather!!.main!!.temp!! - 273.15).setScale(1, RoundingMode.HALF_EVEN) + " °C"
                     mDialogView.descriptionTextView.text = "Description: " + weather!!.weather!!.first().description
