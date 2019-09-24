@@ -70,25 +70,30 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/centerCameraButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_gravity="bottom|start"
-        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="80dp"
         android:src="@drawable/ic_radar"
-        app:backgroundTint="@color/deep_blue"
-        app:fabSize="mini" />
+        mapbox:civ_background_color="@color/deep_blue"
+        mapbox:civ_border_color="@color/white"
+        android:scaleType="centerCrop"
+        app:civ_border_width="1dp" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/showHideMarkerMenuButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="bottom|end"
-        android:layout_margin="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="80dp"
         android:src="@drawable/ic_oceanshare_logo"
-        app:backgroundTint="@color/deep_blue"
-        app:fabSize= "normal" />
+        mapbox:civ_background_color="@color/deep_blue"
+        mapbox:civ_border_color="@color/white"
+        app:civ_border_width="1dp" />
 
     <LinearLayout
         android:id="@+id/markerDescription"
@@ -167,5 +172,20 @@
             app:wlv_waveColor="@color/gradient_start"/>
 
     </FrameLayout>
+
+    <LinearLayout
+        android:background="#BAFFFFFF"
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:gravity="center"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="70dp">
+        <ImageView
+            android:src="@drawable/logo"
+            android:layout_gravity="center_vertical"
+            android:layout_width="120dp"
+            android:layout_height="40dp" />
+    </LinearLayout>
 
 </FrameLayout>

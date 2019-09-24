@@ -76,6 +76,9 @@ dependencies {
     // JSON
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.beust:klaxon:5.0.1'
+
+    // Blur
+    implementation 'com.eightbitlab:supportrenderscriptblur:1.0.2'
 }
 
 // Firebase

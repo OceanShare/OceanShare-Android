@@ -688,8 +688,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerManager.visibility = View.GONE
         markerManagerEdit.visibility = View.GONE
         markerManagerDescription.visibility = View.VISIBLE
-        showHideMarkerMenuButton.show()
-        centerCameraButton.show()
+        showHideMarkerMenuButton.visibility = View.VISIBLE
+        centerCameraButton.visibility = View.VISIBLE
         map.uiSettings.setAllGesturesEnabled(true)
     }
 
@@ -700,8 +700,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
 
         markerManager.visibility = View.VISIBLE
-        showHideMarkerMenuButton.hide()
-        centerCameraButton.hide()
+        showHideMarkerMenuButton.visibility = View.GONE
+        centerCameraButton.visibility = View.GONE
         mark.hideInfoWindow()
         map.uiSettings.setAllGesturesEnabled(false)
 
@@ -814,8 +814,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
         //to delete
 
-        showHideMarkerMenuButton.hide()
-        centerCameraButton.hide()
+        showHideMarkerMenuButton.visibility = View.GONE
+        centerCameraButton.visibility = View.GONE
 
             submitMarkerDescription.setOnClickListener {
                 val description = markerTextDescription.text.toString()
@@ -827,8 +827,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
                 //to delete
 
-                showHideMarkerMenuButton.show()
-                centerCameraButton.show()
+                showHideMarkerMenuButton.visibility = View.VISIBLE
+                centerCameraButton.visibility = View.VISIBLE
 
                 markerDescription.visibility = View.GONE
                 isEditingMarkerDescription = false
