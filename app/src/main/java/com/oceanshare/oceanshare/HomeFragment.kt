@@ -8,13 +8,11 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
+import android.view.animation.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mapbox.android.core.location.LocationEngine
@@ -36,15 +34,11 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import kotlinx.android.synthetic.main.custom_toast.*
-import kotlinx.android.synthetic.main.custom_toast.view.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.marker_manager.*
-import kotlinx.android.synthetic.main.marker_manager.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.math.round
 
 interface LoadingImplementation {
     fun onFinishedLoading()
@@ -97,6 +91,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         mapView.getMapAsync { mapboxMap ->
             map = mapboxMap
             map.setStyle(Style.OUTDOORS)
+            map.setMinZoomPreference(16.00)
 
             database = FirebaseDatabase.getInstance().reference
 
@@ -126,7 +121,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                                 getTimeStamp())
                         database.child("markers").push().setValue(storedMarker)
 
-                        showCustomToast(getString(R.string.validation_marker_added))
+                        showNotification(getString(R.string.validation_marker_added))
 
                     } else {
                         showDialogWith(getString(R.string.error_marker_limit))
@@ -157,7 +152,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         centerCameraButton.setOnClickListener {
             val position = CameraPosition.Builder()
                     .target(LatLng(originLocation.latitude, originLocation.longitude))
-                    .zoom(12.0)
+                    .zoom(16.0)
                     .tilt(20.0)
                     .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
@@ -401,17 +396,54 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         return markerTitle[groupId]!!
     }
 
-    private fun showCustomToast(toastMessage: String) {
-        val inflater: LayoutInflater = activity!!.layoutInflater
-        val layout: View = inflater.inflate(R.layout.custom_toast, null)!!
+    private fun showNotification(notificationMessage: String) {
 
-        layout.toast_text.text = toastMessage
-        val toast = Toast(mContext)
-        toast.setGravity(Gravity.BOTTOM, -10, 350)
-        toast.duration = Toast.LENGTH_LONG
-        toast.view = layout
 
-        toast.show()
+        notificationMarker.text = notificationMessage
+
+        val fadeIn = AlphaAnimation(0f, 1f)
+        fadeIn.interpolator = DecelerateInterpolator() //add this
+        fadeIn.duration = 3000
+
+        fadeIn.setAnimationListener(object: Animation.AnimationListener {
+            override fun onAnimationStart(p0: Animation?) {
+                notificationMarker.visibility = View.VISIBLE
+            }
+
+            override fun onAnimationRepeat(p0: Animation?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onAnimationEnd(p0: Animation?) {
+                //toto
+            }
+        })
+
+        val fadeOut = AlphaAnimation(1f, 0f)
+        fadeOut.interpolator = AccelerateInterpolator()
+        fadeOut.startOffset = 5000
+        fadeOut.duration = 3000
+
+        fadeOut.setAnimationListener(object: Animation.AnimationListener {
+            override fun onAnimationStart(p0: Animation?) {
+                //toto
+            }
+
+            override fun onAnimationRepeat(p0: Animation?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onAnimationEnd(p0: Animation?) {
+                notificationMarker.visibility = View.INVISIBLE
+            }
+        })
+
+        var animations = AnimationSet(false)
+
+        animations.addAnimation(fadeOut)
+        animations.addAnimation(fadeIn)
+
+        notificationMarker.startAnimation(animations)
     }
 
     private fun setupFadeAnimations() {
@@ -451,6 +483,12 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     override fun onFinishedLoading() {
         loadingView.startAnimation(fadeOutAnimation)
         loadingView.visibility = View.GONE
+    }
+
+    private fun setupLocationDisplay() {
+
+        longDisplay.text = getText(R.string.longitude).toString() + originLocation.longitude.toString()
+        latDisplay.text = getText(R.string.latitude).toString() + originLocation.latitude.toString()
     }
 
     private fun closedMarkerManager() {
@@ -511,7 +549,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             markerManagerEdit.visibility = View.GONE
             markerManagerDescription.visibility = View.VISIBLE
             editMarkerDescritionField.text.clear()
-            showCustomToast(getString(R.string.validation_marker_edited))
+            //showNotification(getString(R.string.validation_marker_edited))
         }
 
         cancelEditMarkerButton.setOnClickListener {
@@ -524,7 +562,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         deleteMarkerButton.setOnClickListener {
             closedMarkerManager()
             database.child("markers").child(getMarkerKey(mark.id)).removeValue()
-            showCustomToast(getString(R.string.validation_marker_deleted))
+            showNotification(getString(R.string.validation_marker_deleted))
         }
 
         markerManagerLikeButton.setOnClickListener {
@@ -654,6 +692,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         if (lastLocation != null) {
             originLocation = lastLocation
             setCameraPosition(lastLocation)
+            setupLocationDisplay()
         } else {
             locationEngine?.addLocationEngineListener(this)
         }
@@ -674,7 +713,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     private fun setCameraPosition(location: Location) {
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                LatLng(location.latitude, location.longitude), 12.0))
+                LatLng(location.latitude, location.longitude), 16.0))
     }
 
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
@@ -694,7 +733,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     override fun onLocationChanged(location: Location?) {
         location?.let {
             originLocation = location
-            setCameraPosition(location)
+            //setCameraPosition(location)
+            setupLocationDisplay()
         }
     }
 

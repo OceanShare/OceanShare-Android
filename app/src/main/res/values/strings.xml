@@ -99,4 +99,6 @@
     <string name="button_delete">Delete</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_submit">Submit</string>
+    <string name="latitude">"Lat:  "</string>
+    <string name="longitude">Long:</string>
 </resources>
