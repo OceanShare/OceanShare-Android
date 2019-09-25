@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/background"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="-150dp">
+        android:layout_marginTop="-130dp">
 
         <com.mikhaellopez.circularimageview.CircularImageView
             android:layout_width="180dp"

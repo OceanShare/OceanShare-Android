@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TmpFragment">
+    tools:context=".MeteoFragment">
 
     <android.support.v7.widget.AppCompatImageView
         android:layout_gravity="center"
