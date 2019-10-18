@@ -121,7 +121,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                                 getTimeStamp())
                         database.child("markers").push().setValue(storedMarker)
 
-                        showNotification(getString(R.string.validation_marker_added))
+                        showNotification(getString(R.string.validation_marker_added), false)
 
                     } else {
                         showDialogWith(getString(R.string.error_marker_limit))
@@ -229,7 +229,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             val downvote = p0.child("downvote").value.toString().toInt()
                             val contributor = p0.child("contributors").value.toString()
                             val timestamp = p0.child("timestamp").value.toString().toLong()
-
 
                             val userVotes = fillLikedArray(contributor)
 
@@ -396,8 +395,11 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         return markerTitle[groupId]!!
     }
 
-    private fun showNotification(notificationMessage: String) {
+    private fun showNotification(notificationMessage: String, error: Boolean) {
 
+        /*if (error) {
+            notificationMarker.backgroundTintList = R.color.red
+        }*/
 
         notificationMarker.text = notificationMessage
 
@@ -562,7 +564,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         deleteMarkerButton.setOnClickListener {
             closedMarkerManager()
             database.child("markers").child(getMarkerKey(mark.id)).removeValue()
-            showNotification(getString(R.string.validation_marker_deleted))
+            showNotification(getString(R.string.validation_marker_deleted), false)
         }
 
         markerManagerLikeButton.setOnClickListener {
