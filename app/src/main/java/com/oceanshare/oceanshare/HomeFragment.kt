@@ -5,9 +5,10 @@ import android.content.Context
 import android.location.Location
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Looper
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +16,7 @@ import android.view.animation.*
 import android.view.inputmethod.InputMethodManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.mapbox.android.core.location.LocationEngine
-import com.mapbox.android.core.location.LocationEngineListener
-import com.mapbox.android.core.location.LocationEnginePriority
-import com.mapbox.android.core.location.LocationEngineProvider
+import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.mapboxsdk.Mapbox
@@ -26,16 +24,17 @@ import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.constants.Style
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponent
-import com.mapbox.mapboxsdk.location.LocationComponentOptions
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.Style
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.marker_manager.*
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -44,13 +43,14 @@ interface LoadingImplementation {
     fun onFinishedLoading()
 }
 
-class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, LoadingImplementation {
+class HomeFragment : Fragment(), PermissionsListener, LoadingImplementation {
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
     private lateinit var permissionManager: PermissionsManager
     private lateinit var originLocation: Location
     private lateinit var mContext: Context
     private lateinit var database: DatabaseReference
+    private lateinit var callback: LocationEngineCallback<LocationEngineResult>
 
 
     private var currentMarker: Marker? = null
@@ -58,6 +58,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
     private var  markerHashMap : HashMap<String, MarkerData> = HashMap()
+    private var DEFAULT_INTERVAL_IN_MILLISECONDS : Long = 1000L
+    private var DEFAULT_MAX_WAIT_TIME : Long = DEFAULT_INTERVAL_IN_MILLISECONDS * 5
 
     private var fbAuth = FirebaseAuth.getInstance()
 
@@ -91,11 +93,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         mapView.getMapAsync { mapboxMap ->
             map = mapboxMap
             map.setStyle(Style.OUTDOORS)
-            map.setMinZoomPreference(16.00)
 
             database = FirebaseDatabase.getInstance().reference
-
-            enableLocation()
 
             initMarker()
 
@@ -107,11 +106,11 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
                     if (features.isEmpty()) {
                         showDialogWith(getString(R.string.error_marker_land))
-                        return@addOnMapClickListener
+                        return@addOnMapClickListener false
                     }
                     if (it.distanceTo(LatLng(originLocation.latitude, originLocation.longitude)) > 4000) {
                         showDialogWith(getString(R.string.error_marker_too_far))
-                        return@addOnMapClickListener
+                        return@addOnMapClickListener false
                     }
 
                     if (getMarkerSetCount(fbAuth.currentUser?.uid.toString()) < 5)
@@ -129,6 +128,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
                     currentMarker = null
                 }
+                true
             }
 
             map.setOnMarkerClickListener {
@@ -145,7 +145,12 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                 setupEditingMarkerMenu(it)
             }
 
+            mapView.addOnDidFinishRenderingMapListener {
+                enableLocation()
+            }
+
         }
+
         setupFadeAnimations()
         setupMarkerMenu()
 
@@ -488,9 +493,10 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
 
     private fun setupLocationDisplay() {
-
-        longDisplay.text = getText(R.string.longitude).toString() + originLocation.longitude.toString()
-        latDisplay.text = getText(R.string.latitude).toString() + originLocation.latitude.toString()
+        longDisplay.text = getText(R.string.longitude).toString() + originLocation.longitude
+                .toBigDecimal().setScale(4, RoundingMode.UP).toString()
+        latDisplay.text = getText(R.string.latitude).toString() + originLocation.latitude
+                .toBigDecimal().setScale(4, RoundingMode.UP).toString()
     }
 
     private fun closedMarkerManager() {
@@ -634,7 +640,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                 markerTextDescription.text.clear()
                 val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
-
+HomeFragment().
                 //to delete
 
                 showHideMarkerMenuButton.show()
@@ -676,8 +682,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     private fun enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(mContext)) {
-            initializeLocationEngine()
             initializeLocationComponent()
+            initializeLocationEngine()
         } else {
             permissionManager = PermissionsManager(this)
             permissionManager.requestLocationPermissions(activity)
@@ -686,28 +692,46 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     @SuppressWarnings("MissingPermission")
     private fun initializeLocationEngine() {
-        locationEngine = LocationEngineProvider(mContext).obtainBestLocationEngineAvailable()
-        locationEngine?.priority = LocationEnginePriority.HIGH_ACCURACY
-        locationEngine?.activate()
+        locationEngine = LocationEngineProvider.getBestLocationEngine(mContext)
+        val request : LocationEngineRequest =
+                LocationEngineRequest.Builder(DEFAULT_INTERVAL_IN_MILLISECONDS)
+                        .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
+                        .setMaxWaitTime(DEFAULT_MAX_WAIT_TIME).build()
 
-        val lastLocation = locationEngine?.lastLocation
-        if (lastLocation != null) {
-            originLocation = lastLocation
-            setCameraPosition(lastLocation)
-            setupLocationDisplay()
-        } else {
-            locationEngine?.addLocationEngineListener(this)
+        callback = object : LocationEngineCallback<LocationEngineResult> {
+            override fun onSuccess(result: LocationEngineResult) {
+                var location: Location = result.lastLocation!!
+
+                if (location === null) {
+                    return
+                }
+
+                if (map != null && location != null) {
+                    map.locationComponent.forceLocationUpdate(location)
+                    onLocationChanged(location)
+                }
+
+                Log.d("SuccessResult", "Latitude".plus(result.lastLocation?.latitude.toString()).plus( ", Longitude:").plus(result.lastLocation?.longitude.toString()))
+
+            }
+
+            override fun onFailure(exception: Exception) {
+                Log.d("FAIL", exception.toString())
+            }
         }
+
+        locationEngine?.requestLocationUpdates(request, callback, Looper.getMainLooper())
+        locationEngine?.getLastLocation(callback)
     }
 
     @SuppressWarnings("MissingPermission")
     private fun initializeLocationComponent() {
-        val options = LocationComponentOptions.builder(context)
-                .trackingGesturesManagement(true)
-                .accuracyColor(ContextCompat.getColor(context!!, R.color.deep_blue))
-                .build()
         locationComponent = map.locationComponent
-        locationComponent?.activateLocationComponent(mContext, options)
+        var locationComponentActivationOptions : LocationComponentActivationOptions =
+                LocationComponentActivationOptions.builder(mContext, map.style!!)
+                        .useDefaultLocationEngine(false)
+                        .build()
+        locationComponent?.activateLocationComponent(locationComponentActivationOptions)
         locationComponent?.isLocationComponentEnabled = true
         locationComponent?.renderMode = RenderMode.COMPASS
         locationComponent?.cameraMode = CameraMode.TRACKING
@@ -732,26 +756,16 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onLocationChanged(location: Location?) {
-        location?.let {
-            originLocation = location
-            //setCameraPosition(location)
-            setupLocationDisplay()
-        }
-    }
+    fun onLocationChanged(lastLocation : Location) {
+        originLocation = lastLocation
+        setCameraPosition(lastLocation)
+        setupLocationDisplay()
 
-    @SuppressWarnings("MissingPermission")
-    override fun onConnected() {
-        locationEngine?.requestLocationUpdates()
     }
 
     @SuppressWarnings("MissingPermission")
     override fun onStart() {
         super.onStart()
-        if (PermissionsManager.areLocationPermissionsGranted(mContext)) {
-            locationComponent?.onStart()
-            locationEngine?.requestLocationUpdates()
-        }
         mapView.onStart()
     }
 
@@ -766,8 +780,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
     override fun onStop() {
         super.onStop()
-        locationEngine?.removeLocationUpdates()
-        locationComponent?.onStop()
         mapView.onStop()
 
     }
@@ -782,7 +794,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        locationEngine?.deactivate()
+        if (locationEngine != null) {
+            locationEngine?.removeLocationUpdates(callback)
+        }
         mapView.onDestroy()
     }
 }

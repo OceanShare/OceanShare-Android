@@ -65,7 +65,7 @@ dependencies {
 
 
     //Mapbox (map)
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:6.7.2'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.4.0'
 
     // Loading view
     implementation 'me.itangqi.waveloadingview:library:0.3.5'
