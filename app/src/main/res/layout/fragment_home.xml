@@ -85,25 +85,54 @@
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:elevation="10dp"
         android:orientation="vertical"
         android:gravity="center"
-        android:background="@drawable/gradient_background" >
-
+        android:background="#BA000000" >
+        <TextView
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:text="Vous pouvez ajouter une\ndescription optionnelle à votre\névenement."
+            android:layout_width="wrap_content"
+            android:textSize="20sp"
+            android:layout_marginBottom="20dp"
+            android:layout_height="wrap_content"/>
         <EditText
             android:id="@+id/markerTextDescription"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
             android:layout_height="wrap_content"
+            android:textAlignment="center"
             android:hint="What's happening ?"
             android:background="@drawable/rounded_edit_text"/>
-        
-        <Button
-            android:id="@+id/submitMarkerDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/button_submit"
-            android:background="@drawable/request_button"/>
 
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/submitMarkerDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="30dp"
+                android:text="@string/button_submit"
+                android:textColor="@color/white"
+                android:background="@drawable/ok_button"/>
+            <View
+                android:layout_width="10dp"
+                android:layout_height="0dp"/>
+            <Button
+                android:id="@+id/cancelMarkerDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:text="@string/button_cancel"
+                android:background="@drawable/cancel_button"/>
+        </LinearLayout>
     </LinearLayout>
 
     <include layout="@layout/marker_manager"/>
@@ -111,6 +140,7 @@
     <FrameLayout
         android:id="@+id/markerMenu"
         android:visibility="gone"
+        android:elevation="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
@@ -142,6 +172,7 @@
         android:elevation="10dp"
         android:background="#fafafa"
         android:layout_width="match_parent"
+        android:visibility="invisible"
         android:layout_height="match_parent">
 
         <me.itangqi.waveloadingview.WaveLoadingView

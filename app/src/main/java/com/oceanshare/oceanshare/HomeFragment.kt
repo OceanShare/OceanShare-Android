@@ -242,7 +242,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     true
                 } else {
                     it.hideInfoWindow()
-                 false
+                    false
                 }
             }
 
@@ -285,13 +285,13 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     val weather = Klaxon().parse<Weather>(fullWeather!!.weather!!)
 
 
-                        val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_tmp, null)
-                        val mBuilder = AlertDialog.Builder(context!!, R.style.DialogTheme)
-                                .setView(mDialogView)
-                        val  mAlertDialog = mBuilder.show()
-                        mDialogView.dialogCancelBtn.setOnClickListener {
-                            mAlertDialog.dismiss()
-                        }
+                    val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_tmp, null)
+                    val mBuilder = AlertDialog.Builder(context!!, R.style.DialogTheme)
+                            .setView(mDialogView)
+                    val  mAlertDialog = mBuilder.show()
+                    mDialogView.dialogCancelBtn.setOnClickListener {
+                        mAlertDialog.dismiss()
+                    }
 
                     mDialogView.nameTextView.text = "City: " + weather!!.name
 
@@ -813,26 +813,22 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerDescription.background.alpha = 128
         markerDescription.visibility = View.VISIBLE
 
-        //to delete
+        cancelMarkerDescription.setOnClickListener {
+            markerDescription.visibility = View.GONE
+            currentMarker = null
+            isEditingMarkerDescription = false
+        }
 
-        showHideMarkerMenuButton.visibility = View.GONE
-        centerCameraButton.visibility = View.GONE
+        submitMarkerDescription.setOnClickListener {
+            val description = markerTextDescription.text.toString()
 
-            submitMarkerDescription.setOnClickListener {
-                val description = markerTextDescription.text.toString()
+            currentMarker?.description = description
+            markerTextDescription.text.clear()
+            val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
 
-                currentMarker?.description = description
-                markerTextDescription.text.clear()
-                val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
-
-                //to delete
-
-                showHideMarkerMenuButton.visibility = View.VISIBLE
-                centerCameraButton.visibility = View.VISIBLE
-
-                markerDescription.visibility = View.GONE
-                isEditingMarkerDescription = false
+            markerDescription.visibility = View.GONE
+            isEditingMarkerDescription = false
         }
     }
 
@@ -965,7 +961,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-            mapView.onSaveInstanceState(outState)
+        mapView.onSaveInstanceState(outState)
     }
     override fun onLowMemory() {
         super.onLowMemory()
