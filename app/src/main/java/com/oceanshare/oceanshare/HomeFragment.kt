@@ -52,6 +52,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.marker_manager.*
 import kotlinx.android.synthetic.main.marker_manager.view.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
+import kotlinx.android.synthetic.main.marker_entry.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -851,6 +852,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markersList.add(Marker(getString(R.string.marker_sos),R.drawable.marker_menu_warning, R.drawable.marker_map_warning, 3,""))
         markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, R.drawable.marker_map_dolphin, 4, ""))
         markersList.add(Marker(getString(R.string.marker_position), R.drawable.marker_menu_position, R.drawable.marker_map_position, 5, ""))
+        markersList.add(Marker(getString(R.string.marker_buoy), R.drawable.marker_menu_buoy, R.drawable.marker_map_buoy, 6, ""))
+        markersList.add(Marker(getString(R.string.marker_cost_guard), R.drawable.marker_menu_cost_guard, R.drawable.marker_map_cost_guard, 7, ""))
+        markersList.add(Marker(getString(R.string.marker_fishes), R.drawable.marker_menu_fishes, R.drawable.marker_map_fishes, 8, ""))
         val adapter = MarkerAdapter(context!!, markersList)
 
         markerGridView.adapter = adapter
@@ -860,6 +864,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             currentMarker = markersList[position]
             setupDescriptionScreen()
         }
+
+        meteoMarker.markerName.setText(R.string.marker_meteo)
+        meteoMarker.markerImage.setImageResource(R.drawable.marker_menu_meteo)
     }
 
     private fun enableLocation() {

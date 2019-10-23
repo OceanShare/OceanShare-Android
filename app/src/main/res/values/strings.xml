@@ -76,6 +76,10 @@
     <string name="marker_sos">SOS</string>
     <string name="marker_dolphin">Dolphin</string>
     <string name="marker_position">Position</string>
+    <string name="marker_meteo">Meteo</string>
+    <string name="marker_buoy">Buoy</string>
+    <string name="marker_cost_guard">Cost Guards</string>
+    <string name="marker_fishes">Fishes</string>
     <string name="button_settings">SETTINGS</string>
     <string name="button_settings_description">Settings icon</string>
     <string name="button_add_media">ADD MEDIA</string>

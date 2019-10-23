@@ -139,32 +139,60 @@
 
     <FrameLayout
         android:id="@+id/markerMenu"
-        android:visibility="gone"
+        android:visibility="visible"
         android:elevation="10dp"
         android:layout_width="match_parent"
+        android:layout_marginBottom="50dp"
         android:layout_height="match_parent" >
-
         <View
             android:id="@+id/markerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#BA000000" />
-
-        <GridView
-            android:id="@+id/markerGridView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:cacheColorHint="@color/white"
-            android:layout_marginStart="50dp"
-            android:layout_marginEnd="50dp"
-            android:verticalSpacing="20dp"
-            android:horizontalSpacing="10dp"
+        <LinearLayout
+            android:gravity="center"
             android:layout_gravity="center"
-            android:numColumns="3"
-            android:padding="5dp"
-            android:scrollbars="none"
-            android:stretchMode="columnWidth"
-            android:gravity="center" />
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:text="Sélectionnez un évenement à poser sur\nla carte. Tous les utilisateurs le verront."
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginBottom="20dp"
+                android:layout_height="wrap_content"/>
+            <GridView
+                android:id="@+id/markerGridView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:cacheColorHint="@color/white"
+                android:layout_marginStart="50dp"
+                android:layout_marginEnd="50dp"
+                android:verticalSpacing="20dp"
+                android:horizontalSpacing="10dp"
+                android:layout_gravity="center"
+                android:numColumns="3"
+                android:padding="5dp"
+                android:scrollbars="none"
+                android:stretchMode="columnWidth"
+                android:gravity="center" />
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:text="Choisissez l'évenement 'météo' pour en\nsavoir plus sur une destination."
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginBottom="20dp"
+                android:layout_height="wrap_content"/>
+            <include android:id="@+id/meteoMarker" layout="@layout/marker_entry"/>
+        </LinearLayout>
     </FrameLayout>
 
     <FrameLayout

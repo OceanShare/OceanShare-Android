@@ -76,6 +76,10 @@
     <string name="marker_sos">SOS</string>
     <string name="marker_dolphin">Dauphins</string>
     <string name="marker_position">Position</string>
+    <string name="marker_meteo">Météo</string>
+    <string name="marker_buoy">Bouée</string>
+    <string name="marker_cost_guard">Guardes côte</string>
+    <string name="marker_fishes">Poissons</string>
     <string name="button_settings">PARAMETRES</string>
     <string name="button_add_media">AJOUT PHOTO</string>
     <string name="button_edit_infos">MODIF INFOS</string>
