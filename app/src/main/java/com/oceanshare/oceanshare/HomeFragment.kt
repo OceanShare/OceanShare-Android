@@ -1,8 +1,10 @@
 package com.oceanshare.oceanshare
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.AnimationDrawable
 import android.location.Location
 import android.net.Uri
 import android.os.AsyncTask
@@ -585,28 +587,34 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
 
     private fun showNotification(notificationMessage: String, error: Boolean) {
-
         /*if (error) {
             notificationMarker.backgroundTintList = R.color.red
         }*/
-
         notificationMarker.text = notificationMessage
+
+        val colorFade = ValueAnimator.ofArgb(resources.getColor(R.color.opaque_white), resources.getColor(R.color.opaque_green))
+        colorFade.duration = 3000
+        colorFade.addUpdateListener {
+            topBarStatus.setBackgroundColor(it.animatedValue as Int)
+        }
+
+        val opacityFade = ValueAnimator.ofFloat(1f, 0f)
+        opacityFade.duration = 3000
+        opacityFade.addUpdateListener {
+            notificationLogo.alpha = it.animatedValue as Float
+        }
 
         val fadeIn = AlphaAnimation(0f, 1f)
         fadeIn.interpolator = DecelerateInterpolator() //add this
         fadeIn.duration = 3000
-
         fadeIn.setAnimationListener(object: Animation.AnimationListener {
             override fun onAnimationStart(p0: Animation?) {
                 notificationMarker.visibility = View.VISIBLE
             }
-
-            override fun onAnimationRepeat(p0: Animation?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
+            override fun onAnimationRepeat(p0: Animation?) {}
             override fun onAnimationEnd(p0: Animation?) {
-                //toto
+                colorFade.reverse()
+                opacityFade.reverse()
             }
         })
 
@@ -614,27 +622,21 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         fadeOut.interpolator = AccelerateInterpolator()
         fadeOut.startOffset = 5000
         fadeOut.duration = 3000
-
         fadeOut.setAnimationListener(object: Animation.AnimationListener {
             override fun onAnimationStart(p0: Animation?) {
-                //toto
+                colorFade.start()
+                opacityFade.start()
             }
-
-            override fun onAnimationRepeat(p0: Animation?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
+            override fun onAnimationRepeat(p0: Animation?) {}
             override fun onAnimationEnd(p0: Animation?) {
                 notificationMarker.visibility = View.INVISIBLE
             }
         })
 
-        var animations = AnimationSet(false)
-
-        animations.addAnimation(fadeOut)
-        animations.addAnimation(fadeIn)
-
-        notificationMarker.startAnimation(animations)
+        val markerAnimations = AnimationSet(false)
+        markerAnimations.addAnimation(fadeOut)
+        markerAnimations.addAnimation(fadeIn)
+        notificationMarker.startAnimation(markerAnimations)
     }
 
     private fun setupFadeAnimations() {
@@ -677,9 +679,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
 
     private fun setupLocationDisplay() {
-
-        longDisplay.text = getText(R.string.longitude).toString() + originLocation.longitude.toString()
-        latDisplay.text = getText(R.string.latitude).toString() + originLocation.latitude.toString()
+        longDisplay.text = getText(R.string.longitude).toString() + "\t" + "%.4f".format(originLocation.longitude)
+        latDisplay.text = getText(R.string.latitude).toString() + "\t" + "%.4f".format(originLocation.latitude)
     }
 
     private fun closedMarkerManager() {

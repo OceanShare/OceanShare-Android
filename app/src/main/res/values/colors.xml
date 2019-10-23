@@ -8,6 +8,7 @@
     <color name="salmon">#ff5a61</color>
     <color name="red">#ff3232</color>
     <color name="opaque_green">#B334eb3d</color>
+    <color name="opaque_white">#DAFFFFFF</color>
 
     <color name="gradient_start">#36D1DC</color>
     <color name="gradient_end">#4e93ff</color>
