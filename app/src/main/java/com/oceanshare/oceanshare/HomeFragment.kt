@@ -681,7 +681,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     private fun setupLocationDisplay() {
         longDisplay.text = getText(R.string.longitude).toString() + "\t" + "%.4f".format(originLocation.longitude)
-        latDisplay.text = getText(R.string.latitude).toString() + "\t" + "%.4f".format(originLocation.latitude)
+        latDisplay.text = getText(R.string.latitude).toString() + "\t\t" + "%.4f".format(originLocation.latitude)
     }
 
     private fun closedMarkerManager() {

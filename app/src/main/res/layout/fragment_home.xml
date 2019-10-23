@@ -32,7 +32,7 @@
             android:id="@+id/longDisplay"
             android:layout_marginTop="80dp"
             android:layout_marginStart="10dp"
-            android:text="xxxxxxxxxxxxxxxxxx"
+            android:text="Long: 6,0338"
             android:background="@drawable/location_data_background"
             android:textColor="@color/white"
             android:paddingVertical="2dp"
@@ -45,7 +45,7 @@
             android:id="@+id/latDisplay"
             android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
-            android:text="xxxxxxxxxxxxxxxxxx"
+            android:text="Lat: 43,1342"
             android:background="@drawable/location_data_background"
             android:textColor="@color/white"
             android:paddingVertical="2dp"
@@ -139,7 +139,7 @@
 
     <FrameLayout
         android:id="@+id/markerMenu"
-        android:visibility="visible"
+        android:visibility="gone"
         android:elevation="10dp"
         android:layout_width="match_parent"
         android:layout_marginBottom="50dp"
