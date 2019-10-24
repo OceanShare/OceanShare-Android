@@ -63,6 +63,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:16.2.1'
     implementation 'com.google.firebase:firebase-database:16.1.0'
 
+    //OkHtpp
+    implementation("com.squareup.okhttp3:okhttp:4.2.1")
 
     //Mapbox (map)
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:8.4.0'

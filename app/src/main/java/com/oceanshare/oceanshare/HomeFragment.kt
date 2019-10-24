@@ -55,6 +55,8 @@ class HomeFragment : Fragment(), PermissionsListener, LoadingImplementation {
 
     private var currentMarker: Marker? = null
 
+    private var weather: Weather = Weather()
+
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
     private var  markerHashMap : HashMap<String, MarkerData> = HashMap()
@@ -760,7 +762,7 @@ HomeFragment().
         originLocation = lastLocation
         setCameraPosition(lastLocation)
         setupLocationDisplay()
-
+        weather.receiveWeatherData("5", "6")
     }
 
     @SuppressWarnings("MissingPermission")
