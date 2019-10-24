@@ -224,7 +224,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     {
                         val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.groupId,
                                 currentMarker!!.description, getHour(), fbAuth.currentUser?.uid.toString(),
-                                getTimeStamp())
+                                fbAuth.currentUser?.email.toString(), getTimeStamp())
                         database.child("markers").push().setValue(storedMarker)
 
                         showNotification(getString(R.string.validation_marker_added), false)
@@ -238,19 +238,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             }
 
             map.setOnMarkerClickListener {
-                if (!it.isInfoWindowShown) {
-                    it.showInfoWindow(map, mapView)
-                    true
-                } else {
-                    it.hideInfoWindow()
-                    false
-                }
-            }
-
-            map.setOnInfoWindowLongClickListener {
                 setupEditingMarkerMenu(it)
+                true
             }
-
         }
         setupFadeAnimations()
         setupMarkerMenu()
@@ -417,6 +407,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             val markerDesc = p0.child("description").value.toString()
                             val markerTime = p0.child("time").value.toString()
                             val markerUser = p0.child("user").value.toString()
+                            val markerUsername = "Joseph"
                             val upvote = p0.child("upvote").value.toString().toInt()
                             val downvote = p0.child("downvote").value.toString().toInt()
                             val contributor = p0.child("contributors").value.toString()
@@ -436,8 +427,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             )
 
                             markerHashMap[key] = MarkerData(markerMap.id, markerLatitude,
-                                    markerLongitude, groupId,
-                                    markerDesc, markerTime, markerUser, timestamp, markerIcon, upvote, downvote,
+                                    markerLongitude, groupId, markerDesc, markerTime, markerUser,
+                                    markerUsername, timestamp, markerIcon, upvote, downvote,
                                     userVotes)
                         }
                     }
@@ -557,6 +548,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerImage[3] = R.drawable.marker_map_warning
         markerImage[4] = R.drawable.marker_map_dolphin
         markerImage[5] = R.drawable.marker_map_position
+        markerImage[6] = R.drawable.marker_map_buoy
+        markerImage[7] = R.drawable.marker_map_cost_guard
+        markerImage[8] = R.drawable.marker_map_fishes
 
         return markerImage[groupId]!!
     }
@@ -570,6 +564,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerImage[3] = R.drawable.marker_menu_warning
         markerImage[4] = R.drawable.marker_menu_dolphin
         markerImage[5] = R.drawable.marker_menu_position
+        markerImage[6] = R.drawable.marker_menu_buoy
+        markerImage[7] = R.drawable.marker_menu_cost_guard
+        markerImage[8] = R.drawable.marker_menu_fishes
 
         return markerImage[groupId]!!
     }
@@ -583,7 +580,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerTitle[3] = getString(R.string.marker_sos)
         markerTitle[4] = getString(R.string.marker_dolphin)
         markerTitle[5] = getString(R.string.marker_position)
-
+        markerTitle[6] = getString(R.string.marker_buoy)
+        markerTitle[7] = getString(R.string.marker_cost_guard)
+        markerTitle[8] = getString(R.string.marker_fishes)
         return markerTitle[groupId]!!
     }
 
@@ -718,12 +717,16 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerManagerId.text = getMarkerKey(mark.id)
 
         if (fbAuth.currentUser?.uid.toString() == markerInformation.user) {
+            markerManagerOwnMarker.text = getString(R.string.user_marker)
             markerManagerOwnMarker.visibility = View.VISIBLE
             markerManagerEditButton.visibility = View.VISIBLE
+            markerManagerVoteButtons.visibility = View.GONE
 
         } else {
-            markerManagerOwnMarker.visibility = View.GONE
+            markerManagerOwnMarker.text = "Posé par : " + markerInformation.username
+            markerManagerOwnMarker.visibility = View.VISIBLE
             markerManagerEditButton.visibility = View.INVISIBLE
+            markerManagerVoteButtons.visibility = View.VISIBLE
         }
 
         markerManagerEditButton.setOnClickListener {
