@@ -105,4 +105,14 @@
     <string name="button_submit">Validé</string>
     <string name="latitude">"Lat:  "</string>
     <string name="longitude">"Long: "</string>
+    <string name="latitude_meteo">Lat.</string>
+    <string name="longitude_meteo">Long.</string>
+    <string name="sunrise">Lever du soleil</string>
+    <string name="sunset">Coucher du soleil</string>
+    <string name="rain_risk">Risque de pluie</string>
+    <string name="water_temp">Temp. de l\'eau</string>
+    <string name="wind">Vent</string>
+    <string name="humidity">Humidité</string>
+    <string name="visibility">Visibilité</string>
+    <string name="uv_indice">Indice UV</string>
 </resources>

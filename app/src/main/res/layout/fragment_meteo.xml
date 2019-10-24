@@ -1,26 +1,379 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:gravity="center"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MeteoFragment"
-    android:background="#ffffff">
+    android:background="#ffffff"
+    android:orientation="vertical"
+    tools:context=".MeteoFragment">
 
-    <android.support.v7.widget.AppCompatImageView
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_dashboard"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:background="@color/profile_grey_buttons" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/marker_meteo"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:padding="20dp"
+                    android:src="@drawable/ic_sun"
+                    app:civ_border_width="60dp" />
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/meteoImage"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:foregroundGravity="center"
+                    android:src="@drawable/ic_sun"
+                    app:civ_border_width="0dp" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/meteoTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:text="27°C"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="40sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </RelativeLayout>
 
     <View
-        android:layout_width="5dp"
-        android:layout_height="30dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/profile_grey_buttons" />
 
-    <TextView
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="@string/dashboard_tmp" />
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/longitude_meteo"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoLongitute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5.893588"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/latitude_meteo"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoLatitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="43.079214"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/profile_grey_buttons" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sunrise"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoSunrise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="05:56"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sunset"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoSunset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="21:18"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/profile_grey_buttons" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rain_risk"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoRainRisk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 %"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/water_temp"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoWaterTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24 °C"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/profile_grey_buttons" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wind"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoWind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ESE 21 km/h"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/humidity"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoHumidity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="61 %"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/profile_grey_buttons" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/visibility"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoVisibility"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="11,3 km"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/uv_indice"
+                android:textAllCaps="true"
+                android:textColor="@color/profile_blue_buttons"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meteoUVIndice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7 (Medium)"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
