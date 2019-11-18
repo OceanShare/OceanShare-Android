@@ -8,21 +8,19 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private val homeFragment = HomeFragment()
-    //private val tmpFragment = TmpFragment()
+    private val meteoFragment = MeteoFragment()
     private val profileFragment = ProfileFragment()
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                return@OnNavigationItemSelectedListener switchFragments()//loadFragment(homeFragment)
+                return@OnNavigationItemSelectedListener switchFragments(item.itemId)//loadFragment(homeFragment)
             }
-            /*
             R.id.navigation_dashboard -> {
-                return@OnNavigationItemSelectedListener loadFragment(tmpFragment)
+                return@OnNavigationItemSelectedListener switchFragments(item.itemId)
             }
-            */
             R.id.navigation_profile -> {
-                return@OnNavigationItemSelectedListener switchFragments()//loadFragment(profileFragment)
+                return@OnNavigationItemSelectedListener switchFragments(item.itemId)//loadFragment(profileFragment)
             }
         }
         false
@@ -35,19 +33,31 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
                 .add(R.id.fragment_container, homeFragment)
                 .add(R.id.fragment_container, profileFragment)
+                .add(R.id.fragment_container, meteoFragment)
                 .hide(profileFragment)
+                .hide(meteoFragment)
                 .commit()
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
-    private fun switchFragments() : Boolean {
-        if (profileFragment.isHidden) {
+    private fun switchFragments(id: Int) : Boolean {
+        if (id == R.id.navigation_home) {
+            supportFragmentManager.beginTransaction()
+                    .show(homeFragment)
+                    .hide(meteoFragment)
+                    .hide(profileFragment)
+                    .commit()
+        } else if (id == R.id.navigation_dashboard) {
+            supportFragmentManager.beginTransaction()
+                    .show(meteoFragment)
+                    .hide(homeFragment)
+                    .hide(profileFragment)
+                    .commit()
+        } else if (id == R.id.navigation_profile) {
             supportFragmentManager.beginTransaction()
                     .show(profileFragment)
-                    .commit()
-        } else {
-            supportFragmentManager.beginTransaction()
-                    .hide(profileFragment)
+                    .hide(homeFragment)
+                    .hide(meteoFragment)
                     .commit()
         }
         return true

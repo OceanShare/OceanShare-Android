@@ -76,6 +76,10 @@
     <string name="marker_sos">SOS</string>
     <string name="marker_dolphin">Dauphins</string>
     <string name="marker_position">Position</string>
+    <string name="marker_meteo">Météo</string>
+    <string name="marker_buoy">Bouée</string>
+    <string name="marker_cost_guard">Guardes côte</string>
+    <string name="marker_fishes">Poissons</string>
     <string name="button_settings">PARAMETRES</string>
     <string name="button_add_media">AJOUT PHOTO</string>
     <string name="button_edit_infos">MODIF INFOS</string>
@@ -101,4 +105,15 @@
     <string name="button_submit">Validé</string>
     <string name="latitude">"Lat:  "</string>
     <string name="longitude">"Long: "</string>
+    <string name="latitude_meteo">Lat.</string>
+    <string name="longitude_meteo">Long.</string>
+    <string name="sunrise">Lever du soleil</string>
+    <string name="sunset">Coucher du soleil</string>
+    <string name="rain_risk">Risque de pluie</string>
+    <string name="water_temp">Temp. de l\'eau</string>
+    <string name="wind">Vent</string>
+    <string name="humidity">Humidité</string>
+    <string name="visibility">Visibilité</string>
+    <string name="uv_indice">Indice UV</string>
+    <string name="edit">Edit</string>
 </resources>

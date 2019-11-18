@@ -2,6 +2,7 @@ package com.oceanshare.oceanshare
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
@@ -80,6 +81,12 @@ class ProfileFragment : Fragment() {
             val  mAlertDialog = mBuilder.show()
             mDialogView.dialogCancelBtn.setOnClickListener {
                 mAlertDialog.dismiss()
+            }
+
+            mDialogView.dialogLearnMoreButton.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse("https://sagotg.github.io/OceanShare/")
+                startActivity(intent)
             }
         }
 

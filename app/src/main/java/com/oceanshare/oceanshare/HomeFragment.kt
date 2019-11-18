@@ -1,5 +1,6 @@
 package com.oceanshare.oceanshare
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
@@ -26,7 +27,6 @@ import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.constants.Style
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponent
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
@@ -36,6 +36,14 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.marker_manager.*
+import kotlinx.android.synthetic.main.marker_entry.view.*
+import kotlinx.android.synthetic.main.marker_manager.exitButton
+import kotlinx.android.synthetic.main.marker_manager.markerManagerOwnMarker
+import kotlinx.android.synthetic.main.weather_marker.*
+import kotlinx.android.synthetic.main.weather_marker.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -52,12 +60,14 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     private lateinit var mContext: Context
     private lateinit var database: DatabaseReference
 
-
     private var currentMarker: Marker? = null
 
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
     private var  markerHashMap : HashMap<String, MarkerData> = HashMap()
+    private var isEditingMarkerDescription = false
+    private var isWeatherMarker = false
+    private var apiService = IWeatherApi()
 
     private var fbAuth = FirebaseAuth.getInstance()
 
@@ -90,7 +100,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
             map = mapboxMap
-            map.setStyle(Style.OUTDOORS)
+            map.setStyleUrl("mapbox://styles/oceanshare06/ck266a67z0azk1dnzvvj6jz4k")
             map.setMinZoomPreference(16.00)
 
             database = FirebaseDatabase.getInstance().reference
@@ -100,7 +110,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             initMarker()
 
             map.addOnMapClickListener {
-                if (currentMarker != null) {
+                if ((currentMarker != null) && isEditingMarkerDescription == false) {
                     val pixel = map.projection.toScreenLocation(it)
                     val features = map.queryRenderedFeatures(pixel, "water")
                     //var error = false
@@ -118,7 +128,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                     {
                         val storedMarker = MarkerData(null ,it.latitude, it.longitude, currentMarker!!.groupId,
                                 currentMarker!!.description, getHour(), fbAuth.currentUser?.uid.toString(),
-                                getTimeStamp())
+                                fbAuth.currentUser?.email.toString(), getTimeStamp())
                         database.child("markers").push().setValue(storedMarker)
 
                         showNotification(getString(R.string.validation_marker_added), false)
@@ -129,22 +139,21 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
                     currentMarker = null
                 }
-            }
 
-            map.setOnMarkerClickListener {
-                if (!it.isInfoWindowShown) {
-                    it.showInfoWindow(map, mapView)
-                    true
-                } else {
-                    it.hideInfoWindow()
-                 false
+                else if (isWeatherMarker) {
+                    GlobalScope.launch(Dispatchers.Main) {
+                        val weatherResponse = apiService.getWeather(it.latitude.toString(),
+                                it.longitude.toString())
+                        setupWeatherMarkerScreen(weatherResponse)
+                    }
+                    isWeatherMarker = false
                 }
             }
 
-            map.setOnInfoWindowLongClickListener {
+            map.setOnMarkerClickListener {
                 setupEditingMarkerMenu(it)
+                true
             }
-
         }
         setupFadeAnimations()
         setupMarkerMenu()
@@ -225,6 +234,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             val markerDesc = p0.child("description").value.toString()
                             val markerTime = p0.child("time").value.toString()
                             val markerUser = p0.child("user").value.toString()
+                            val markerUsername = "Joseph"
                             val upvote = p0.child("upvote").value.toString().toInt()
                             val downvote = p0.child("downvote").value.toString().toInt()
                             val contributor = p0.child("contributors").value.toString()
@@ -244,8 +254,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
                             )
 
                             markerHashMap[key] = MarkerData(markerMap.id, markerLatitude,
-                                    markerLongitude, groupId,
-                                    markerDesc, markerTime, markerUser, timestamp, markerIcon, upvote, downvote,
+                                    markerLongitude, groupId, markerDesc, markerTime, markerUser,
+                                    markerUsername, timestamp, markerIcon, upvote, downvote,
                                     userVotes)
                         }
                     }
@@ -365,6 +375,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerImage[3] = R.drawable.marker_map_warning
         markerImage[4] = R.drawable.marker_map_dolphin
         markerImage[5] = R.drawable.marker_map_position
+        markerImage[6] = R.drawable.marker_map_buoy
+        markerImage[7] = R.drawable.marker_map_cost_guard
+        markerImage[8] = R.drawable.marker_map_fishes
 
         return markerImage[groupId]!!
     }
@@ -378,6 +391,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerImage[3] = R.drawable.marker_menu_warning
         markerImage[4] = R.drawable.marker_menu_dolphin
         markerImage[5] = R.drawable.marker_menu_position
+        markerImage[6] = R.drawable.marker_menu_buoy
+        markerImage[7] = R.drawable.marker_menu_cost_guard
+        markerImage[8] = R.drawable.marker_menu_fishes
 
         return markerImage[groupId]!!
     }
@@ -391,33 +407,41 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerTitle[3] = getString(R.string.marker_sos)
         markerTitle[4] = getString(R.string.marker_dolphin)
         markerTitle[5] = getString(R.string.marker_position)
-
+        markerTitle[6] = getString(R.string.marker_buoy)
+        markerTitle[7] = getString(R.string.marker_cost_guard)
+        markerTitle[8] = getString(R.string.marker_fishes)
         return markerTitle[groupId]!!
     }
 
     private fun showNotification(notificationMessage: String, error: Boolean) {
-
         /*if (error) {
             notificationMarker.backgroundTintList = R.color.red
         }*/
-
         notificationMarker.text = notificationMessage
+
+        val colorFade = ValueAnimator.ofArgb(resources.getColor(R.color.opaque_white), resources.getColor(R.color.opaque_green))
+        colorFade.duration = 3000
+        colorFade.addUpdateListener {
+            topBarStatus.setBackgroundColor(it.animatedValue as Int)
+        }
+
+        val opacityFade = ValueAnimator.ofFloat(1f, 0f)
+        opacityFade.duration = 3000
+        opacityFade.addUpdateListener {
+            notificationLogo.alpha = it.animatedValue as Float
+        }
 
         val fadeIn = AlphaAnimation(0f, 1f)
         fadeIn.interpolator = DecelerateInterpolator() //add this
         fadeIn.duration = 3000
-
         fadeIn.setAnimationListener(object: Animation.AnimationListener {
             override fun onAnimationStart(p0: Animation?) {
                 notificationMarker.visibility = View.VISIBLE
             }
-
-            override fun onAnimationRepeat(p0: Animation?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
+            override fun onAnimationRepeat(p0: Animation?) {}
             override fun onAnimationEnd(p0: Animation?) {
-                //toto
+                colorFade.reverse()
+                opacityFade.reverse()
             }
         })
 
@@ -425,27 +449,21 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         fadeOut.interpolator = AccelerateInterpolator()
         fadeOut.startOffset = 5000
         fadeOut.duration = 3000
-
         fadeOut.setAnimationListener(object: Animation.AnimationListener {
             override fun onAnimationStart(p0: Animation?) {
-                //toto
+                colorFade.start()
+                opacityFade.start()
             }
-
-            override fun onAnimationRepeat(p0: Animation?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
+            override fun onAnimationRepeat(p0: Animation?) {}
             override fun onAnimationEnd(p0: Animation?) {
                 notificationMarker.visibility = View.INVISIBLE
             }
         })
 
-        var animations = AnimationSet(false)
-
-        animations.addAnimation(fadeOut)
-        animations.addAnimation(fadeIn)
-
-        notificationMarker.startAnimation(animations)
+        val markerAnimations = AnimationSet(false)
+        markerAnimations.addAnimation(fadeOut)
+        markerAnimations.addAnimation(fadeIn)
+        notificationMarker.startAnimation(markerAnimations)
     }
 
     private fun setupFadeAnimations() {
@@ -488,9 +506,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
 
     private fun setupLocationDisplay() {
-
-        longDisplay.text = getText(R.string.longitude).toString() + originLocation.longitude.toString()
-        latDisplay.text = getText(R.string.latitude).toString() + originLocation.latitude.toString()
+        longDisplay.text = getText(R.string.longitude).toString() + "\t" + "%.4f".format(originLocation.longitude)
+        latDisplay.text = getText(R.string.latitude).toString() + "\t\t" + "%.4f".format(originLocation.latitude)
     }
 
     private fun closedMarkerManager() {
@@ -499,8 +516,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerManager.visibility = View.GONE
         markerManagerEdit.visibility = View.GONE
         markerManagerDescription.visibility = View.VISIBLE
-        showHideMarkerMenuButton.show()
-        centerCameraButton.show()
+        showHideMarkerMenuButton.visibility = View.VISIBLE
+        centerCameraButton.visibility = View.VISIBLE
         map.uiSettings.setAllGesturesEnabled(true)
     }
 
@@ -511,8 +528,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
 
         markerManager.visibility = View.VISIBLE
-        showHideMarkerMenuButton.hide()
-        centerCameraButton.hide()
+        showHideMarkerMenuButton.visibility = View.GONE
+        centerCameraButton.visibility = View.GONE
         mark.hideInfoWindow()
         map.uiSettings.setAllGesturesEnabled(false)
 
@@ -527,12 +544,16 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerManagerId.text = getMarkerKey(mark.id)
 
         if (fbAuth.currentUser?.uid.toString() == markerInformation.user) {
+            markerManagerOwnMarker.text = getString(R.string.user_marker)
             markerManagerOwnMarker.visibility = View.VISIBLE
             markerManagerEditButton.visibility = View.VISIBLE
+            markerManagerVoteButtons.visibility = View.GONE
 
         } else {
-            markerManagerOwnMarker.visibility = View.GONE
+            markerManagerOwnMarker.text = "Posé par : " + markerInformation.username
+            markerManagerOwnMarker.visibility = View.VISIBLE
             markerManagerEditButton.visibility = View.INVISIBLE
+            markerManagerVoteButtons.visibility = View.VISIBLE
         }
 
         markerManagerEditButton.setOnClickListener {
@@ -618,29 +639,58 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     }
 
+    private fun setupWeatherMarkerScreen(weatherResponse: FullWeather) {
+
+        var convert = WeatherConverter()
+
+        weatherMarker.temperatureTextView.text = convert.getTemperature(weatherResponse.weather!!.main!!.temp!!)
+        weatherMarker.descriptionTextView.text = weatherResponse.weather!!.weather!![0].description
+        weatherMarker.latitudeTextView.text = weatherResponse.weather!!.coord!!.lat.toString()
+        weatherMarker.longitudeTextView.text = weatherResponse.weather!!.coord!!.lon.toString()
+        weatherMarker.sunriseTextView.text = convert.getSunriseTime(weatherResponse.weather!!.sys!!.sunrise!!)
+        weatherMarker.sunsetTextView.text = convert.getSunsetTime(weatherResponse.weather!!.sys!!.sunset!!)
+        weatherMarker.cloudCoverTextView.text = convert.getCloudyValue(weatherResponse.weather!!.clouds!!.all!!)
+        weatherMarker.windTextView.text = convert.getWindData(weatherResponse.weather!!.wind!!.deg!!, weatherResponse.weather!!.wind!!.speed!!)
+        weatherMarker.humidityTextView.text = convert.getHumidity(weatherResponse.weather!!.main!!.humidity!!)
+        weatherMarker.uvIndiceTextView.text = convert.getUv(weatherResponse.uv!!.value!!)
+
+
+        weatherMarker.visibility = View.VISIBLE
+        showHideMarkerMenuButton.visibility = View.GONE
+        centerCameraButton.visibility = View.GONE
+        map.uiSettings.setAllGesturesEnabled(false)
+
+        println("I'm in SetupWeatherMarkerScreen" + weatherResponse.weather!!.main!!.temp.toString())
+
+        weatherMarker.exitButton.setOnClickListener {
+            weatherMarker.visibility = View.GONE
+            showHideMarkerMenuButton.visibility = View.VISIBLE
+            centerCameraButton.visibility = View.VISIBLE
+            map.uiSettings.setAllGesturesEnabled(true)
+        }
+    }
+
     private fun setupDescriptionScreen() {
+        isEditingMarkerDescription = true
         markerDescription.background.alpha = 128
         markerDescription.visibility = View.VISIBLE
 
-        //to delete
+        cancelMarkerDescription.setOnClickListener {
+            markerDescription.visibility = View.GONE
+            currentMarker = null
+            isEditingMarkerDescription = false
+        }
 
-        showHideMarkerMenuButton.hide()
-        centerCameraButton.hide()
+        submitMarkerDescription.setOnClickListener {
+            val description = markerTextDescription.text.toString()
 
-            submitMarkerDescription.setOnClickListener {
-                val description = markerTextDescription.text.toString()
+            currentMarker?.description = description
+            markerTextDescription.text.clear()
+            val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
 
-                currentMarker?.description = description
-                markerTextDescription.text.clear()
-                val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
-
-                //to delete
-
-                showHideMarkerMenuButton.show()
-                centerCameraButton.show()
-
-                markerDescription.visibility = View.GONE
+            markerDescription.visibility = View.GONE
+            isEditingMarkerDescription = false
         }
     }
 
@@ -663,6 +713,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markersList.add(Marker(getString(R.string.marker_sos),R.drawable.marker_menu_warning, R.drawable.marker_map_warning, 3,""))
         markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, R.drawable.marker_map_dolphin, 4, ""))
         markersList.add(Marker(getString(R.string.marker_position), R.drawable.marker_menu_position, R.drawable.marker_map_position, 5, ""))
+        markersList.add(Marker(getString(R.string.marker_buoy), R.drawable.marker_menu_buoy, R.drawable.marker_map_buoy, 6, ""))
+        markersList.add(Marker(getString(R.string.marker_cost_guard), R.drawable.marker_menu_cost_guard, R.drawable.marker_map_cost_guard, 7, ""))
+        markersList.add(Marker(getString(R.string.marker_fishes), R.drawable.marker_menu_fishes, R.drawable.marker_map_fishes, 8, ""))
         val adapter = MarkerAdapter(context!!, markersList)
 
         markerGridView.adapter = adapter
@@ -671,6 +724,15 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             markerMenu.visibility = View.GONE
             currentMarker = markersList[position]
             setupDescriptionScreen()
+        }
+
+        meteoMarker.markerName.setText(R.string.marker_meteo)
+        meteoMarker.markerImage.setImageResource(R.drawable.marker_menu_meteo)
+
+        meteoMarker.setOnClickListener {
+            markerMenu.startAnimation(fadeOutAnimation)
+            markerMenu.visibility = View.GONE
+            isWeatherMarker = true
         }
     }
 
@@ -737,6 +799,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             originLocation = location
             //setCameraPosition(location)
             setupLocationDisplay()
+            //WeatherSwag().receiveWeatherData(it.latitude.toString() ,it.longitude.toString())
         }
     }
 
@@ -773,7 +836,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-            mapView.onSaveInstanceState(outState)
+        mapView.onSaveInstanceState(outState)
     }
     override fun onLowMemory() {
         super.onLowMemory()
