@@ -105,4 +105,15 @@
     <string name="button_submit">Submit</string>
     <string name="latitude">"Lat:"</string>
     <string name="longitude">Long:</string>
+    <string name="latitude_meteo">Lat.</string>
+    <string name="longitude_meteo">Long.</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="sunset">Sunset</string>
+    <string name="rain_risk">Rain risk</string>
+    <string name="water_temp">Water temp.</string>
+    <string name="wind">Wind</string>
+    <string name="humidity">Humidity</string>
+    <string name="visibility">Visibility</string>
+    <string name="uv_indice">UV Indice</string>
+    <string name="edit">Edit</string>
 </resources>
