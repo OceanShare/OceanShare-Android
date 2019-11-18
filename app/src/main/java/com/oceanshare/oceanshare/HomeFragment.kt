@@ -3,25 +3,17 @@ package com.oceanshare.oceanshare
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import android.graphics.drawable.AnimationDrawable
 import android.location.Location
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
-import android.os.StrictMode
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.view.Gravity
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
-import com.beust.klaxon.Klaxon
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.mapbox.android.core.location.LocationEngine
@@ -35,7 +27,6 @@ import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.constants.Style
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponent
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
@@ -43,110 +34,22 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import kotlinx.android.synthetic.main.dialog_not_implemented.view.*
-import kotlinx.android.synthetic.main.dialog_not_implemented.view.dialogCancelBtn
-import kotlinx.android.synthetic.main.dialog_tmp.view.*
-import kotlinx.android.synthetic.main.custom_toast.*
-import kotlinx.android.synthetic.main.custom_toast.view.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.marker_manager.*
-import kotlinx.android.synthetic.main.marker_manager.view.*
-import kotlinx.android.synthetic.main.fragment_profile.view.*
 import kotlinx.android.synthetic.main.marker_entry.view.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.Path
-import retrofit2.http.Query
-import java.math.BigDecimal
-import java.math.RoundingMode
+import kotlinx.android.synthetic.main.marker_manager.exitButton
+import kotlinx.android.synthetic.main.marker_manager.markerManagerOwnMarker
+import kotlinx.android.synthetic.main.weather_marker.*
+import kotlinx.android.synthetic.main.weather_marker.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
 import java.util.*
 import kotlin.collections.HashMap
 
 interface LoadingImplementation {
     fun onFinishedLoading()
-}
-
-class UV {
-    var lat: Double? = null
-    var lon: Double? = null
-    var date: Int? = null
-    var value: Double? = null
-}
-
-class Weather {
-    var coor: Coord? = null
-    var weather: ArrayList<Weather2>? = null
-    var base: String? = null
-    var main: Main? = null
-    var wind: Wind? = null
-    var clouds: Clouds? = null
-    var dt: Int? = null
-    var sys: Sys? = null
-    var timezone: Int? = null
-    var id: Int? = null
-    var name: String? = null
-    var cod: Int? = null
-}
-
-class Weather2 {
-    var id: Int? = null
-    var main: String? = null
-    var description: String? = null
-    var icon: String? = null
-}
-
-class Coord {
-    var lon: Double? = null
-    var lat: Double? = null
-}
-
-class Main {
-    var temp: Double? = null
-    var pressure: Int? = null
-    var humidity: Int? = null
-    var temp_min: Double? = null
-    var temp_max: Double? = null
-    var sea_level: Int? = null
-    var grnd_level: Int? = null
-}
-
-class Wind {
-    var speed: Double? = null
-    var deg: Double? = null
-}
-
-class Clouds {
-    var all: Int? = null
-}
-
-class FullWeather {
-    var uv: String? = null
-    var weather: String? = null
-}
-
-class Sys {
-    var message: Double? = null
-    var sunrise: Long? = null
-    var sunset: Long? = null
-}
-
-interface IWeatherApi {
-    @Headers(
-            "Accept: application/json",
-            "Content-type: application/json",
-            "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjF9.Vcp2grZ53t_OG3jwSXsRwfc_UUjboNgZarkAGiX0jgM"
-    )
-    @GET("api/weather")
-    fun getWeather(@Query("lat") lat: String?, @Query("lng") lng: String?): Call<FullWeather>
 }
 
 class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, LoadingImplementation {
@@ -162,8 +65,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
     private var  markerHashMap : HashMap<String, MarkerData> = HashMap()
-    private var hashMap: HashMap<String, MarkerData> = HashMap()
     private var isEditingMarkerDescription = false
+    private var isWeatherMarker = false
+    private var apiService = IWeatherApi()
 
     private var fbAuth = FirebaseAuth.getInstance()
 
@@ -196,7 +100,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
             map = mapboxMap
-            map.setStyle(Style.OUTDOORS)
+            map.setStyleUrl("mapbox://styles/oceanshare06/ck266a67z0azk1dnzvvj6jz4k")
             map.setMinZoomPreference(16.00)
 
             database = FirebaseDatabase.getInstance().reference
@@ -206,7 +110,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             initMarker()
 
             map.addOnMapClickListener {
-                if (currentMarker != null && isEditingMarkerDescription == false) {
+                if ((currentMarker != null) && isEditingMarkerDescription == false) {
                     val pixel = map.projection.toScreenLocation(it)
                     val features = map.queryRenderedFeatures(pixel, "water")
                     //var error = false
@@ -235,6 +139,15 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
                     currentMarker = null
                 }
+
+                else if (isWeatherMarker) {
+                    GlobalScope.launch(Dispatchers.Main) {
+                        val weatherResponse = apiService.getWeather(it.latitude.toString(),
+                                it.longitude.toString())
+                        setupWeatherMarkerScreen(weatherResponse)
+                    }
+                    isWeatherMarker = false
+                }
             }
 
             map.setOnMarkerClickListener {
@@ -256,92 +169,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         setupMarkerMenu()
 
         centerCameraButton.setOnClickListener {
-
-
-            Log.e("DEBUG","1")
-            val url = "http://35.198.134.25:5000/"
-            val retrofit = Retrofit.Builder()
-                    .baseUrl(url)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-
-            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-            StrictMode.setThreadPolicy(policy)
-
-            Log.e("DEBUG","2")
-            val service = retrofit.create(IWeatherApi::class.java)
-            val weather = service.getWeather(originLocation.latitude.toString(), originLocation.longitude.toString())
-            //val okok = weather.execute()
-            //val ok = okok.body()
-            //val okk = okok.raw()
-            //val okkk = okok.errorBody()
-
-            Log.e("DEBUG","3")
-            weather.enqueue(object: Callback<FullWeather> {
-                @SuppressLint("NewApi")
-                override fun onResponse(call: Call<FullWeather>, response: Response<FullWeather>) {
-                    val fullWeather = response.body()
-
-                    val uv = Klaxon().parse<UV>(fullWeather!!.uv!!)
-                    val weather = Klaxon().parse<Weather>(fullWeather!!.weather!!)
-
-
-                    val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_tmp, null)
-                    val mBuilder = AlertDialog.Builder(context!!, R.style.DialogTheme)
-                            .setView(mDialogView)
-                    val  mAlertDialog = mBuilder.show()
-                    mDialogView.dialogCancelBtn.setOnClickListener {
-                        mAlertDialog.dismiss()
-                    }
-
-                    mDialogView.nameTextView.text = "City: " + weather!!.name
-
-                    mDialogView.temperatureTextView.text = "Temperature: " + BigDecimal(weather!!.main!!.temp!! - 273.15).setScale(1, RoundingMode.HALF_EVEN) + " °C"
-                    mDialogView.descriptionTextView.text = "Description: " + weather!!.weather!!.first().description
-
-                    mDialogView.longitudeTextView.text = "Longitude: " + uv!!.lon
-                    mDialogView.latitudeTextView.text = "Latitude: " + uv!!.lat
-
-                    val sunriseDate = Instant.ofEpochSecond(weather!!.sys!!.sunrise!!).atZone(ZoneId.systemDefault()).toLocalDateTime()
-                    val sunsetDate = Instant.ofEpochSecond(weather!!.sys!!.sunset!!).atZone(ZoneId.systemDefault()).toLocalDateTime()
-
-                    var sunriseHour = sunriseDate.hour.toString()
-                    if (sunriseDate.hour.toString().length == 1) {
-                        sunriseHour = "0" + sunriseHour
-                    }
-                    var sunriseMinute = sunriseDate.minute.toString()
-                    if (sunriseDate.minute.toString().length == 1) {
-                        sunriseMinute = "0" + sunriseMinute
-                    }
-                    var sunsetHour = sunsetDate.hour.toString()
-                    if (sunsetDate.hour.toString().length == 1) {
-                        sunsetHour = "0" + sunsetHour
-                    }
-                    var sunsetMinute = sunsetDate.minute.toString()
-                    if (sunsetDate.minute.toString().length == 1) {
-                        sunsetMinute = "0" + sunsetMinute
-                    }
-                    mDialogView.sunriseTextView.text = "Sunrise: " + sunriseHour + ":" + sunriseMinute + " AM"
-                    mDialogView.sunsetTextView.text = "Sunset: " + sunsetHour + ":" + sunsetMinute + " PM"
-
-                    mDialogView.cloudCoverTextView.text = "Cloud Cover: " + "0 %"
-                    mDialogView.waterTemperatureTextView.text = "Water Temp.: " + "-- °C"
-
-                    mDialogView.windTextView.text = "Wind: " + weather!!.wind!!.speed + " km/h"
-                    mDialogView.humidityTextView.text = "Humidity: " + weather!!.main!!.humidity + "%"
-
-                    mDialogView.visibilityTextView.text = "Visibility: " + "10.0 km/h"
-                    mDialogView.uvIndiceTextView.text = "UV Indice: " + uv!!.value
-
-                    Log.e("DEBUG", "OKOK")
-                }
-                override fun onFailure(call: Call<FullWeather>, t: Throwable) {
-                    Log.e("TAN", "Error : $t")
-                    Log.e("DEBUG","6")
-                }
-            })
-
-            Log.e("DEBUG","7")
             val position = CameraPosition.Builder()
                     .target(LatLng(originLocation.latitude, originLocation.longitude))
                     .zoom(16.0)
@@ -557,6 +384,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerImage[3] = R.drawable.marker_map_warning
         markerImage[4] = R.drawable.marker_map_dolphin
         markerImage[5] = R.drawable.marker_map_position
+        markerImage[6] = R.drawable.marker_map_buoy
+        markerImage[7] = R.drawable.marker_map_cost_guard
+        markerImage[8] = R.drawable.marker_map_fishes
 
         return markerImage[groupId]!!
     }
@@ -570,6 +400,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerImage[3] = R.drawable.marker_menu_warning
         markerImage[4] = R.drawable.marker_menu_dolphin
         markerImage[5] = R.drawable.marker_menu_position
+        markerImage[6] = R.drawable.marker_menu_buoy
+        markerImage[7] = R.drawable.marker_menu_cost_guard
+        markerImage[8] = R.drawable.marker_menu_fishes
 
         return markerImage[groupId]!!
     }
@@ -583,6 +416,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         markerTitle[3] = getString(R.string.marker_sos)
         markerTitle[4] = getString(R.string.marker_dolphin)
         markerTitle[5] = getString(R.string.marker_position)
+        markerTitle[6] = getString(R.string.marker_buoy)
+        markerTitle[7] = getString(R.string.marker_cost_guard)
+        markerTitle[8] = getString(R.string.marker_fishes)
 
         return markerTitle[groupId]!!
     }
@@ -809,6 +645,37 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
     }
 
+    private fun setupWeatherMarkerScreen(weatherResponse: FullWeather) {
+
+        var convert = WeatherConverter()
+
+        weatherMarker.temperatureTextView.text = convert.getTemperature(weatherResponse.weather!!.main!!.temp!!)
+        weatherMarker.descriptionTextView.text = weatherResponse.weather!!.weather!![0].description
+        weatherMarker.latitudeTextView.text = weatherResponse.weather!!.coord!!.lat.toString()
+        weatherMarker.longitudeTextView.text = weatherResponse.weather!!.coord!!.lon.toString()
+        weatherMarker.sunriseTextView.text = convert.getSunriseTime(weatherResponse.weather!!.sys!!.sunrise!!)
+        weatherMarker.sunsetTextView.text = convert.getSunsetTime(weatherResponse.weather!!.sys!!.sunset!!)
+        weatherMarker.cloudCoverTextView.text = convert.getCloudyValue(weatherResponse.weather!!.clouds!!.all!!)
+        weatherMarker.windTextView.text = convert.getWindData(weatherResponse.weather!!.wind!!.deg!!, weatherResponse.weather!!.wind!!.speed!!)
+        weatherMarker.humidityTextView.text = convert.getHumidity(weatherResponse.weather!!.main!!.humidity!!)
+        weatherMarker.uvIndiceTextView.text = convert.getUv(weatherResponse.uv!!.value!!)
+
+
+        weatherMarker.visibility = View.VISIBLE
+        showHideMarkerMenuButton.visibility = View.GONE
+        centerCameraButton.visibility = View.GONE
+        map.uiSettings.setAllGesturesEnabled(false)
+
+        println("I'm in SetupWeatherMarkerScreen" + weatherResponse.weather!!.main!!.temp.toString())
+
+        weatherMarker.exitButton.setOnClickListener {
+            weatherMarker.visibility = View.GONE
+            showHideMarkerMenuButton.visibility = View.VISIBLE
+            centerCameraButton.visibility = View.VISIBLE
+            map.uiSettings.setAllGesturesEnabled(true)
+        }
+    }
+
     private fun setupDescriptionScreen() {
         isEditingMarkerDescription = true
         markerDescription.background.alpha = 128
@@ -867,6 +734,12 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
 
         meteoMarker.markerName.setText(R.string.marker_meteo)
         meteoMarker.markerImage.setImageResource(R.drawable.marker_menu_meteo)
+
+        meteoMarker.setOnClickListener {
+            markerMenu.startAnimation(fadeOutAnimation)
+            markerMenu.visibility = View.GONE
+            isWeatherMarker = true
+        }
     }
 
     private fun enableLocation() {
@@ -932,6 +805,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
             originLocation = location
             //setCameraPosition(location)
             setupLocationDisplay()
+            //WeatherSwag().receiveWeatherData(it.latitude.toString() ,it.longitude.toString())
         }
     }
 

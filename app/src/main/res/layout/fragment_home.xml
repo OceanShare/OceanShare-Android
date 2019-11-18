@@ -136,6 +136,7 @@
     </LinearLayout>
 
     <include layout="@layout/marker_manager"/>
+    <include layout="@layout/weather_marker"/>
 
     <FrameLayout
         android:id="@+id/markerMenu"
