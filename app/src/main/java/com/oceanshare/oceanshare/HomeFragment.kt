@@ -152,6 +152,21 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
                     .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
         }
+
+        // TO REMOVE - Needed to demonstrate SpeedMeter at delivery
+        centerCameraButton.setOnLongClickListener {
+            if (speedMeter.visibility == View.VISIBLE) {
+                speedMeter.visibility = View.INVISIBLE
+            } else if (speedMeter.visibility == View.INVISIBLE) {
+                speedMeter.visibility = View.VISIBLE
+            }
+            if (warningTooFast.visibility == View.VISIBLE) {
+                warningTooFast.visibility = View.INVISIBLE
+            } else if (warningTooFast.visibility == View.INVISIBLE) {
+                warningTooFast.visibility = View.VISIBLE
+            }
+            return@setOnLongClickListener true
+        }
     }
 
     private fun getHour(): String {
