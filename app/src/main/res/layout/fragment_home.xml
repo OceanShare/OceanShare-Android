@@ -21,40 +21,6 @@
         android:layout_height="match_parent"
         mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/longDisplay"
-            android:layout_marginTop="80dp"
-            android:layout_marginStart="10dp"
-            android:text="Long: 6,0338"
-            android:background="@drawable/location_data_background"
-            android:textColor="@color/white"
-            android:paddingVertical="2dp"
-            android:paddingHorizontal="10dp"
-            android:textSize="16dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/latDisplay"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:text="Lat: 43,1342"
-            android:background="@drawable/location_data_background"
-            android:textColor="@color/white"
-            android:paddingVertical="2dp"
-            android:paddingHorizontal="10dp"
-            android:textSize="16dp" />
-
-
-    </LinearLayout>
-
     <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/centerCameraButton"
         android:layout_width="40dp"

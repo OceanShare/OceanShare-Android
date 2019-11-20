@@ -469,11 +469,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         fadeOutAnimation.repeatCount = 0
     }
 
-    private fun setupLocationDisplay() {
-        longDisplay.text = getText(R.string.longitude).toString() + "\t" + "%.4f".format(originLocation.longitude)
-        latDisplay.text = getText(R.string.latitude).toString() + "\t\t" + "%.4f".format(originLocation.latitude)
-    }
-
     private fun closedMarkerManager() {
         val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
@@ -724,7 +719,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         if (lastLocation != null) {
             originLocation = lastLocation
             setCameraPosition(lastLocation)
-            setupLocationDisplay()
         } else {
             locationEngine?.addLocationEngineListener(this)
         }
@@ -766,7 +760,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         location?.let {
             originLocation = location
             //setCameraPosition(location)
-            setupLocationDisplay()
             //WeatherSwag().receiveWeatherData(it.latitude.toString() ,it.longitude.toString())
         }
     }
