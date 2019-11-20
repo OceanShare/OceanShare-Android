@@ -5,7 +5,7 @@
 
     <!-- MapBox credentials -->
 
-    <string name="mapbox_access_token">pk.eyJ1Ijoib2NlYW5zaGFyZSIsImEiOiJjanA3MzBsb2UxY3Q1M3ZtbndyZWJlazduIn0.-SSawSdhpQMdpvCwp-JQ3A</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoib2NlYW5zaGFyZTA2IiwiYSI6ImNqcGZpZXNkcDBiZGEza21sdjlsNDZwd2wifQ.rxDiDLT59nQfaAHEycKskw</string>
 
     <!-- Titles -->
     <string name="app_name">Oceanshare</string>

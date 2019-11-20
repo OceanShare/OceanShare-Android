@@ -6,7 +6,7 @@ import kotlin.math.roundToInt
 
 class WeatherConverter {
     fun getTemperature(temp: Double): String {
-        return ((temp - 32) / 1.8).roundToInt().toString() + "°C"
+        return (((temp - 273.15) * 1.8).roundToInt().toString() + "°C")
     }
 
     fun getSunriseTime(timestamp: Long): String {

@@ -91,6 +91,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         mapView.getMapAsync { mapboxMap ->
             map = mapboxMap
             map.setMinZoomPreference(16.00)
+            map.setStyleUrl("mapbox://styles/oceanshare06/ck36dulje0m7c1cpih4atqiab")
 
             database = FirebaseDatabase.getInstance().reference
 
