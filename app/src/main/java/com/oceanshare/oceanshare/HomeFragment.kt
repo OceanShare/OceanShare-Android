@@ -1,6 +1,5 @@
 package com.oceanshare.oceanshare
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.location.Location
 import android.os.Bundle
@@ -49,7 +48,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
     private lateinit var permissionManager: PermissionsManager
-    private lateinit var originLocation: Location
+    lateinit var originLocation: Location
     private lateinit var mContext: Context
     private lateinit var database: DatabaseReference
 
@@ -142,8 +141,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         setupFadeAnimations()
         setupMarkerMenu()
 
-        //centerCameraImage.setColorFilter(R.color.deep_blue, android.graphics.PorterDuff.Mode.MULTIPLY)
-        //markerMenuImage.setColorFilter(R.color.salmon, android.graphics.PorterDuff.Mode.SRC_ATOP)
         centerCameraButton.setOnClickListener {
             val position = CameraPosition.Builder()
                     .target(LatLng(originLocation.latitude, originLocation.longitude))

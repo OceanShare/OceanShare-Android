@@ -44,6 +44,7 @@ class WeatherData {
     var dt: Int? = null
     var sys: Sys? = null
     var timezone: Int? = null
+    var visibility: Int? = null
     var id: Int? = null
     var name: String? = null
     var cod: Int? = null
@@ -91,10 +92,6 @@ class Sys {
     var message: Double? = null
     var sunrise: Long? = null
     var sunset: Long? = null
-}
-
-class Weather {
-
 }
 
 interface IWeatherApi {
