@@ -1,10 +1,8 @@
 package com.oceanshare.oceanshare
 
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -103,7 +101,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
             initMarker()
 
             map.addOnMapClickListener {
-                if ((currentMarker != null) && isEditingMarkerDescription == false) {
+                if ((currentMarker != null) && !isEditingMarkerDescription) {
                     val pixel = map.projection.toScreenLocation(it)
                     val features = map.queryRenderedFeatures(pixel, "water")
                     //var error = false
@@ -124,7 +122,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
                                 fbAuth.currentUser?.email.toString(), getTimeStamp())
                         database.child("markers").push().setValue(storedMarker)
 
-                        showNotification(getString(R.string.validation_marker_added), false)
+                        showNotification(getString(R.string.validation_marker_added))
 
                     } else {
                         showDialogWith(getString(R.string.error_marker_limit))
@@ -172,21 +170,23 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     private fun getCreationString(timestamp: Long) : String {
         val intervalTime = (System.currentTimeMillis() /1000 - timestamp / 1000)
 
-        if ((intervalTime) < 60) {
-            return (getString(R.string.marker_placed) + " " + intervalTime.toString() + " " +
-                    getString(R.string.seconds))
-        }
-        else if ((intervalTime / 60) < 60) {
-            return (getString(R.string.marker_placed) + " " + (intervalTime / 60).toString() + " " +
-                    getString(R.string.minutes))
-        }
-        else if ((intervalTime / 3600) < 24) {
-            return (getString(R.string.marker_placed) + " " + (intervalTime / 3600).toString() + " " +
-                    getString(R.string.hours))
+        when {
+            (intervalTime) < 60 -> {
+                return (getString(R.string.marker_placed) + " " + intervalTime.toString() + " " +
+                        getString(R.string.seconds))
+            }
+            (intervalTime / 60) < 60 -> {
+                return (getString(R.string.marker_placed) + " " + (intervalTime / 60).toString() + " " +
+                        getString(R.string.minutes))
+            }
+            (intervalTime / 3600) < 24 -> {
+                return (getString(R.string.marker_placed) + " " + (intervalTime / 3600).toString() + " " +
+                        getString(R.string.hours))
+            }
+            else -> return (getString(R.string.marker_placed) + " " + (intervalTime / 86400).toString() + " " +
+                    getString(R.string.days))
         }
 
-        return (getString(R.string.marker_placed) + " " + (intervalTime / 86400).toString() + " " +
-                getString(R.string.days))
     }
 
     private fun getMarkerSetCount(user: String) : Int {
@@ -328,9 +328,9 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
 
         if (userList != "null") {
             val lines = userList.lines()
-            lines.forEach {
+            lines.forEach { line ->
 
-                var userVotes = it.replace("{", "")
+                var userVotes = line.replace("{", "")
                 userVotes = userVotes.replace("}", "")
 
                 if (userVotes.contains(",")) {
@@ -406,7 +406,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         return markerTitle[groupId]!!
     }
 
-    private fun showNotification(notificationMessage: String, error: Boolean) {
+    private fun showNotification(notificationMessage: String) {
         /*if (error) {
             notificationMarker.backgroundTintList = R.color.red
         }*/
@@ -549,51 +549,57 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         deleteMarkerButton.setOnClickListener {
             closedMarkerManager()
             database.child("markers").child(getMarkerKey(mark.id)).removeValue()
-            showNotification(getString(R.string.validation_marker_deleted), false)
+            showNotification(getString(R.string.validation_marker_deleted))
         }
 
         markerManagerLikeButton.setOnClickListener {
 
-            if (checkVoteMarker(markerInformation.vote!!) == 2)
-            {
-                database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
-                        .setValue(markerInformation.upvote + 1)
-                database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
-                        .setValue(markerInformation.downvote - 1)
-                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
-                        .child(currentUser).setValue(1)
-            } else if (checkVoteMarker(markerInformation.vote!!) == 1) {
-                database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
-                        .setValue(markerInformation.upvote - 1)
-                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
-                        .child(currentUser).setValue(0)
-            } else {
-                database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
-                        .setValue(markerInformation.upvote + 1)
-                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
-                        .child(currentUser).setValue(1)
+            when {
+                checkVoteMarker(markerInformation.vote!!) == 2 -> {
+                    database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
+                            .setValue(markerInformation.upvote + 1)
+                    database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
+                            .setValue(markerInformation.downvote - 1)
+                    database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                            .child(currentUser).setValue(1)
+                }
+                checkVoteMarker(markerInformation.vote!!) == 1 -> {
+                    database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
+                            .setValue(markerInformation.upvote - 1)
+                    database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                            .child(currentUser).setValue(0)
+                }
+                else -> {
+                    database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
+                            .setValue(markerInformation.upvote + 1)
+                    database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                            .child(currentUser).setValue(1)
+                }
             }
         }
 
         markerManagerDislikeButton.setOnClickListener {
-            if (checkVoteMarker(markerInformation.vote!!) == 2)
-            {
-                database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
-                        .setValue(markerInformation.downvote - 1)
-                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
-                        .child(currentUser).setValue(0)
-            } else if (checkVoteMarker(markerInformation.vote!!) == 1) {
-                database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
-                        .setValue(markerInformation.downvote + 1)
-                database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
-                        .setValue(markerInformation.upvote - 1)
-                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
-                        .child(currentUser).setValue(2)
-            } else {
-                database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
-                        .setValue(markerInformation.downvote + 1)
-                database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
-                        .child(currentUser).setValue(2)
+            when {
+                checkVoteMarker(markerInformation.vote!!) == 2 -> {
+                    database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
+                            .setValue(markerInformation.downvote - 1)
+                    database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                            .child(currentUser).setValue(0)
+                }
+                checkVoteMarker(markerInformation.vote!!) == 1 -> {
+                    database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
+                            .setValue(markerInformation.downvote + 1)
+                    database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
+                            .setValue(markerInformation.upvote - 1)
+                    database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                            .child(currentUser).setValue(2)
+                }
+                else -> {
+                    database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
+                            .setValue(markerInformation.downvote + 1)
+                    database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
+                            .child(currentUser).setValue(2)
+                }
             }
         }
 
@@ -604,8 +610,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     }
 
     private fun setupWeatherMarkerScreen(weatherResponse: FullWeather) {
-
-        var convert = WeatherConverter()
+        val convert = WeatherConverter()
 
         weatherMarker.temperatureTextView.text = convert.getTemperature(weatherResponse.weather!!.main!!.temp!!)
         weatherMarker.descriptionTextView.text = weatherResponse.weather!!.weather!![0].description
@@ -617,7 +622,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         weatherMarker.windTextView.text = convert.getWindData(weatherResponse.weather!!.wind!!.deg!!, weatherResponse.weather!!.wind!!.speed!!)
         weatherMarker.humidityTextView.text = convert.getHumidity(weatherResponse.weather!!.main!!.humidity!!)
         weatherMarker.uvIndiceTextView.text = convert.getUv(weatherResponse.uv!!.value!!)
-
 
         weatherMarker.visibility = View.VISIBLE
         showHideMarkerMenuButton.visibility = View.GONE
