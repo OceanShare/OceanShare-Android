@@ -119,9 +119,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
                                 currentMarker!!.description, getHour(), fbAuth.currentUser?.uid.toString(),
                                 fbAuth.currentUser?.email.toString(), getTimeStamp())
                         database.child("markers").push().setValue(storedMarker)
-
-                        showNotification(getString(R.string.validation_marker_added))
-
                     } else {
                         showDialogWith(getString(R.string.error_marker_limit))
                     }
@@ -403,61 +400,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         return markerTitle[groupId]!!
     }
 
-    private fun showNotification(notificationMessage: String) {
-        /*if (error) {
-            notificationMarker.backgroundTintList = R.color.red
-        }*/
-        notificationMarker.text = notificationMessage
-
-        val colorFade = ValueAnimator.ofArgb(resources.getColor(R.color.opaque_white), resources.getColor(R.color.opaque_green))
-        colorFade.duration = 3000
-        colorFade.addUpdateListener {
-            topBarStatus.setBackgroundColor(it.animatedValue as Int)
-        }
-
-        val opacityFade = ValueAnimator.ofFloat(1f, 0f)
-        opacityFade.duration = 3000
-        opacityFade.addUpdateListener {
-            notificationLogo.alpha = it.animatedValue as Float
-        }
-
-        val fadeIn = AlphaAnimation(0f, 1f)
-        fadeIn.interpolator = DecelerateInterpolator() //add this
-        fadeIn.duration = 3000
-        fadeIn.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(p0: Animation?) {
-                notificationMarker.visibility = View.VISIBLE
-            }
-
-            override fun onAnimationRepeat(p0: Animation?) {}
-            override fun onAnimationEnd(p0: Animation?) {
-                colorFade.reverse()
-                opacityFade.reverse()
-            }
-        })
-
-        val fadeOut = AlphaAnimation(1f, 0f)
-        fadeOut.interpolator = AccelerateInterpolator()
-        fadeOut.startOffset = 5000
-        fadeOut.duration = 3000
-        fadeOut.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(p0: Animation?) {
-                colorFade.start()
-                opacityFade.start()
-            }
-
-            override fun onAnimationRepeat(p0: Animation?) {}
-            override fun onAnimationEnd(p0: Animation?) {
-                notificationMarker.visibility = View.INVISIBLE
-            }
-        })
-
-        val markerAnimations = AnimationSet(false)
-        markerAnimations.addAnimation(fadeOut)
-        markerAnimations.addAnimation(fadeIn)
-        notificationMarker.startAnimation(markerAnimations)
-    }
-
     private fun setupFadeAnimations() {
         fadeInAnimation = AlphaAnimation(0.0f, 1.0f)
         fadeInAnimation.duration = 500
@@ -539,7 +481,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         deleteMarkerButton.setOnClickListener {
             closedMarkerManager()
             database.child("markers").child(getMarkerKey(mark.id)).removeValue()
-            showNotification(getString(R.string.validation_marker_deleted))
         }
 
         markerManagerLikeButton.setOnClickListener {
@@ -755,8 +696,20 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     override fun onLocationChanged(location: Location?) {
         location?.let {
             originLocation = location
-            //setCameraPosition(location)
-            //WeatherSwag().receiveWeatherData(it.latitude.toString() ,it.longitude.toString())
+            if (originLocation.speed < 1) {
+                speedMeter.visibility = View.INVISIBLE
+                warningTooFast.visibility = View.INVISIBLE
+            } else {
+                val speedKilometersHours = location.speed * 3.6
+                val speedNds = speedKilometersHours * 0.54
+                speedText.text = speedNds.toInt().toString()
+                speedMeter.visibility = View.VISIBLE
+                if (speedNds > 5) {
+                    warningTooFast.visibility = View.VISIBLE
+                } else {
+                    warningTooFast.visibility = View.INVISIBLE
+                }
+            }
         }
     }
 
