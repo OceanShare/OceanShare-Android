@@ -48,11 +48,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
-interface LoadingImplementation {
-    fun onFinishedLoading()
-}
-
-class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, LoadingImplementation {
+class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
     private lateinit var permissionManager: PermissionsManager
@@ -94,13 +90,10 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
     override fun onViewCreated(view: View ,savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupLoadingView()
-
         mapView = view.findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
             map = mapboxMap
-            map.setStyleUrl("mapbox://styles/oceanshare06/ck266a67z0azk1dnzvvj6jz4k")
             map.setMinZoomPreference(16.00)
 
             database = FirebaseDatabase.getInstance().reference
@@ -474,35 +467,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener, Lo
         fadeOutAnimation = AlphaAnimation(1.0f, 0.0f)
         fadeOutAnimation.duration = 500
         fadeOutAnimation.repeatCount = 0
-    }
-
-    private fun setupLoadingView() {
-        waveLoadingView.progressValue = 0
-        LoadingTask(this).execute()
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    inner class LoadingTask(private val listener: LoadingImplementation) : AsyncTask<Void, Void, Void>() {
-        override fun doInBackground(vararg params: Void?): Void? {
-            for (i in 0 until 10) { Thread.sleep(100) }
-            for (i in 0 until 10) {
-                activity?.runOnUiThread {
-                    run { waveLoadingView.progressValue += 10 }
-                }
-                Thread.sleep(100)
-            }
-            return null
-        }
-
-        override fun onPostExecute(result: Void?) {
-            super.onPostExecute(result)
-            listener.onFinishedLoading()
-        }
-    }
-
-    override fun onFinishedLoading() {
-        loadingView.startAnimation(fadeOutAnimation)
-        loadingView.visibility = View.GONE
     }
 
     private fun setupLocationDisplay() {

@@ -196,30 +196,6 @@
         </LinearLayout>
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/loadingView"
-        android:elevation="10dp"
-        android:background="#fafafa"
-        android:layout_width="match_parent"
-        android:visibility="invisible"
-        android:layout_height="match_parent">
-
-        <me.itangqi.waveloadingview.WaveLoadingView
-            android:layout_gravity="center"
-            android:id="@+id/waveLoadingView"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            app:wlv_borderWidth="3dp"
-            app:wlv_borderColor="@android:color/transparent"
-            app:wlv_progressValue="10"
-            app:wlv_shapeType="circle"
-            app:wlv_round_rectangle="true"
-            app:wlv_triangle_direction="north"
-            app:wlv_waveAmplitude="50"
-            app:wlv_waveColor="@color/gradient_start"/>
-
-    </FrameLayout>
-
     <LinearLayout
         android:id="@+id/topBarStatus"
         android:background="@color/opaque_white"
