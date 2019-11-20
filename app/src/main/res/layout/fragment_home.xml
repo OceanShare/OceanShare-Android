@@ -1,19 +1,18 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:gravity="center"
-    android:orientation="vertical"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".HomeFragment">
 
-   <android.support.v7.widget.AppCompatImageView
-        android:layout_gravity="center"
+    <android.support.v7.widget.AppCompatImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"/>
+        android:layout_gravity="center"
+        android:src="@drawable/ic_home" />
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
@@ -22,237 +21,239 @@
         mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/warningTooFast"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="invisible">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_warning" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/longDisplay"
-            android:layout_marginTop="80dp"
-            android:layout_marginStart="10dp"
-            android:text="Long: 6,0338"
-            android:background="@drawable/location_data_background"
-            android:textColor="@color/white"
-            android:paddingVertical="2dp"
-            android:paddingHorizontal="10dp"
-            android:textSize="16dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/latDisplay"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:text="Lat: 43,1342"
-            android:background="@drawable/location_data_background"
-            android:textColor="@color/white"
-            android:paddingVertical="2dp"
-            android:paddingHorizontal="10dp"
-            android:textSize="16dp" />
-
-
+            android:paddingBottom="10dp"
+            android:text="La vitesse est limitée à 5nds\ndans la zone des 300 mètres."
+            android:textAlignment="center"
+            android:textColor="@color/red"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-    <com.mikhaellopez.circularimageview.CircularImageView
+    <android.support.v7.widget.CardView
         android:id="@+id/centerCameraButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_gravity="bottom|start"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="80dp"
-        android:src="@drawable/ic_radar"
-        mapbox:civ_background_color="@color/deep_blue"
-        mapbox:civ_border_color="@color/white"
-        android:scaleType="centerCrop"
-        app:civ_border_width="1dp" />
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="150dp"
+        android:elevation="12dp"
+        app:cardCornerRadius="40dp">
 
-    <com.mikhaellopez.circularimageview.CircularImageView
-        android:id="@+id/showHideMarkerMenuButton"
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_location"
+            android:tint="@color/deep_blue" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/openMarkerMenuButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="80dp"
-        android:src="@drawable/ic_oceanshare_logo"
-        mapbox:civ_background_color="@color/deep_blue"
-        mapbox:civ_border_color="@color/white"
-        app:civ_border_width="1dp" />
+        android:elevation="12dp"
+        app:cardCornerRadius="40dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_pin"
+            android:tint="@color/deep_blue" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/speedMeter"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="80dp"
+        android:elevation="12dp"
+        android:visibility="invisible"
+        app:cardCornerRadius="40dp">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_speed"
+            android:tint="@color/deep_blue" />
+
+        <TextView
+            android:id="@+id/speedText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="4dp"
+            android:text="0"
+            android:textAlignment="center"
+            android:textColor="@color/deep_blue"
+            android:textSize="23sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="Nds"
+            android:textAlignment="center"
+            android:textColor="@color/deep_blue"
+            android:textSize="13sp" />
+    </android.support.v7.widget.CardView>
 
     <LinearLayout
         android:id="@+id/markerDescription"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#BA000000"
         android:elevation="10dp"
-        android:orientation="vertical"
         android:gravity="center"
-        android:background="#BA000000" >
+        android:orientation="vertical"
+        android:visibility="gone">
+
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Vous pouvez ajouter une\ndescription optionnelle à votre\névenement."
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:text="Vous pouvez ajouter une\ndescription optionnelle à votre\névenement."
-            android:layout_width="wrap_content"
-            android:textSize="20sp"
-            android:layout_marginBottom="20dp"
-            android:layout_height="wrap_content"/>
+            android:textSize="20sp" />
+
         <EditText
             android:id="@+id/markerTextDescription"
             android:layout_width="match_parent"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/rounded_edit_text"
             android:hint="What's happening ?"
-            android:background="@drawable/rounded_edit_text"/>
+            android:textAlignment="center" />
 
         <LinearLayout
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
             <Button
                 android:id="@+id/submitMarkerDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/ok_button"
                 android:text="@string/button_submit"
-                android:textColor="@color/white"
-                android:background="@drawable/ok_button"/>
+                android:textColor="@color/white" />
+
             <View
                 android:layout_width="10dp"
-                android:layout_height="0dp"/>
+                android:layout_height="0dp" />
+
             <Button
                 android:id="@+id/cancelMarkerDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="30dp"
                 android:layout_weight="1"
-                android:textColor="@color/white"
+                android:background="@drawable/cancel_button"
                 android:text="@string/button_cancel"
-                android:background="@drawable/cancel_button"/>
+                android:textColor="@color/white" />
         </LinearLayout>
     </LinearLayout>
 
-    <include layout="@layout/marker_manager"/>
-    <include layout="@layout/weather_marker"/>
+    <include layout="@layout/marker_manager" />
+
+    <include layout="@layout/weather_marker" />
 
     <FrameLayout
         android:id="@+id/markerMenu"
-        android:visibility="gone"
-        android:elevation="10dp"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginBottom="50dp"
-        android:layout_height="match_parent" >
+        android:elevation="10dp"
+        android:visibility="gone">
+
         <View
             android:id="@+id/markerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#BA000000" />
+
         <LinearLayout
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:text="Sélectionnez un évenement à poser sur\nla carte. Tous les utilisateurs le verront."
-                android:layout_width="wrap_content"
-                android:textSize="20sp"
-                android:layout_marginBottom="20dp"
-                android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/closeMarkerMenuButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginBottom="30dp"
+                android:elevation="12dp"
+                android:gravity="center"
+                app:cardCornerRadius="40dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_close"
+                    android:tint="@color/deep_blue" />
+            </android.support.v7.widget.CardView>
+
             <GridView
                 android:id="@+id/markerGridView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:cacheColorHint="@color/white"
+                android:layout_gravity="center"
                 android:layout_marginStart="50dp"
                 android:layout_marginEnd="50dp"
-                android:verticalSpacing="20dp"
+                android:layout_marginBottom="20dp"
+                android:cacheColorHint="@color/white"
+                android:gravity="center"
                 android:horizontalSpacing="10dp"
-                android:layout_gravity="center"
                 android:numColumns="3"
                 android:padding="5dp"
                 android:scrollbars="none"
                 android:stretchMode="columnWidth"
-                android:gravity="center" />
-            <TextView
-                android:layout_marginTop="20dp"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_horizontal"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:text="Choisissez l'évenement 'météo' pour en\nsavoir plus sur une destination."
-                android:layout_width="wrap_content"
-                android:textSize="20sp"
-                android:layout_marginBottom="20dp"
-                android:layout_height="wrap_content"/>
-            <include android:id="@+id/meteoMarker" layout="@layout/marker_entry"/>
+                android:verticalSpacing="20dp" />
+
+            <include
+                android:id="@+id/meteoMarker"
+                layout="@layout/marker_entry" />
         </LinearLayout>
     </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/loadingView"
-        android:elevation="10dp"
-        android:background="#fafafa"
-        android:layout_width="match_parent"
-        android:visibility="invisible"
-        android:layout_height="match_parent">
-
-        <me.itangqi.waveloadingview.WaveLoadingView
-            android:layout_gravity="center"
-            android:id="@+id/waveLoadingView"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            app:wlv_borderWidth="3dp"
-            app:wlv_borderColor="@android:color/transparent"
-            app:wlv_progressValue="10"
-            app:wlv_shapeType="circle"
-            app:wlv_round_rectangle="true"
-            app:wlv_triangle_direction="north"
-            app:wlv_waveAmplitude="50"
-            app:wlv_waveColor="@color/gradient_start"/>
-
-    </FrameLayout>
-
-    <LinearLayout
-        android:id="@+id/topBarStatus"
-        android:background="@color/opaque_white"
-        android:layout_width="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:gravity="center"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_height="70dp">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:layout_height="match_parent" >
-            <ImageView
-                android:id="@+id/notificationLogo"
-                android:src="@drawable/logo"
-                android:gravity="center"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center_vertical"
-                android:layout_width="120dp"
-                android:layout_height="40dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/notificationMarker"
-                android:gravity="center"
-                android:layout_centerInParent="true"
-                android:text="@string/validation_marker_added"
-                android:textStyle="bold"
-                android:textSize="28dp"
-                android:textColor="@color/white"
-                android:visibility="invisible"/>
-        </RelativeLayout>
-    </LinearLayout>
 </FrameLayout>

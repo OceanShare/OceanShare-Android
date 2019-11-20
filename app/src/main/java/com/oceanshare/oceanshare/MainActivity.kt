@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,6 +52,9 @@ class MainActivity : AppCompatActivity() {
                     .hide(profileFragment)
                     .commit()
         } else if (id == R.id.navigation_dashboard) {
+            GlobalScope.launch(Dispatchers.Main) {
+                meteoFragment.fetchMeteo(homeFragment.originLocation)
+            }
             supportFragmentManager.beginTransaction()
                     .show(meteoFragment)
                     .hide(homeFragment)
