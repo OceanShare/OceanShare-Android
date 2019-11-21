@@ -57,6 +57,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     private var locationEngine: LocationEngine? = null
     private var locationComponent: LocationComponent? = null
     private var markerHashMap: HashMap<String, MarkerData> = HashMap()
+    private var userHashMap: HashMap<String, UserData> = HashMap()
     private var isEditingMarkerDescription = false
     private var isWeatherMarker = false
     private var apiService = IWeatherApi()
@@ -98,6 +99,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
             enableLocation()
 
             initMarker()
+            initUsers()
 
             map.addOnMapClickListener {
                 if ((currentMarker != null) && !isEditingMarkerDescription) {
@@ -331,6 +333,110 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
                 })
     }
 
+
+
+    private fun initUsers() {
+        database.child("users").addChildEventListener(
+                object : ChildEventListener {
+
+                    override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                        val key = p0.key.toString()
+                        if (!userHashMap.containsKey(key) && p0.exists() && p0.child("location").exists()) {
+
+                            val userLatitude = p0.child("location").child("latitude").value.toString().toDouble()
+                            val userLongitude = p0.child("location").child("longitude").value.toString().toDouble()
+                            val userName = p0.child("name").value.toString()
+                            val userShipName = p0.child("ship_name").value.toString()
+                            val userActive = p0.child("preferences").child("user_active").value.toString().toBoolean()
+
+
+                            val iconFactory = IconFactory.getInstance(context!!)
+                            val icon = iconFactory.fromResource(findMarkerIconMap(9))
+                            
+
+                            if (userActive) {
+                                 map.addMarker(MarkerOptions()
+                                        .position(LatLng(userLatitude, userLongitude))
+                                        .icon(icon)
+                                )
+                            }
+
+                            userHashMap[key] = UserData( 1, userName, userLatitude, userLongitude,
+                                    userShipName, userActive)
+                        }
+                    }
+
+                    override fun onChildRemoved(p0: DataSnapshot) {
+                        val key = p0.key.toString()
+
+                        if (markerHashMap.containsKey(key) && p0.exists()) {
+                            if (markerManagerId.text == key) {
+                                markerManager.visibility = View.GONE
+                                closedMarkerManager()
+                            }
+
+                            map.getAnnotation(markerHashMap[key]?.id!!)?.remove()
+                            markerHashMap.remove(key)
+                        }
+                    }
+
+                    override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                        val key = p0.key.toString()
+
+
+
+                        if (markerHashMap.containsKey(key) && p0.exists() &&
+                                (fillLikedArray(p0.child("contributors").value.toString()) != markerHashMap[key]?.vote)) {
+                            map.markers.forEach {
+                                if (getMarkerKey(it.id) == key) {
+                                    markerHashMap[key]?.vote = fillLikedArray(p0.child("contributors").value.toString())
+                                }
+                            }
+                        }
+
+                        if (markerHashMap.containsKey(key) && p0.exists() &&
+                                (p0.child("description").value.toString() != markerHashMap[key]?.description)) {
+                            map.markers.forEach {
+                                if (getMarkerKey(it.id) == key) {
+                                    markerHashMap[key]?.description = p0.child("description").value.toString()
+                                    it.snippet = p0.child("description").value.toString()
+                                    markerManagerDescription.text = markerHashMap[key]?.description
+                                }
+                            }
+                        }
+
+                        if (markerHashMap.containsKey(key) && p0.exists() &&
+                                (p0.child("upvote").value.toString().toInt() != markerHashMap[key]?.upvote)) {
+                            map.markers.forEach {
+                                if (getMarkerKey(it.id) == key) {
+                                    markerHashMap[key]?.upvote = p0.child("upvote").value.toString().toInt()
+                                    markerManagerLikeButton.text = markerHashMap[key]?.upvote.toString()
+                                }
+                            }
+                        }
+
+                        if (markerHashMap.containsKey(key) && p0.exists() &&
+                                (p0.child("downvote").value.toString().toInt() != markerHashMap[key]?.downvote)) {
+                            map.markers.forEach {
+                                if (getMarkerKey(it.id) == key) {
+                                    markerHashMap[key]?.downvote = p0.child("downvote").value.toString().toInt()
+                                    markerManagerDislikeButton.text = markerHashMap[key]?.downvote.toString()
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+
+                    override fun onCancelled(p0: DatabaseError) {
+                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                    }
+                })
+    }
+
+
     private fun fillLikedArray(userList: String): MutableList<MarkerVote> {
         val vote: MutableList<MarkerVote> = mutableListOf()
 
@@ -378,6 +484,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         markerImage[6] = R.drawable.marker_map_buoy
         markerImage[7] = R.drawable.marker_map_cost_guard
         markerImage[8] = R.drawable.marker_map_fishes
+        markerImage[9] = R.drawable.mini_yatcht
 
         return markerImage[groupId]!!
     }
