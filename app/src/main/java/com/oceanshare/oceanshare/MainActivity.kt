@@ -7,7 +7,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,27 +44,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun switchFragments(id: Int) : Boolean {
-        if (id == R.id.navigation_home) {
-            supportFragmentManager.beginTransaction()
-                    .show(homeFragment)
-                    .hide(meteoFragment)
-                    .hide(profileFragment)
-                    .commit()
-        } else if (id == R.id.navigation_dashboard) {
-            GlobalScope.launch(Dispatchers.Main) {
-                meteoFragment.fetchMeteo(homeFragment.originLocation)
+        when (id) {
+            R.id.navigation_home -> {
+                supportFragmentManager.beginTransaction()
+                        .show(homeFragment)
+                        .hide(meteoFragment)
+                        .hide(profileFragment)
+                        .commit()
             }
-            supportFragmentManager.beginTransaction()
-                    .show(meteoFragment)
-                    .hide(homeFragment)
-                    .hide(profileFragment)
-                    .commit()
-        } else if (id == R.id.navigation_profile) {
-            supportFragmentManager.beginTransaction()
-                    .show(profileFragment)
-                    .hide(homeFragment)
-                    .hide(meteoFragment)
-                    .commit()
+            R.id.navigation_dashboard -> {
+                GlobalScope.launch(Dispatchers.Main) {
+                    meteoFragment.fetchMeteo(homeFragment.originLocation)
+                }
+                supportFragmentManager.beginTransaction()
+                        .show(meteoFragment)
+                        .hide(homeFragment)
+                        .hide(profileFragment)
+                        .commit()
+            }
+            R.id.navigation_profile -> {
+                supportFragmentManager.beginTransaction()
+                        .show(profileFragment)
+                        .hide(homeFragment)
+                        .hide(meteoFragment)
+                        .commit()
+            }
         }
         return true
     }
