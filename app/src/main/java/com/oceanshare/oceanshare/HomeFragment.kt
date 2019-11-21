@@ -663,6 +663,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     private fun setupWeatherMarkerScreen(weatherResponse: FullWeather) {
         val convert = WeatherConverter()
 
+        weatherMarker.weatherMarkerIcon.setImageResource(convert.getWeatherIcon(weatherResponse.weather?.weather!![0].id!!))
         weatherMarker.temperatureTextView.text = convert.getTemperature(weatherResponse.weather?.main?.temp)
         weatherMarker.descriptionTextView.text = weatherResponse.weather?.weather!![0].description
         weatherMarker.latitudeTextView.text = weatherResponse.weather!!.coord!!.lat.toString()
