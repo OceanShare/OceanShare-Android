@@ -17,13 +17,13 @@ class MainActivity : AppCompatActivity() {
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_home -> {
-                return@OnNavigationItemSelectedListener switchFragments(item.itemId)//loadFragment(homeFragment)
+                return@OnNavigationItemSelectedListener switchFragments(item.itemId)
             }
             R.id.navigation_dashboard -> {
                 return@OnNavigationItemSelectedListener switchFragments(item.itemId)
             }
             R.id.navigation_profile -> {
-                return@OnNavigationItemSelectedListener switchFragments(item.itemId)//loadFragment(profileFragment)
+                return@OnNavigationItemSelectedListener switchFragments(item.itemId)
             }
         }
         false

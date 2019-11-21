@@ -663,16 +663,17 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     private fun setupWeatherMarkerScreen(weatherResponse: FullWeather) {
         val convert = WeatherConverter()
 
-        weatherMarker.temperatureTextView.text = convert.getTemperature(weatherResponse.weather!!.main!!.temp!!)
-        weatherMarker.descriptionTextView.text = weatherResponse.weather!!.weather!![0].description
+        weatherMarker.temperatureTextView.text = convert.getTemperature(weatherResponse.weather?.main?.temp)
+        weatherMarker.descriptionTextView.text = weatherResponse.weather?.weather!![0].description
         weatherMarker.latitudeTextView.text = weatherResponse.weather!!.coord!!.lat.toString()
         weatherMarker.longitudeTextView.text = weatherResponse.weather!!.coord!!.lon.toString()
-        weatherMarker.sunriseTextView.text = convert.getSunriseTime(weatherResponse.weather!!.sys!!.sunrise!!)
-        weatherMarker.sunsetTextView.text = convert.getSunsetTime(weatherResponse.weather!!.sys!!.sunset!!)
-        weatherMarker.cloudCoverTextView.text = convert.getCloudyValue(weatherResponse.weather!!.clouds!!.all!!)
-        weatherMarker.windTextView.text = convert.getWindData(weatherResponse.weather!!.wind!!.deg!!, weatherResponse.weather!!.wind!!.speed!!)
-        weatherMarker.humidityTextView.text = convert.getHumidity(weatherResponse.weather!!.main!!.humidity!!)
-        weatherMarker.uvIndiceTextView.text = convert.getUv(weatherResponse.uv!!.value!!)
+        weatherMarker.sunriseTextView.text = convert.getTime(weatherResponse.weather?.sys?.sunrise)
+        weatherMarker.sunsetTextView.text = convert.getTime(weatherResponse.weather?.sys?.sunset)
+        weatherMarker.cloudCoverTextView.text = convert.getCloudyValue(weatherResponse.weather?.clouds?.all)
+        weatherMarker.windTextView.text = convert.getWindData(weatherResponse.weather?.wind?.deg, weatherResponse.weather?.wind?.speed)
+        weatherMarker.humidityTextView.text = convert.getHumidity(weatherResponse.weather?.main?.humidity)
+        weatherMarker.uvIndiceTextView.text = convert.getUv(weatherResponse.uv?.value)
+        weatherMarker.visibilityTextView.text = convert.getVisibility(weatherResponse.weather?.visibility)
 
         weatherMarker.visibility = View.VISIBLE
         openMarkerMenuButton.visibility = View.GONE

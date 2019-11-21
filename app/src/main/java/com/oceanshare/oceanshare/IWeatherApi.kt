@@ -1,30 +1,12 @@
 package com.oceanshare.oceanshare
 
-import android.annotation.SuppressLint
-import android.graphics.drawable.GradientDrawable
 import android.os.StrictMode
-import android.support.v7.app.AlertDialog
-import android.util.Log
-import android.view.LayoutInflater
-import kotlinx.android.synthetic.main.dialog_not_implemented.view.*
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import okhttp3.*
-import org.json.JSONException
-import org.json.JSONObject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
-import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.roundToInt
 
 class UV {
     var lat: Double? = null
