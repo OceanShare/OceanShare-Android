@@ -43,7 +43,7 @@ class ProfileFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val user = dataSnapshot.getValue(User::class.java)
                 if (user?.name != null) {
-                    username_text_view.text = user.name
+                    username_text_view.text = "Bonjour " + user.name + " !"
                 }
                 if (user?.shipName != null) {
                     ship_name_text_view.text = user.shipName
