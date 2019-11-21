@@ -22,7 +22,7 @@
 
         <TextView
             android:layout_centerHorizontal="true"
-            android:text="@string/informations"
+            android:text="@string/account"
             android:textSize="26sp"
             android:textStyle="bold"
             android:textColor="@color/gradient_end"
@@ -32,7 +32,7 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -121,9 +121,10 @@
             android:contentDescription="@string/oceanshare_logo" />
 
         <TextView
+            android:layout_marginTop="5dp"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
-            android:text="Ouais les infos lol"
+            android:text="@string/legal_mentions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -137,7 +138,6 @@
             android:textStyle="bold"
             android:textSize="22sp"
             android:layout_height="wrap_content" />
-
     </LinearLayout>
 
 </LinearLayout>

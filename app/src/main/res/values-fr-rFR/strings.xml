@@ -116,4 +116,6 @@
     <string name="visibility">Visibilité</string>
     <string name="uv_indice">Indice UV</string>
     <string name="edit">Edit</string>
+    <string name="account">Compte</string>
+    <string name="legal_mentions">Les données des utilisateurs sont confidentielles et ne\ngénèrent aucune transaction de la part d\'OceanShare.</string>
 </resources>
