@@ -3,18 +3,14 @@ package com.oceanshare.oceanshare
 import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_meteo.*
-import java.lang.Math.round
-import java.sql.Timestamp
-import java.util.*
-import kotlin.math.roundToLong
 
 class MeteoFragment : Fragment() {
     private var apiService = IWeatherApi()
+    private var weatherConverter = WeatherConverter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -25,26 +21,24 @@ class MeteoFragment : Fragment() {
     suspend fun fetchMeteo(location: Location) {
         val meteo = apiService.getWeather(location.latitude.toString(), location.longitude.toString())
         meteoImage.setImageResource(analyseDescription(meteo.weather!!.weather!![0]))
-        meteoTemp.text = (meteo.weather!!.main!!.temp!! - 273.15).toInt().toString() + " °C"
-        meteoDescription.text = meteo.weather!!.weather!![0].description!!.capitalize()
+        meteoTemp.text = weatherConverter.getTemperature(meteo.weather!!.main!!.temp!!)
+        meteo.weather?.weather?.let {
+            meteoDescription.text = it[0].description?.capitalize()
+        }
         meteoLongitute.text = location.longitude.toString()
         meteoLatitude.text = location.latitude.toString()
-        val sunriseTimestamp = Timestamp(meteo.weather!!.sys!!.sunrise!!)
-        val sunrise = Date(sunriseTimestamp.time)
-        meteoSunrise.text = "HH:MM"//sunrise.toString()
-        val sunsetTimestamp = Timestamp(meteo.weather!!.sys!!.sunset!!)
-        val sunset = Date(sunsetTimestamp.time)
-        meteoSunset.text = "HH:MM"//sunset.minutes.toString()
-        meteoRainRisk.text = meteo.weather!!.clouds!!.all.toString() + " %"
+        meteoSunrise.text = weatherConverter.getTime(meteo.weather?.sys?.sunrise)
+        meteoSunset.text = weatherConverter.getTime(meteo.weather?.sys?.sunset)
+        meteoRainRisk.text = weatherConverter.getCloudyValue(meteo.weather?.clouds?.all)
         meteoWaterTemp.text = "--"
-        meteoWind.text = analyseWindDirection(meteo.weather!!.wind!!.deg!!) + " " + meteo.weather!!.wind!!.speed.toString() + "km/h"
-        meteoHumidity.text = meteo.weather!!.main!!.humidity.toString() + " %"
-        meteoVisibility.text = (meteo.weather!!.visibility!! / 1000).toString() + " km"
-        meteoUVIndice.text = meteo.uv!!.value.toString() + " (" + getUVSuffix(meteo.uv!!.value!!) + ")"
+        meteoWind.text = weatherConverter.getWindData(meteo.weather?.wind?.deg, meteo.weather?.wind?.speed)
+        meteoHumidity.text = weatherConverter.getHumidity(meteo.weather?.main?.humidity)
+        meteoVisibility.text = weatherConverter.getVisibility(meteo.weather?.visibility)
+        meteoUVIndice.text = weatherConverter.getUv(meteo.uv?.value)
     }
 
-    fun analyseDescription(weather: WeatherData2): Int {
-        var choosenOne: Int
+    private fun analyseDescription(weather: WeatherData2): Int {
+        val choosenOne: Int
         val id = weather.id!!
 
         if (id in 0..232) {
@@ -74,17 +68,8 @@ class MeteoFragment : Fragment() {
 
     }
 
-    private fun getUVSuffix(uv: Double): String {
-        if (uv <= 2) {
-            return "Bas"
-        } else if (uv >= 6) {
-            return "Haut"
-        }
-        return "Moyen"
-    }
-
     private fun analyseWindDirection(degrees: Double): String {
-        var windDirection: String
+        val windDirection: String
 
         if (degrees in 348.75..360.0) {
             windDirection = "N "
@@ -121,7 +106,7 @@ class MeteoFragment : Fragment() {
         } else if (326.25 < degrees && degrees < 348.75) {
             windDirection = "NNW "
         } else {
-            windDirection  = ""
+            windDirection = ""
         }
         return windDirection
     }
