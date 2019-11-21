@@ -43,7 +43,7 @@ class ProfileFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val user = dataSnapshot.getValue(User::class.java)
                 if (user?.name != null) {
-                    username_text_view.text = user.name
+                    username_text_view.text = "Bonjour " + user.name + " !"
                 }
                 if (user?.shipName != null) {
                     ship_name_text_view.text = user.shipName
@@ -60,9 +60,11 @@ class ProfileFragment : Fragment() {
             mDatabase.child("users").child(uid).addListenerForSingleValueEvent(userListener)
         }
 
+        /*
         view.logout_button.setOnClickListener {
             logout()
         }
+         */
 
         view.settings_button.setOnClickListener {
             val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_not_implemented, null)
@@ -97,7 +99,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun logout() {
-        logout_button.startAnimation()
+        // logout_button.startAnimation()
         val account = GoogleSignIn.getLastSignedInAccount(activity)
         fbAuth.signOut()
 
@@ -124,7 +126,7 @@ class ProfileFragment : Fragment() {
     private fun redirectToConnection() {
         val authenticationIntent = Intent(activity, AuthenticationActivity::class.java)
         startActivity(authenticationIntent)
-        logout_button.dispose()
+        // logout_button.dispose()
         activity?.finish()
     }
 }
