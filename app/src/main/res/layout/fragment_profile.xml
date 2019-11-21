@@ -214,6 +214,22 @@
         </LinearLayout>
     </LinearLayout>
 
+    <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+        android:id="@+id/logout_button"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/regular_margin"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/request_button"
+        android:elevation="10dp"
+        android:text="@string/action_logout"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        app:initialCornerAngle="100dp"
+        app:spinning_bar_color="@color/white"
+        app:spinning_bar_padding="6dp"
+        app:spinning_bar_width="4dp" />
     <!--
     <ScrollView
         android:layout_width="match_parent"

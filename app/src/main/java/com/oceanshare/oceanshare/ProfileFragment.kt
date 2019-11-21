@@ -60,11 +60,9 @@ class ProfileFragment : Fragment() {
             mDatabase.child("users").child(uid).addListenerForSingleValueEvent(userListener)
         }
 
-        /*
         view.logout_button.setOnClickListener {
             logout()
         }
-         */
 
         view.settings_button.setOnClickListener {
             val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_not_implemented, null)
@@ -99,7 +97,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun logout() {
-        // logout_button.startAnimation()
+        logout_button.startAnimation()
         val account = GoogleSignIn.getLastSignedInAccount(activity)
         fbAuth.signOut()
 
@@ -126,7 +124,7 @@ class ProfileFragment : Fragment() {
     private fun redirectToConnection() {
         val authenticationIntent = Intent(activity, AuthenticationActivity::class.java)
         startActivity(authenticationIntent)
-        // logout_button.dispose()
+        logout_button.dispose()
         activity?.finish()
     }
 }
