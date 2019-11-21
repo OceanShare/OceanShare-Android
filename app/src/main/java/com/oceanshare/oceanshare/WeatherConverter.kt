@@ -98,4 +98,35 @@ class WeatherConverter {
         }
         return "--"
     }
+
+    fun getWeatherIcon(weatherId: Int): Int {
+        val choosenOne: Int
+        val id = weatherId
+
+        if (id in 0..232) {
+            choosenOne = R.drawable.storm
+        } else if (id in 300..321 || id in 520..531) {
+            choosenOne = R.drawable.light_rain
+        } else if (id in 500..504) {
+            choosenOne = R.drawable.rain
+        } else if (id == 511 || id in 600..601 || id in 615..622) {
+            choosenOne = R.drawable.snowflake
+        } else if (id in 611..613) {
+            choosenOne = R.drawable.hail
+        } else if (id in 701..771) {
+            choosenOne = R.drawable.cloud
+        } else if (id == 781) {
+            choosenOne = R.drawable.tornado
+        } else if (id == 800) {
+            choosenOne = R.drawable.sun
+        } else if (id == 801 || id == 802) {
+            choosenOne = R.drawable.cloudy
+        } else if (id == 803 || id == 804) {
+            choosenOne = R.drawable.clouds
+        } else {
+            choosenOne = R.drawable.thermometer
+        }
+        return choosenOne
+
+    }
 }
