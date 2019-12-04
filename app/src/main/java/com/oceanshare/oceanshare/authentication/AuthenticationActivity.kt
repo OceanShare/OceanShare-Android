@@ -18,7 +18,8 @@ import kotlinx.android.synthetic.main.activity_connection.*
 class AuthenticationActivity : AppCompatActivity(),
         RegisterFragment.OnFragmentInteractionListener,
         LoginFragment.OnFragmentInteractionListener,
-        LoginFragment.Callback, RegisterFragment.Callback {
+        WalkthroughFragment.OnFragmentInteractionListener,
+        LoginFragment.Callback, RegisterFragment.Callback, WalkthroughFragment.Callback {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
@@ -60,17 +61,21 @@ class AuthenticationActivity : AppCompatActivity(),
         container.adapter = mSectionsPagerAdapter
 
         container.clipToPadding = false
-        container.setPadding(100, 0, 100, 0)
+        //container.setPadding(100, 0, 100, 0)
         container.pageMargin = 0
     }
 
     override fun showRegistrationPage() {
-        container.setCurrentItem(1, true)
+        container.setCurrentItem(2, true)
     }
 
     override fun showLoginPage() {
-        container.setCurrentItem(0, true)
+        container.setCurrentItem(1, true)
     }
+
+    //override fun showWalkthroughPage() {
+    //    container.setCurrentItem(0, true)
+    //}
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -103,13 +108,14 @@ class AuthenticationActivity : AppCompatActivity(),
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             return when (position) {
-                0 -> LoginFragment.newInstance()
+                0 -> WalkthroughFragment.newInstance()
+                1 -> LoginFragment.newInstance()
                 else -> RegisterFragment.newInstance()
             }
         }
 
         override fun getCount(): Int {
-            return 2
+            return 3
         }
     }
 }

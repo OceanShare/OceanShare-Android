@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:overScrollMode="never"
+    android:paddingStart="35dp"
+    android:paddingEnd="35dp"
     tools:context=".authentication.RegisterFragment">
 
     <LinearLayout
@@ -14,12 +16,12 @@
         android:orientation="vertical">
 
         <ImageView
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="20dp"
-            android:src="@drawable/logo"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="300dp"
-            android:layout_height="100dp" />
+            android:src="@drawable/logo" />
 
         <LinearLayout
             android:id="@+id/email_register_form"
@@ -33,64 +35,6 @@
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:padding="@dimen/regular_padding">
-
-            <!--
-
-             FirstName text field
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginStart="5dp"
-                    android:layout_toStartOf="@+id/name_ic"
-                    android:labelFor="@+id/name"
-                    android:text="@string/prompt_name"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/form_field_hint_text_size" />
-
-                <ImageView
-                    android:id="@+id/name_ic"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="5dp"
-                    android:contentDescription="@string/prompt_name"
-                    android:src="@drawable/ic_name" />
-
-            </RelativeLayout>
-
-            <com.oceanshare.oceanshare.CustomTextInputLayout
-                android:id="@+id/name_til"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:errorEnabled="true"
-                app:errorTextAppearance="@style/til_error_appearance">
-
-                <EditText
-                    android:id="@+id/name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:background="@drawable/rounded_edit_text"
-                    android:inputType="textCapSentences"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="@color/white"
-                    tools:ignore="Autofill" />
-            </com.oceanshare.oceanshare.CustomTextInputLayout>
-
-            <View
-                android:layout_width="5dp"
-                android:layout_height="5dp" />
-
-            -->
 
             <!-- Email text field -->
             <RelativeLayout
@@ -179,10 +123,10 @@
                 android:id="@+id/password_til"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@color/white"
                 app:errorEnabled="true"
-                app:errorTextAppearance="@style/til_error_appearance">
+                app:errorTextAppearance="@style/til_error_appearance"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/white">
 
                 <EditText
                     android:id="@+id/password"
@@ -237,10 +181,10 @@
                 android:id="@+id/password_confirmation_til"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@color/white"
                 app:errorEnabled="true"
-                app:errorTextAppearance="@style/til_error_appearance">
+                app:errorTextAppearance="@style/til_error_appearance"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/white">
 
                 <EditText
                     android:id="@+id/password_confirmation"
@@ -263,103 +207,57 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="10dp"
             android:baselineAligned="false"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
 
-            <com.dd.ShadowLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
-                android:layout_weight="1"
-                app:sl_cornerRadius="50dp"
-                app:sl_dx="0dp"
-                app:sl_dy="4dp"
-                app:sl_shadowColor="#46939393"
-                app:sl_shadowRadius="4dp">
+            <ImageButton
+                android:id="@+id/google_login_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/ic_google"
+                android:contentDescription="@string/description_google_button" />
 
-                <ImageButton
-                    android:id="@+id/google_login_button"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/ic_google"
-                    android:contentDescription="@string/description_google_button" />
-            </com.dd.ShadowLayout>
 
-            <com.dd.ShadowLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
-                android:layout_weight="1"
-                app:sl_cornerRadius="50dp"
-                app:sl_dx="0dp"
-                app:sl_dy="4dp"
-                app:sl_shadowColor="#46939393"
-                app:sl_shadowRadius="4dp">
-
-                <FrameLayout
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <com.facebook.login.widget.LoginButton
+                    android:id="@+id/facebook_login_button"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-
-                    <com.facebook.login.widget.LoginButton
-                        android:id="@+id/facebook_login_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="30dp"
-                        android:layout_marginBottom="30dp"
-                        android:visibility="gone" />
-
-                    <ImageButton
-                        android:id="@+id/true_facebook_login_button"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/ic_facebook"
-                        android:contentDescription="@string/description_facebook_button" />
-
-                </FrameLayout>
-
-            </com.dd.ShadowLayout>
-
-            <com.dd.ShadowLayout
-                android:layout_width="1dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
-                android:layout_weight="4"
-                app:sl_cornerRadius="60dp"
-                app:sl_dx="0dp"
-                app:sl_dy="4dp"
-                app:sl_shadowColor="#46939393"
-                app:sl_shadowRadius="8dp">
-
-                <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
-                    android:id="@+id/email_register_button"
-                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="5dp"
-                    android:background="@drawable/request_button"
-                    android:text="@string/action_register"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/connection_button_text_size"
-                    android:textStyle="bold"
-                    app:initialCornerAngle="100dp"
-                    app:spinning_bar_color="@color/white"
-                    app:spinning_bar_padding="6dp"
-                    app:spinning_bar_width="4dp" />
-            </com.dd.ShadowLayout>
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:visibility="gone" />
+                <ImageButton
+                    android:id="@+id/true_facebook_login_button"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/ic_facebook"
+                    android:contentDescription="@string/description_facebook_button" />
+            </FrameLayout>
+
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                android:id="@+id/email_register_button"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/round_blue_button"
+                android:text="@string/action_register"
+                android:textColor="@color/white"
+                android:textSize="@dimen/connection_button_text_size"
+                android:textStyle="bold"
+                app:initialCornerAngle="100dp"
+                app:spinning_bar_color="@color/white"
+                app:spinning_bar_padding="6dp"
+                app:spinning_bar_width="4dp" />
 
         </LinearLayout>
 
