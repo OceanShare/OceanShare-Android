@@ -21,7 +21,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="20dp"
-            android:src="@drawable/logo" />
+            android:src="@drawable/logo"
+            tools:ignore="ContentDescription" />
 
         <LinearLayout
             android:id="@+id/email_register_form"
@@ -227,6 +228,7 @@
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
+
                 <com.facebook.login.widget.LoginButton
                     android:id="@+id/facebook_login_button"
                     android:layout_width="wrap_content"
@@ -235,6 +237,7 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="30dp"
                     android:visibility="gone" />
+
                 <ImageButton
                     android:id="@+id/true_facebook_login_button"
                     android:layout_width="50dp"

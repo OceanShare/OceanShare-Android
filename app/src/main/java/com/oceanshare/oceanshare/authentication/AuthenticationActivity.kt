@@ -2,18 +2,20 @@ package com.oceanshare.oceanshare.authentication
 
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.oceanshare.oceanshare.MainActivity
 import com.oceanshare.oceanshare.R
 import kotlinx.android.synthetic.main.activity_connection.*
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 
 class AuthenticationActivity : AppCompatActivity(),
         RegisterFragment.OnFragmentInteractionListener,
@@ -38,6 +40,13 @@ class AuthenticationActivity : AppCompatActivity(),
         }
 
         setupSectionsPagerAdapter()
+        KeyboardVisibilityEvent.setEventListener(this) { isOpen ->
+            if (isOpen) {
+                dotsIndicator.visibility = View.GONE
+            } else {
+                dotsIndicator.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun redirectToHomePage() {
@@ -63,6 +72,9 @@ class AuthenticationActivity : AppCompatActivity(),
         container.clipToPadding = false
         //container.setPadding(100, 0, 100, 0)
         container.pageMargin = 0
+
+        dotsIndicator.setViewPager(container)
+        container.adapter?.registerDataSetObserver(dotsIndicator.dataSetObserver)
     }
 
     override fun showRegistrationPage() {
@@ -73,9 +85,13 @@ class AuthenticationActivity : AppCompatActivity(),
         container.setCurrentItem(1, true)
     }
 
-    //override fun showWalkthroughPage() {
-    //    container.setCurrentItem(0, true)
-    //}
+    override fun toggleDotIndicatorVisibility() {
+        if (dotsIndicator.visibility == View.VISIBLE) {
+            dotsIndicator.visibility = View.GONE
+        } else {
+            dotsIndicator.visibility = View.VISIBLE
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.

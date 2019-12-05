@@ -1,89 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".authentication.WalkthroughFragment">
 
     <FrameLayout
-        android:orientation="vertical"
-        android:background="#FFFFFF"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <ImageView
-            android:layout_gravity="center"
-            android:src="@drawable/logo"
-            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/logo"
+            tools:ignore="ContentDescription" />
 
         <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
             android:id="@+id/buttonStart"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="80dp"
             android:background="@drawable/round_blue_button"
             android:text="@string/start"
             android:textColor="@color/white"
             android:textSize="@dimen/connection_button_text_size"
             android:textStyle="bold"
-            android:layout_gravity="center_horizontal|bottom"
             app:initialCornerAngle="100dp"
             app:spinning_bar_color="@color/white"
             app:spinning_bar_padding="6dp"
             app:spinning_bar_width="4dp" />
 
         <TextView
-            android:text="@string/legals"
             android:layout_width="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textAlignment="center"
+            android:layout_height="30dp"
             android:layout_gravity="center_horizontal|bottom"
-            android:layout_height="30dp"/>
+            android:layout_marginBottom="12dp"
+            android:text="@string/legals"
+            android:textAlignment="center" />
     </FrameLayout>
 
+    <RelativeLayout
+        android:id="@+id/walkthroughContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
         <LinearLayout
-            android:id="@+id/walkthroughContainer"
-            android:background="#AA000000"
-            android:orientation="vertical"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="#AA000000"
+            android:orientation="vertical">
 
             <ImageView
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/logo_white"
-                android:layout_marginTop="20dp"
                 android:layout_width="200dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/logo_white"
+                tools:ignore="ContentDescription" />
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/walkthroughPager"
                 android:layout_width="wrap_content"
-                android:layout_marginTop="-110dp"
-                android:layout_marginHorizontal="50dp"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="70dp"
+                android:layout_marginTop="-130dp"
+                android:layout_marginEnd="70dp" />
 
             <Button
                 android:id="@+id/buttonOk"
                 android:layout_width="wrap_content"
-                android:text="@string/action_ok"
-                android:textColor="@color/white"
-                android:layout_marginTop="-110dp"
-                android:background="@drawable/round_blue_button"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_height="wrap_content"/>
+                android:layout_marginTop="-130dp"
+                android:background="@drawable/walkthrough_ok_button"
+                android:text="@string/action_ok"
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/textAlreadyKnowOceanshare"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
                 android:text="@string/already_know_oceanshare"
                 android:textColor="@color/white"
-                android:layout_width="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_height="30dp"/>
-
+                android:textSize="18sp" />
         </LinearLayout>
+
+        <com.make.dots.dotsindicator.DotsIndicator
+            android:id="@+id/dotsIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="170dp"
+            app:dot_drawable="@drawable/ic_dot_darkgrey"
+            app:dot_drawable_unselected="@drawable/ic_dot_lightgrey"
+            app:dot_height="8dp"
+            app:dot_margin="6dp"
+            app:dot_width="8dp" />
+    </RelativeLayout>
 </RelativeLayout>

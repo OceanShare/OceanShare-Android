@@ -116,21 +116,27 @@ class RegisterFragment : Fragment() {
 
         // Check for a valid email address.
         AuthenticationHelper.isEmailValid(context, emailStr)?.also { error ->
-            if (!cancel) { focusView = email }
+            if (!cancel) {
+                focusView = email
+            }
             email_til.error = error
             cancel = true
         }
 
         // Check for a valid password.
         AuthenticationHelper.isPasswordValid(context, passwordStr)?.also { error ->
-            if (!cancel) { focusView = password }
+            if (!cancel) {
+                focusView = password
+            }
             password_til.error = error
             cancel = true
         }
 
         // Check for a valid password confirmation.
         AuthenticationHelper.isPasswordConfirmationValid(context, passwordStr, passwordConfirmationStr)?.also { error ->
-            if (!cancel) { focusView = password_confirmation }
+            if (!cancel) {
+                focusView = password_confirmation
+            }
             password_confirmation_til.error = error
             cancel = true
         }
