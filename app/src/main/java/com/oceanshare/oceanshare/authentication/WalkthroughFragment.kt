@@ -19,6 +19,7 @@ class WalkthroughFragment : Fragment() {
 
     interface Callback {
         fun showLoginPage()
+        fun toggleDotIndicatorVisibility()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -27,35 +28,40 @@ class WalkthroughFragment : Fragment() {
 
         mCallback = activity as Callback?
 
-        val walkthroughImages: IntArray
-        if (Locale.getDefault().language == "fr") {
-            walkthroughImages = intArrayOf(R.drawable.walkthrough_1_fr, R.drawable.walkthrough_2_fr, R.drawable.walkthrough_3_fr)
+        val walkthroughImages: IntArray = if (Locale.getDefault().language == "fr") {
+            intArrayOf(R.drawable.walkthrough_1_fr, R.drawable.walkthrough_2_fr, R.drawable.walkthrough_3_fr)
         } else {
-            walkthroughImages = intArrayOf(R.drawable.walkthrough_1_en, R.drawable.walkthrough_2_en, R.drawable.walkthrough_3_en)
+            intArrayOf(R.drawable.walkthrough_1_en, R.drawable.walkthrough_2_en, R.drawable.walkthrough_3_en)
         }
 
         inflatedLayout.walkthroughPager.adapter = context?.let { WalkthroughPagerAdapter(it, walkthroughImages) }
+        inflatedLayout.dotsIndicator.setViewPager(inflatedLayout.walkthroughPager)
+        inflatedLayout.walkthroughPager.adapter?.registerDataSetObserver(inflatedLayout.dotsIndicator.dataSetObserver)
 
         inflatedLayout.textAlreadyKnowOceanshare.setOnClickListener {
             inflatedLayout.walkthroughContainer.visibility = View.GONE
             inflatedLayout.buttonStart.visibility = View.VISIBLE
+            mCallback?.showLoginPage()
+            mCallback?.toggleDotIndicatorVisibility()
         }
 
         inflatedLayout.buttonStart.setOnClickListener {
             inflatedLayout.walkthroughContainer.visibility = View.VISIBLE
             inflatedLayout.buttonStart.visibility = View.GONE
+            mCallback?.toggleDotIndicatorVisibility()
         }
 
         inflatedLayout.buttonOk.setOnClickListener {
             if (inflatedLayout.walkthroughPager.adapter != null && inflatedLayout.walkthroughPager.adapter?.count != null)
-            if (inflatedLayout.walkthroughPager.currentItem < inflatedLayout.walkthroughPager.adapter?.count?.minus(1)!!) {
-                inflatedLayout.walkthroughPager.setCurrentItem(inflatedLayout.walkthroughPager.currentItem + 1, true)
-            } else {
-                inflatedLayout.walkthroughPager.setCurrentItem(0, false)
-                inflatedLayout.walkthroughContainer.visibility = View.GONE
-                inflatedLayout.buttonStart.visibility = View.VISIBLE
-                mCallback?.showLoginPage()
-            }
+                if (inflatedLayout.walkthroughPager.currentItem < inflatedLayout.walkthroughPager.adapter?.count?.minus(1)!!) {
+                    inflatedLayout.walkthroughPager.setCurrentItem(inflatedLayout.walkthroughPager.currentItem + 1, true)
+                } else {
+                    inflatedLayout.walkthroughPager.setCurrentItem(0, false)
+                    inflatedLayout.walkthroughContainer.visibility = View.GONE
+                    inflatedLayout.buttonStart.visibility = View.VISIBLE
+                    mCallback?.showLoginPage()
+                    mCallback?.toggleDotIndicatorVisibility()
+                }
             inflatedLayout.walkthroughPager
         }
 

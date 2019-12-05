@@ -335,4 +335,20 @@
                 layout="@layout/marker_entry" />
         </LinearLayout>
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/splashScreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:elevation="100dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/logo"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
 </FrameLayout>

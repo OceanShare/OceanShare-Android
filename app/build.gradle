@@ -77,8 +77,11 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.beust:klaxon:5.0.1'
 
-    // Blur
-    implementation 'com.eightbitlab:supportrenderscriptblur:1.0.2'
+    // Keyboard state
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.3.0'
+
+    // View pager indocators
+    implementation 'com.github.tizisdeepan:dots:1.0.1'
 }
 
 // Firebase

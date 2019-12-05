@@ -5,9 +5,9 @@
     android:id="@+id/login_form"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:overScrollMode="never"
     android:paddingStart="35dp"
     android:paddingEnd="35dp"
-    android:overScrollMode="never"
     tools:context=".authentication.LoginFragment">
 
     <LinearLayout
@@ -16,12 +16,13 @@
         android:orientation="vertical">
 
         <ImageView
+            android:layout_width="300dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="20dp"
             android:src="@drawable/logo"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="300dp"
-            android:layout_height="100dp" />
+            tools:ignore="ContentDescription" />
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -128,10 +129,10 @@
                     android:id="@+id/password_til"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:passwordToggleEnabled="true"
-                    app:passwordToggleTint="@color/white"
                     app:errorEnabled="true"
-                    app:errorTextAppearance="@style/til_error_appearance">
+                    app:errorTextAppearance="@style/til_error_appearance"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleTint="@color/white">
 
                     <EditText
                         android:id="@+id/password"
@@ -284,7 +285,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="10dp"
             android:text="@string/don_t_have_an_account_register"
             android:textSize="@dimen/form_field_hint_text_size" />
