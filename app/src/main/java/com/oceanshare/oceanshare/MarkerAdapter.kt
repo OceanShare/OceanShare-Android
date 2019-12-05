@@ -29,7 +29,7 @@ class MarkerAdapter(context: Context, foodsList: ArrayList<Marker>) : BaseAdapte
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val marker = this.markersList[position]
 
-        val inflater = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val inflater = context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val markerView = inflater.inflate(R.layout.marker_entry, null)
         markerView.markerImage.setImageResource(marker.image)
         markerView.markerName.text = marker.name

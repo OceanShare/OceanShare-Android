@@ -52,8 +52,9 @@ class WalkthroughFragment : Fragment() {
         }
 
         inflatedLayout.buttonOk.setOnClickListener {
-            if (inflatedLayout.walkthroughPager.adapter != null && inflatedLayout.walkthroughPager.adapter?.count != null)
-                if (inflatedLayout.walkthroughPager.currentItem < inflatedLayout.walkthroughPager.adapter?.count?.minus(1)!!) {
+            if (inflatedLayout.walkthroughPager.adapter != null && inflatedLayout.walkthroughPager.adapter?.count != null) {
+                val pageCount = inflatedLayout.walkthroughPager.adapter?.count?.minus(1)
+                if (pageCount != null && inflatedLayout.walkthroughPager.currentItem < pageCount) {
                     inflatedLayout.walkthroughPager.setCurrentItem(inflatedLayout.walkthroughPager.currentItem + 1, true)
                 } else {
                     inflatedLayout.walkthroughPager.setCurrentItem(0, false)
@@ -62,6 +63,7 @@ class WalkthroughFragment : Fragment() {
                     mCallback?.showLoginPage()
                     mCallback?.toggleDotIndicatorVisibility()
                 }
+            }
             inflatedLayout.walkthroughPager
         }
 

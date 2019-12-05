@@ -20,8 +20,8 @@ class MeteoFragment : Fragment() {
 
     suspend fun fetchMeteo(location: Location) {
         val meteo = apiService.getWeather(location.latitude.toString(), location.longitude.toString())
-        meteoImage.setImageResource(analyseDescription(meteo.weather!!.weather!![0]))
-        meteoTemp.text = weatherConverter.getTemperature(meteo.weather!!.main!!.temp!!)
+        meteo.weather?.weather?.get(0)?.let { analyseDescription(it) }?.let { meteoImage.setImageResource(it) }
+        meteoTemp.text = weatherConverter.getTemperature(meteo.weather?.main?.temp)
         meteo.weather?.weather?.let {
             meteoDescription.text = it[0].description?.capitalize()
         }
@@ -39,7 +39,7 @@ class MeteoFragment : Fragment() {
 
     private fun analyseDescription(weather: WeatherData2): Int {
         val choosenOne: Int
-        val id = weather.id!!
+        val id = weather.id
 
         if (id in 0..232) {
             choosenOne = R.drawable.storm
