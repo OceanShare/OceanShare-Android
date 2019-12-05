@@ -534,7 +534,7 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
         markerManager.visibility = View.GONE
-        markerManagerEdit.visibility = View.GONE
+        markerEditionContainer.visibility = View.GONE
         markerManagerDescription.visibility = View.VISIBLE
         openMarkerMenuButton.visibility = View.VISIBLE
         centerCameraButton.visibility = View.VISIBLE
@@ -573,32 +573,32 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
         }
 
         markerManagerEditButton.setOnClickListener {
-            if (markerManagerEdit.visibility != View.VISIBLE) {
-                editMarkerDescritionField.setText(mark.snippet)
-                markerManagerEdit.visibility = View.VISIBLE
+            if (markerEditionContainer.visibility != View.VISIBLE) {
+                markerDescriptionText.setText(mark.snippet)
+                markerEditionContainer.visibility = View.VISIBLE
                 markerManagerDescription.visibility = View.GONE
             }
         }
 
-        submitMarkerEditedDescription.setOnClickListener {
+        saveMarkerEdition.setOnClickListener {
             database.child("markers").child(getMarkerKey(mark.id)).child("description")
-                    .setValue(editMarkerDescritionField.text.toString())
+                    .setValue(markerDescriptionText.text.toString())
             val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
-            markerManagerEdit.visibility = View.GONE
+            markerEditionContainer.visibility = View.GONE
             markerManagerDescription.visibility = View.VISIBLE
-            editMarkerDescritionField.text.clear()
+            markerDescriptionText.text.clear()
             //showNotification(getString(R.string.validation_marker_edited))
         }
 
-        cancelEditMarkerButton.setOnClickListener {
+        cancelMarkerEdition.setOnClickListener {
             val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
-            markerManagerEdit.visibility = View.GONE
+            markerEditionContainer.visibility = View.GONE
             markerManagerDescription.visibility = View.VISIBLE
         }
 
-        deleteMarkerButton.setOnClickListener {
+        removeMarker.setOnClickListener {
             closedMarkerManager()
             database.child("markers").child(getMarkerKey(mark.id)).removeValue()
         }

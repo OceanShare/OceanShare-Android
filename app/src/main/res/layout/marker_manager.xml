@@ -71,59 +71,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp">
 
-            <LinearLayout
-                android:id="@+id/markerManagerEdit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/opaque_deep_blue"
-                android:orientation="vertical"
-                android:padding="5dp"
-                android:visibility="gone">
-
-                <EditText
-                    android:id="@+id/editMarkerDescritionField"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_border"
-                    android:gravity="top|left"
-                    android:lines="3"
-                    android:paddingHorizontal="4dp"
-                    android:paddingVertical="2dp"
-                    android:textSize="20dp" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <Button
-                        android:id="@+id/submitMarkerEditedDescription"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:backgroundTint="@color/deep_blue"
-                        android:text="@string/button_submit"
-                        android:textColor="@color/white" />
-
-                    <Button
-                        android:id="@+id/deleteMarkerButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:backgroundTint="@color/red"
-                        android:text="@string/button_delete" />
-
-                    <Button
-                        android:id="@+id/cancelEditMarkerButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toLeftOf="@id/submitMarkerEditedDescription"
-                        android:text="@string/button_cancel" />
-
-                </RelativeLayout>
-
-
-            </LinearLayout>
-
             <TextView
                 android:id="@+id/markerManagerDescription"
                 android:layout_width="match_parent"
