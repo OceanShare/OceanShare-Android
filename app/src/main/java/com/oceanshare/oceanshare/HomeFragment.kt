@@ -3,9 +3,11 @@ package com.oceanshare.oceanshare
 import android.content.Context
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -137,6 +139,14 @@ class HomeFragment : Fragment(), LocationEngineListener {
                 true
             }
         }
+
+        mapView.addOnDidFinishLoadingMapListener {
+            Handler().postDelayed({
+                (activity as MainActivity).showBottomNavigationView()
+                splashScreen.animate().alpha(0.0f)
+            }, 2000)
+        }
+
         setupFadeAnimations()
         setupMarkerMenu()
 

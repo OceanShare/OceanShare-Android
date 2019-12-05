@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        navigation.alpha = 0.0f
 
         supportFragmentManager.beginTransaction()
                 .add(R.id.fragment_container, homeFragment)
@@ -41,6 +42,10 @@ class MainActivity : AppCompatActivity() {
                 .hide(meteoFragment)
                 .commit()
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
+    }
+
+    fun showBottomNavigationView() {
+        navigation.animate().alpha(1.0f)
     }
 
     private fun switchFragments(id: Int): Boolean {
