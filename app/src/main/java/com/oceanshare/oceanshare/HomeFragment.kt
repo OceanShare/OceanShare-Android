@@ -94,7 +94,6 @@ class HomeFragment : Fragment(), LocationEngineListener {
             database = FirebaseDatabase.getInstance().reference
 
             enableLocation()
-
             initMarker()
             initUsers()
 
@@ -142,12 +141,14 @@ class HomeFragment : Fragment(), LocationEngineListener {
         setupMarkerMenu()
 
         centerCameraButton.setOnClickListener {
-            val position = CameraPosition.Builder()
-                    .target(LatLng(originLocation.latitude, originLocation.longitude))
-                    .zoom(16.0)
-                    .tilt(20.0)
-                    .build()
-            map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
+            if (::originLocation.isInitialized) {
+                val position = CameraPosition.Builder()
+                        .target(LatLng(originLocation.latitude, originLocation.longitude))
+                        .zoom(16.0)
+                        .tilt(20.0)
+                        .build()
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
+            }
         }
     }
 
