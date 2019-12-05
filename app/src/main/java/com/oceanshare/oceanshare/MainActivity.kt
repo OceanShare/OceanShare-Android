@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
     }
 
-    private fun switchFragments(id: Int) : Boolean {
+    private fun switchFragments(id: Int): Boolean {
         when (id) {
             R.id.navigation_home -> {
                 supportFragmentManager.beginTransaction()

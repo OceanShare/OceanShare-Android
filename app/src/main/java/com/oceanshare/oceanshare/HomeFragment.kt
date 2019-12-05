@@ -9,7 +9,7 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.*
+import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -17,8 +17,6 @@ import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
 import com.mapbox.android.core.location.LocationEngineProvider
-import com.mapbox.android.core.permissions.PermissionsListener
-import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
@@ -44,10 +42,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
-class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
+class HomeFragment : Fragment(), LocationEngineListener {
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
-    private lateinit var permissionManager: PermissionsManager
     lateinit var originLocation: Location
     private lateinit var mContext: Context
     private lateinit var database: DatabaseReference
@@ -70,18 +67,18 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        Mapbox.getInstance(activity!!.applicationContext, getString(R.string.mapbox_access_token))
+        activity?.applicationContext?.let { Mapbox.getInstance(it, getString(R.string.mapbox_access_token)) }
         mContext = activity!!.applicationContext
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     private fun showDialogWith(message: String) {
-        val builder = AlertDialog.Builder(context!!)
-        builder.setTitle(R.string.error)
-        builder.setMessage(message)
-        builder.setPositiveButton("Ok") { _, _ -> }
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
+        val builder = context?.let { AlertDialog.Builder(it) }
+        builder?.setTitle(R.string.error)
+        builder?.setMessage(message)
+        builder?.setPositiveButton("Ok") { _, _ -> }
+        val dialog: AlertDialog? = builder?.create()
+        dialog?.show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -151,21 +148,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
                     .tilt(20.0)
                     .build()
             map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
-        }
-
-        // TO REMOVE - Needed to demonstrate SpeedMeter at delivery
-        centerCameraButton.setOnLongClickListener {
-            if (speedMeter.visibility == View.VISIBLE) {
-                speedMeter.visibility = View.INVISIBLE
-            } else if (speedMeter.visibility == View.INVISIBLE) {
-                speedMeter.visibility = View.VISIBLE
-            }
-            if (warningTooFast.visibility == View.VISIBLE) {
-                warningTooFast.visibility = View.INVISIBLE
-            } else if (warningTooFast.visibility == View.INVISIBLE) {
-                warningTooFast.visibility = View.VISIBLE
-            }
-            return@setOnLongClickListener true
         }
     }
 
@@ -334,7 +316,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     }
 
 
-
     private fun initUsers() {
         database.child("users").addChildEventListener(
                 object : ChildEventListener {
@@ -352,16 +333,16 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
 
                             val iconFactory = IconFactory.getInstance(context!!)
                             val icon = iconFactory.fromResource(findMarkerIconMap(9))
-                            
+
 
                             if (userActive) {
-                                 map.addMarker(MarkerOptions()
+                                map.addMarker(MarkerOptions()
                                         .position(LatLng(userLatitude, userLongitude))
                                         .icon(icon)
                                 )
                             }
 
-                            userHashMap[key] = UserData( 1, userName, userLatitude, userLongitude,
+                            userHashMap[key] = UserData(1, userName, userLatitude, userLongitude,
                                     userShipName, userActive)
                         }
                     }
@@ -759,13 +740,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     }
 
     private fun enableLocation() {
-        if (PermissionsManager.areLocationPermissionsGranted(mContext)) {
-            initializeLocationEngine()
-            initializeLocationComponent()
-        } else {
-            permissionManager = PermissionsManager(this)
-            permissionManager.requestLocationPermissions(activity)
-        }
+        initializeLocationEngine()
+        initializeLocationComponent()
     }
 
     @SuppressWarnings("MissingPermission")
@@ -801,20 +777,6 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
                 LatLng(location.latitude, location.longitude), 16.0))
     }
 
-    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
-        // Present a toast or dialog explaining why need to grant access
-    }
-
-    override fun onPermissionResult(granted: Boolean) {
-        if (granted) {
-            initializeLocationComponent()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
     override fun onLocationChanged(location: Location?) {
         location?.let {
             originLocation = location
@@ -843,10 +805,8 @@ class HomeFragment : Fragment(), PermissionsListener, LocationEngineListener {
     @SuppressWarnings("MissingPermission")
     override fun onStart() {
         super.onStart()
-        if (PermissionsManager.areLocationPermissionsGranted(mContext)) {
-            locationComponent?.onStart()
-            locationEngine?.requestLocationUpdates()
-        }
+        locationComponent?.onStart()
+        locationEngine?.requestLocationUpdates()
         mapView.onStart()
     }
 
