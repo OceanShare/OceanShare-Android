@@ -36,7 +36,8 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_warning" />
+            android:src="@drawable/ic_warning"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -44,7 +45,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:paddingBottom="10dp"
-            android:text="La vitesse est limitée à 5nds\ndans la zone des 300 mètres."
+            android:text="@string/warning_too_fast"
             android:textAlignment="center"
             android:textColor="@color/red"
             android:textSize="16sp"
@@ -67,7 +68,8 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_location"
-            android:tint="@color/deep_blue" />
+            android:tint="@color/deep_blue"
+            tools:ignore="ContentDescription" />
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -86,7 +88,8 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_pin"
-            android:tint="@color/deep_blue" />
+            android:tint="@color/deep_blue"
+            tools:ignore="ContentDescription" />
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -106,7 +109,8 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_speed"
-            android:tint="@color/deep_blue" />
+            android:tint="@color/deep_blue"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/speedText"
@@ -114,7 +118,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="4dp"
-            android:text="0"
             android:textAlignment="center"
             android:textColor="@color/deep_blue"
             android:textSize="23sp"
@@ -125,7 +128,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:text="Nds"
+            android:text="@string/nds"
             android:textAlignment="center"
             android:textColor="@color/deep_blue"
             android:textSize="13sp" />
@@ -145,7 +148,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:text="Vous pouvez ajouter une\ndescription optionnelle à votre\névenement."
+            android:text="@string/marker_creation_description"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="20sp" />
@@ -157,8 +160,10 @@
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:background="@drawable/rounded_edit_text"
-            android:hint="What's happening ?"
-            android:textAlignment="center" />
+            android:hint="@string/what_is_happening"
+            android:importantForAutofill="no"
+            android:textAlignment="center"
+            tools:ignore="TextFields" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -189,6 +194,79 @@
                 android:text="@string/button_cancel"
                 android:textColor="@color/white" />
         </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/markerEditionContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#BA000000"
+        android:elevation="10dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="@string/marker_edition_description"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/markerDescriptionText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/rounded_edit_text"
+            android:hint="@string/what_is_happening"
+            android:importantForAutofill="no"
+            android:textAlignment="center"
+            tools:ignore="TextFields" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/saveMarkerEdition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/ok_button"
+                android:text="@string/save"
+                android:textColor="@color/white" />
+
+            <View
+                android:layout_width="10dp"
+                android:layout_height="0dp" />
+
+            <Button
+                android:id="@+id/cancelMarkerEdition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/cancel_button"
+                android:text="@string/button_cancel"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/removeMarker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/remove_button"
+            android:text="@string/button_delete"
+            android:textColor="@color/red" />
     </LinearLayout>
 
     <include layout="@layout/marker_manager" />
@@ -231,7 +309,8 @@
                     android:layout_gravity="center"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_close"
-                    android:tint="@color/deep_blue" />
+                    android:tint="@color/deep_blue"
+                    tools:ignore="ContentDescription" />
             </android.support.v7.widget.CardView>
 
             <GridView
