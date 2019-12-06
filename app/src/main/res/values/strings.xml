@@ -1,14 +1,14 @@
 <resources>
     <!-- Facebook credentials -->
-    <string name="facebook_app_id">169506053959899</string>
-    <string name="fb_login_protocol_scheme">fb169506053959899</string>
+    <string name="facebook_app_id" translatable="false">169506053959899</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb169506053959899</string>
 
     <!-- MapBox credentials -->
 
-    <string name="mapbox_access_token">pk.eyJ1Ijoib2NlYW5zaGFyZTA2IiwiYSI6ImNqcGZpZXNkcDBiZGEza21sdjlsNDZwd2wifQ.rxDiDLT59nQfaAHEycKskw</string>
+    <string name="mapbox_access_token" translatable="false">pk.eyJ1Ijoib2NlYW5zaGFyZTA2IiwiYSI6ImNqcGZpZXNkcDBiZGEza21sdjlsNDZwd2wifQ.rxDiDLT59nQfaAHEycKskw</string>
 
     <!-- Titles -->
-    <string name="app_name">Oceanshare</string>
+    <string name="app_name" translatable="false">Oceanshare</string>
     <string name="title_activity_connection">Connection</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_home">Home</string>
@@ -88,7 +88,7 @@
     <string name="button_edit_infos_description">Edit infos icon</string>
     <string name="dialog_not_implemented_text">This feature is not yet available, please check our website and subscribe to our newsletter to know about the future of OceanShare.</string>
     <string name="action_dismiss">Dismiss</string>
-    <string name="button_back"><![CDATA[<]]></string>
+    <string name="button_back" translatable="false"><![CDATA[<]]></string>
     <string name="informations">Informations</string>
     <string name="delete_my_account">Delete my account</string>
     <string name="validation_marker_added">Thank you for your contribution</string>
@@ -103,10 +103,10 @@
     <string name="button_delete">Delete</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_submit">Submit</string>
-    <string name="latitude">"Lat:"</string>
-    <string name="longitude">Long:</string>
-    <string name="latitude_meteo">Lat.</string>
-    <string name="longitude_meteo">Long.</string>
+    <string name="latitude" translatable="false">"Lat:"</string>
+    <string name="longitude" translatable="false">Long:</string>
+    <string name="latitude_meteo" translatable="false">Lat.</string>
+    <string name="longitude_meteo" translatable="false">Long.</string>
     <string name="sunrise">Sunrise</string>
     <string name="sunset">Sunset</string>
     <string name="rain_risk">Rain risk</string>
@@ -128,4 +128,5 @@
     <string name="what_is_happening">What\'s happening ?</string>
     <string name="marker_edition_description">Vous pouvez modifier la description de votre évenement ou le supprimer.</string>
     <string name="save">Save</string>
+    <string name="mapbox_style" translatable="false">mapbox://styles/oceanshare06/ck36dulje0m7c1cpih4atqiab</string>
 </resources>

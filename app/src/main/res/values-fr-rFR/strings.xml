@@ -1,14 +1,9 @@
 <resources>
     <!-- Facebook credentials -->
-    <string name="facebook_app_id">169506053959899</string>
-    <string name="fb_login_protocol_scheme">fb169506053959899</string>
 
     <!-- MapBox credentials -->
 
-    <string name="mapbox_access_token">pk.eyJ1Ijoib2NlYW5zaGFyZTA2IiwiYSI6ImNqcGZpZXNkcDBiZGEza21sdjlsNDZwd2wifQ.rxDiDLT59nQfaAHEycKskw</string>
-
     <!-- Titles -->
-    <string name="app_name">Oceanshare</string>
     <string name="title_activity_connection">Connection</string>
     <string name="title_activity_main">Activité principale</string>
     <string name="title_home">Accueil</string>
@@ -88,7 +83,6 @@
     <string name="button_edit_infos_description">Icon modif infos</string>
     <string name="dialog_not_implemented_text">Cette fonctionnalité n\'est pas encore disponible, n\'hésitez pas à vous inscrire à notre newsletter pour être au courant des dernières nouveautés.</string>
     <string name="action_dismiss">Fermer</string>
-    <string name="button_back"><![CDATA[<]]></string>
     <string name="informations">Informations</string>
     <string name="delete_my_account">Supprimer mon compte</string>
     <string name="validation_marker_added">Merci pour votre contribution</string>
@@ -103,10 +97,6 @@
     <string name="button_delete">Supprimer</string>
     <string name="button_cancel">Annuler</string>
     <string name="button_submit">Validé</string>
-    <string name="latitude">"Lat:  "</string>
-    <string name="longitude">"Long: "</string>
-    <string name="latitude_meteo">Lat.</string>
-    <string name="longitude_meteo">Long.</string>
     <string name="sunrise">Lever du soleil</string>
     <string name="sunset">Coucher du soleil</string>
     <string name="rain_risk">Risque de pluie</string>
@@ -127,4 +117,5 @@
     <string name="marker_creation_description">Vous pouvez ajouter une description optionnelle à votre évenement.</string>
     <string name="marker_edition_description">Vous pouvez modifier la description de votre évenement ou le supprimer.</string>
     <string name="save">Save</string>
+    <string name="what_is_happening">Que se passe-t-il ?</string>
 </resources>

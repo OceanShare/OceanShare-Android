@@ -94,17 +94,14 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
             database = FirebaseDatabase.getInstance().reference
 
-            enableLocation()
             initMarker()
             initUsers()
+            enableLocation()
 
             map.addOnMapClickListener {
                 if ((currentMarker != null) && !isEditingMarkerDescription) {
-                    val pixel = map.projection.toScreenLocation(it)
-                    val features = map.queryRenderedFeatures(pixel, "water")
-                    //var error = false
 
-                    if (features.isEmpty()) {
+                    if (isOnWater(it)) {
                         showDialogWith(getString(R.string.error_marker_land))
                         return@addOnMapClickListener
                     }
@@ -336,7 +333,10 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
-                        if (!userHashMap.containsKey(key) && p0.exists() && p0.child("location").exists()) {
+                        if (!userHashMap.containsKey(key) && p0.exists() && p0.child("location").exists()
+                                && p0.child("preferences").child("user_active").value.toString().toBoolean()
+                                && isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
+                                        p0.child("location").child("longitude").value.toString().toDouble()))) {
 
                             val userLatitude = p0.child("location").child("latitude").value.toString().toDouble()
                             val userLongitude = p0.child("location").child("longitude").value.toString().toDouble()
@@ -344,19 +344,16 @@ class HomeFragment : Fragment(), LocationEngineListener {
                             val userShipName = p0.child("ship_name").value.toString()
                             val userActive = p0.child("preferences").child("user_active").value.toString().toBoolean()
 
+                            println("Latitude: " + userLatitude + ", Longitude: " + userLongitude + ", LatLng: " + LatLng(userLatitude,userLongitude)  + ", isOnWater: " + isOnWater(LatLng(userLatitude,userLongitude)))
 
                             val iconFactory = context?.let { IconFactory.getInstance(it) }
                             val icon = findMarkerIconMap(9)?.let { iconFactory?.fromResource(it) }
 
+                            val markerId = map.addMarker(MarkerOptions()
+                                    .position(LatLng(userLatitude, userLongitude))
+                                    .icon(icon)).id
 
-                            if (userActive) {
-                                map.addMarker(MarkerOptions()
-                                        .position(LatLng(userLatitude, userLongitude))
-                                        .icon(icon)
-                                )
-                            }
-
-                            userHashMap[key] = UserData(1, userName, userLatitude, userLongitude,
+                            userHashMap[key] = UserData( markerId, userName, userLatitude, userLongitude,
                                     userShipName, userActive)
                         }
                     }
@@ -364,12 +361,10 @@ class HomeFragment : Fragment(), LocationEngineListener {
                     override fun onChildRemoved(p0: DataSnapshot) {
                         val key = p0.key.toString()
 
-                        if (markerHashMap.containsKey(key) && p0.exists()) {
-                            if (markerManagerId.text == key) {
-                                markerManager.visibility = View.GONE
-                                closedMarkerManager()
-                            }
-
+                        if (!userHashMap.containsKey(key) && p0.exists() && p0.child("location").exists()
+                                && p0.child("preferences").child("user_active").value.toString().toBoolean()
+                                && isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
+                                        p0.child("location").child("longitude").value.toString().toDouble()))) {
                             markerHashMap[key]?.id?.let { map.getAnnotation(it)?.remove() }
                             markerHashMap.remove(key)
                         }
@@ -378,47 +373,44 @@ class HomeFragment : Fragment(), LocationEngineListener {
                     override fun onChildChanged(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
 
+                        if (p0.exists()
+                                && p0.child("preferences").child("user_active").value.toString().toBoolean()
+                                && isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
+                                        p0.child("location").child("longitude").value.toString().toDouble()))) {
 
+                            val userLatitude = p0.child("location").child("latitude").value.toString().toDouble()
+                            val userLongitude = p0.child("location").child("longitude").value.toString().toDouble()
+                            val userName = p0.child("name").value.toString()
+                            val userShipName = p0.child("ship_name").value.toString()
+                            val userActive = p0.child("preferences").child("user_active").value.toString().toBoolean()
 
-                        if (markerHashMap.containsKey(key) && p0.exists() &&
-                                (fillLikedArray(p0.child("contributors").value.toString()) != markerHashMap[key]?.vote)) {
-                            map.markers.forEach {
-                                if (getMarkerKey(it.id) == key) {
-                                    markerHashMap[key]?.vote = fillLikedArray(p0.child("contributors").value.toString())
-                                }
+                            val iconFactory = IconFactory.getInstance(context!!)
+                            val icon = findMarkerIconMap(9)?.let { iconFactory?.fromResource(it) }
+                            val markerId = map.addMarker(MarkerOptions()
+                                    .position(LatLng(userLatitude, userLongitude))
+                                    .icon(icon)).id
+
+                            if (userHashMap.containsKey(key) &&
+                                    (userHashMap[key]?.longitude != userLongitude || userHashMap[key]?.latitude != userLatitude))
+                            {
+                                map.getAnnotation(userHashMap[key]?.markerId!!)?.remove()
+
+                                userHashMap[key]?.longitude = userLongitude
+                                userHashMap[key]?.latitude = userLatitude
+                                userHashMap[key]?.markerId = markerId
+                            } else {
+                                userHashMap[key] = UserData( markerId, userName, userLatitude, userLongitude,
+                                        userShipName, userActive)
                             }
                         }
-
-                        if (markerHashMap.containsKey(key) && p0.exists() &&
-                                (p0.child("description").value.toString() != markerHashMap[key]?.description)) {
-                            map.markers.forEach {
-                                if (getMarkerKey(it.id) == key) {
-                                    markerHashMap[key]?.description = p0.child("description").value.toString()
-                                    it.snippet = p0.child("description").value.toString()
-                                    markerManagerDescription.text = markerHashMap[key]?.description
-                                }
-                            }
+                        else if (userHashMap.containsKey(key) && p0.exists() &&
+                                (!p0.child("preferences").child("user_active").value.toString().toBoolean()
+                                        || !isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
+                                        p0.child("location").child("longitude").value.toString().toDouble()))))  {
+                            map.getAnnotation(userHashMap[key]?.markerId!!)?.remove()
+                            userHashMap.remove(key)
                         }
 
-                        if (markerHashMap.containsKey(key) && p0.exists() &&
-                                (p0.child("upvote").value.toString().toInt() != markerHashMap[key]?.upvote)) {
-                            map.markers.forEach {
-                                if (getMarkerKey(it.id) == key) {
-                                    markerHashMap[key]?.upvote = p0.child("upvote").value.toString().toInt()
-                                    markerManagerLikeButton.text = markerHashMap[key]?.upvote.toString()
-                                }
-                            }
-                        }
-
-                        if (markerHashMap.containsKey(key) && p0.exists() &&
-                                (p0.child("downvote").value.toString().toInt() != markerHashMap[key]?.downvote)) {
-                            map.markers.forEach {
-                                if (getMarkerKey(it.id) == key) {
-                                    markerHashMap[key]?.downvote = p0.child("downvote").value.toString().toInt()
-                                    markerManagerDislikeButton.text = markerHashMap[key]?.downvote.toString()
-                                }
-                            }
-                        }
                     }
 
                     override fun onChildMoved(p0: DataSnapshot, p1: String?) {
@@ -684,13 +676,25 @@ class HomeFragment : Fragment(), LocationEngineListener {
         }
     }
 
+    private fun isOnWater(it : LatLng) : Boolean {
+        val pixel = map.projection.toScreenLocation(it)
+        val features = map.queryRenderedFeatures(pixel, "water")
+
+        if (features.isEmpty())
+            return true
+
+        return false
+    }
+
     private fun setupDescriptionScreen() {
         isEditingMarkerDescription = true
         markerDescription.background.alpha = 128
         markerDescription.visibility = View.VISIBLE
+        map.uiSettings.setAllGesturesEnabled(false)
 
         cancelMarkerDescription.setOnClickListener {
             markerDescription.visibility = View.GONE
+            map.uiSettings.setAllGesturesEnabled(true)
             currentMarker = null
             isEditingMarkerDescription = false
         }
@@ -704,6 +708,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
             inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
 
             markerDescription.visibility = View.GONE
+            map.uiSettings.setAllGesturesEnabled(true)
             isEditingMarkerDescription = false
         }
     }
@@ -714,10 +719,12 @@ class HomeFragment : Fragment(), LocationEngineListener {
             if (markerMenu.visibility != View.VISIBLE) {
                 markerMenu.startAnimation(fadeInAnimation)
                 markerMenu.visibility = View.VISIBLE
+                map.uiSettings.setAllGesturesEnabled(false)
             }
         }
         closeMarkerMenuButton.setOnClickListener {
             markerMenu.startAnimation(fadeOutAnimation)
+            map.uiSettings.setAllGesturesEnabled(true)
             markerMenu.visibility = View.GONE
         }
 
@@ -747,6 +754,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         meteoMarker.setOnClickListener {
             markerMenu.startAnimation(fadeOutAnimation)
             markerMenu.visibility = View.GONE
+            map.uiSettings.setAllGesturesEnabled(true)
             isWeatherMarker = true
         }
     }
