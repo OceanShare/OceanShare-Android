@@ -7,7 +7,6 @@ import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +47,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
     lateinit var originLocation: Location
-    private lateinit var mContext: Context
+    private var mContext: Context? = null
     private lateinit var database: DatabaseReference
 
     private var currentMarker: Marker? = null
@@ -70,7 +69,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         activity?.applicationContext?.let { Mapbox.getInstance(it, getString(R.string.mapbox_access_token)) }
-        mContext = activity!!.applicationContext
+        mContext = activity?.applicationContext
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -115,9 +114,13 @@ class HomeFragment : Fragment(), LocationEngineListener {
                     }
 
                     if (getMarkerSetCount(fbAuth.currentUser?.uid.toString()) < 5) {
-                        val storedMarker = MarkerData(null, it.latitude, it.longitude, currentMarker!!.groupId,
-                                currentMarker!!.description, getHour(), fbAuth.currentUser?.uid.toString(),
-                                fbAuth.currentUser?.email.toString(), getTimeStamp())
+                        val storedMarker = currentMarker?.groupId?.let { it1 ->
+                            currentMarker?.description?.let { it2 ->
+                                MarkerData(null, it.latitude, it.longitude, it1,
+                                        it2, getHour(), fbAuth.currentUser?.uid.toString(),
+                                        fbAuth.currentUser?.email.toString(), getTimeStamp())
+                            }
+                        }
                         database.child("markers").push().setValue(storedMarker)
                     } else {
                         showDialogWith(getString(R.string.error_marker_limit))
@@ -239,8 +242,8 @@ class HomeFragment : Fragment(), LocationEngineListener {
                             val userVotes = fillLikedArray(contributor)
 
                             val markerIcon = findMarkerIconMenu(groupId)
-                            val iconFactory = IconFactory.getInstance(context!!)
-                            val icon = iconFactory.fromResource(findMarkerIconMap(groupId))
+                            val iconFactory = context?.let { IconFactory.getInstance(it) }
+                            val icon = findMarkerIconMap(groupId)?.let { iconFactory?.fromResource(it) }
 
                             val markerMap = map.addMarker(MarkerOptions()
                                     .position(LatLng(markerLatitude, markerLongitude))
@@ -265,7 +268,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                                 closedMarkerManager()
                             }
 
-                            map.getAnnotation(markerHashMap[key]?.id!!)?.remove()
+                            markerHashMap[key]?.id?.let { map.getAnnotation(it)?.remove() }
                             markerHashMap.remove(key)
                         }
                     }
@@ -342,8 +345,8 @@ class HomeFragment : Fragment(), LocationEngineListener {
                             val userActive = p0.child("preferences").child("user_active").value.toString().toBoolean()
 
 
-                            val iconFactory = IconFactory.getInstance(context!!)
-                            val icon = iconFactory.fromResource(findMarkerIconMap(9))
+                            val iconFactory = context?.let { IconFactory.getInstance(it) }
+                            val icon = findMarkerIconMap(9)?.let { iconFactory?.fromResource(it) }
 
 
                             if (userActive) {
@@ -367,7 +370,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                                 closedMarkerManager()
                             }
 
-                            map.getAnnotation(markerHashMap[key]?.id!!)?.remove()
+                            markerHashMap[key]?.id?.let { map.getAnnotation(it)?.remove() }
                             markerHashMap.remove(key)
                         }
                     }
@@ -464,7 +467,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         return 0
     }
 
-    private fun findMarkerIconMap(groupId: Int): Int {
+    private fun findMarkerIconMap(groupId: Int): Int? {
         val markerImage: HashMap<Int, Int> = HashMap()
 
         markerImage[0] = R.drawable.marker_map_medusa
@@ -478,10 +481,10 @@ class HomeFragment : Fragment(), LocationEngineListener {
         markerImage[8] = R.drawable.marker_map_fishes
         markerImage[9] = R.drawable.mini_yatcht
 
-        return markerImage[groupId]!!
+        return markerImage[groupId]
     }
 
-    private fun findMarkerIconMenu(groupId: Int): Int {
+    private fun findMarkerIconMenu(groupId: Int): Int? {
         val markerImage: HashMap<Int, Int> = HashMap()
 
         markerImage[0] = R.drawable.marker_menu_medusa
@@ -494,10 +497,10 @@ class HomeFragment : Fragment(), LocationEngineListener {
         markerImage[7] = R.drawable.marker_menu_cost_guard
         markerImage[8] = R.drawable.marker_menu_fishes
 
-        return markerImage[groupId]!!
+        return markerImage[groupId]
     }
 
-    private fun findMarkerTitle(groupId: Int): String {
+    private fun findMarkerTitle(groupId: Int): String? {
         val markerTitle: HashMap<Int, String> = HashMap()
 
         markerTitle[0] = getString(R.string.marker_medusa)
@@ -509,7 +512,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         markerTitle[6] = getString(R.string.marker_buoy)
         markerTitle[7] = getString(R.string.marker_cost_guard)
         markerTitle[8] = getString(R.string.marker_fishes)
-        return markerTitle[groupId]!!
+        return markerTitle[groupId]
     }
 
     private fun setupFadeAnimations() {
@@ -523,7 +526,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
     }
 
     private fun closedMarkerManager() {
-        val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
         markerManager.visibility = View.GONE
         markerEditionContainer.visibility = View.GONE
@@ -543,22 +546,22 @@ class HomeFragment : Fragment(), LocationEngineListener {
         mark.hideInfoWindow()
         map.uiSettings.setAllGesturesEnabled(false)
 
-        markerManagerIcon.setImageResource(markerInformation?.markerIcon!!)
-        markerManagerTitle.text = findMarkerTitle(markerInformation.groupId)
-        markerManagerDescription.text = markerInformation.description
-        markerManagerLikeButton.text = markerInformation.upvote.toString()
-        markerManagerDislikeButton.text = markerInformation.downvote.toString()
-        markerManagerCreationTime.text = getCreationString(markerInformation.timestamp)
+        markerInformation?.markerIcon?.let { markerManagerIcon.setImageResource(it) }
+        markerManagerTitle.text = markerInformation?.groupId?.let { findMarkerTitle(it) }
+        markerManagerDescription.text = markerInformation?.description
+        markerManagerLikeButton.text = markerInformation?.upvote.toString()
+        markerManagerDislikeButton.text = markerInformation?.downvote.toString()
+        markerManagerCreationTime.text = markerInformation?.timestamp?.let { getCreationString(it) }
         markerManagerId.text = getMarkerKey(mark.id)
 
-        if (fbAuth.currentUser?.uid.toString() == markerInformation.user) {
+        if (fbAuth.currentUser?.uid.toString() == markerInformation?.user) {
             markerManagerOwnMarker.text = getString(R.string.user_marker)
             markerManagerOwnMarker.visibility = View.VISIBLE
             markerManagerEditButton.visibility = View.VISIBLE
             markerManagerVoteButtons.visibility = View.GONE
 
         } else {
-            markerManagerOwnMarker.text = "Posé par : " + markerInformation.username
+            markerManagerOwnMarker.text = "Posé par : " + markerInformation?.username
             markerManagerOwnMarker.visibility = View.VISIBLE
             markerManagerEditButton.visibility = View.INVISIBLE
             markerManagerVoteButtons.visibility = View.VISIBLE
@@ -575,7 +578,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         saveMarkerEdition.setOnClickListener {
             database.child("markers").child(getMarkerKey(mark.id)).child("description")
                     .setValue(markerDescriptionText.text.toString())
-            val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
             markerEditionContainer.visibility = View.GONE
             markerManagerDescription.visibility = View.VISIBLE
@@ -584,7 +587,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         }
 
         cancelMarkerEdition.setOnClickListener {
-            val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
             markerEditionContainer.visibility = View.GONE
             markerManagerDescription.visibility = View.VISIBLE
@@ -598,7 +601,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         markerManagerLikeButton.setOnClickListener {
 
             when {
-                checkVoteMarker(markerInformation.vote!!) == 2 -> {
+                markerInformation?.vote?.let { it1 -> checkVoteMarker(it1) } == 2 -> {
                     database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
                             .setValue(markerInformation.upvote + 1)
                     database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
@@ -606,7 +609,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                     database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
                             .child(currentUser).setValue(1)
                 }
-                checkVoteMarker(markerInformation.vote!!) == 1 -> {
+                markerInformation?.vote?.let { it1 -> checkVoteMarker(it1) } == 1 -> {
                     database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
                             .setValue(markerInformation.upvote - 1)
                     database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
@@ -614,7 +617,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                 }
                 else -> {
                     database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
-                            .setValue(markerInformation.upvote + 1)
+                            .setValue(markerInformation?.upvote?.plus(1))
                     database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
                             .child(currentUser).setValue(1)
                 }
@@ -623,13 +626,13 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
         markerManagerDislikeButton.setOnClickListener {
             when {
-                checkVoteMarker(markerInformation.vote!!) == 2 -> {
+                markerInformation?.vote?.let { it1 -> checkVoteMarker(it1) } == 2 -> {
                     database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
                             .setValue(markerInformation.downvote - 1)
                     database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
                             .child(currentUser).setValue(0)
                 }
-                checkVoteMarker(markerInformation.vote!!) == 1 -> {
+                markerInformation?.vote?.let { it1 -> checkVoteMarker(it1) } == 1 -> {
                     database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
                             .setValue(markerInformation.downvote + 1)
                     database.child("markers").child(getMarkerKey(mark.id)).child("upvote")
@@ -639,7 +642,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                 }
                 else -> {
                     database.child("markers").child(getMarkerKey(mark.id)).child("downvote")
-                            .setValue(markerInformation.downvote + 1)
+                            .setValue(markerInformation?.downvote?.plus(1))
                     database.child("markers").child(getMarkerKey(mark.id)).child("contributors")
                             .child(currentUser).setValue(2)
                 }
@@ -655,11 +658,11 @@ class HomeFragment : Fragment(), LocationEngineListener {
     private fun setupWeatherMarkerScreen(weatherResponse: FullWeather) {
         val convert = WeatherConverter()
 
-        weatherMarker.weatherMarkerIcon.setImageResource(convert.getWeatherIcon(weatherResponse.weather?.weather!![0].id!!))
+        weatherResponse.weather?.weather?.get(0)?.id?.let { convert.getWeatherIcon(it) }?.let { weatherMarker.weatherMarkerIcon.setImageResource(it) }
         weatherMarker.temperatureTextView.text = convert.getTemperature(weatherResponse.weather?.main?.temp)
-        weatherMarker.descriptionTextView.text = weatherResponse.weather?.weather!![0].description
-        weatherMarker.latitudeTextView.text = weatherResponse.weather!!.coord!!.lat.toString()
-        weatherMarker.longitudeTextView.text = weatherResponse.weather!!.coord!!.lon.toString()
+        weatherMarker.descriptionTextView.text = weatherResponse.weather?.weather?.get(0)?.description
+        weatherMarker.latitudeTextView.text = weatherResponse.weather?.coord?.lat.toString()
+        weatherMarker.longitudeTextView.text = weatherResponse.weather?.coord?.lon.toString()
         weatherMarker.sunriseTextView.text = convert.getTime(weatherResponse.weather?.sys?.sunrise)
         weatherMarker.sunsetTextView.text = convert.getTime(weatherResponse.weather?.sys?.sunset)
         weatherMarker.cloudCoverTextView.text = convert.getCloudyValue(weatherResponse.weather?.clouds?.all)
@@ -672,8 +675,6 @@ class HomeFragment : Fragment(), LocationEngineListener {
         openMarkerMenuButton.visibility = View.GONE
         centerCameraButton.visibility = View.GONE
         map.uiSettings.setAllGesturesEnabled(false)
-
-        println("I'm in SetupWeatherMarkerScreen" + weatherResponse.weather!!.main!!.temp.toString())
 
         weatherMarker.exitButton.setOnClickListener {
             weatherMarker.visibility = View.GONE
@@ -699,7 +700,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
             currentMarker?.description = description
             markerTextDescription.text.clear()
-            val inputMethodManager = mContext.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager = mContext?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
 
             markerDescription.visibility = View.GONE
@@ -730,7 +731,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         markersList.add(Marker(getString(R.string.marker_buoy), R.drawable.marker_menu_buoy, R.drawable.marker_map_buoy, 6, ""))
         markersList.add(Marker(getString(R.string.marker_cost_guard), R.drawable.marker_menu_cost_guard, R.drawable.marker_map_cost_guard, 7, ""))
         markersList.add(Marker(getString(R.string.marker_fishes), R.drawable.marker_menu_fishes, R.drawable.marker_map_fishes, 8, ""))
-        val adapter = MarkerAdapter(context!!, markersList)
+        val adapter = context?.let { MarkerAdapter(it, markersList) }
 
         markerGridView.adapter = adapter
         markerGridView.setOnItemClickListener { _, _, position, _ ->
@@ -772,12 +773,14 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
     @SuppressWarnings("MissingPermission")
     private fun initializeLocationComponent() {
-        val options = LocationComponentOptions.builder(context)
-                .trackingGesturesManagement(true)
-                .accuracyColor(ContextCompat.getColor(context!!, R.color.deep_blue))
-                .build()
+        val options = context?.let { ContextCompat.getColor(it, R.color.deep_blue) }?.let {
+            LocationComponentOptions.builder(context)
+                    .trackingGesturesManagement(true)
+                    .accuracyColor(it)
+                    .build()
+        }
         locationComponent = map.locationComponent
-        locationComponent?.activateLocationComponent(mContext, options)
+        mContext?.let { options?.let { it1 -> locationComponent?.activateLocationComponent(it, it1) } }
         locationComponent?.isLocationComponentEnabled = true
         locationComponent?.renderMode = RenderMode.COMPASS
         locationComponent?.cameraMode = CameraMode.TRACKING

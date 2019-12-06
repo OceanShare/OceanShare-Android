@@ -149,8 +149,8 @@ class RegisterFragment : Fragment() {
 
             fbAuth.createUserWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(activity as Activity) { task ->
                 if (task.isSuccessful) {
-                    val user = fbAuth!!.currentUser
-                    user!!.sendEmailVerification().addOnCompleteListener(activity as Activity) { mailTask ->
+                    val user = fbAuth?.currentUser
+                    user?.sendEmailVerification()?.addOnCompleteListener(activity as Activity) { mailTask ->
                         if (mailTask.isSuccessful) {
                             Toast.makeText(context, R.string.info_mail_confirm, Toast.LENGTH_LONG).show()
                             email_register_button.dispose()

@@ -10,11 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.AccessToken
-import com.facebook.login.LoginManager
-import kotlinx.android.synthetic.main.fragment_profile.view.*
 import com.facebook.GraphRequest
 import com.facebook.HttpMethod
-import kotlinx.android.synthetic.main.fragment_profile.*
+import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -22,6 +20,8 @@ import com.oceanshare.oceanshare.authentication.AuthenticationActivity
 import com.oceanshare.oceanshare.authentication.GoogleAuthentication
 import com.oceanshare.oceanshare.authentication.User
 import kotlinx.android.synthetic.main.dialog_not_implemented.view.*
+import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.android.synthetic.main.fragment_profile.view.*
 
 class ProfileFragment : Fragment() {
 
@@ -66,21 +66,25 @@ class ProfileFragment : Fragment() {
 
         view.settings_button.setOnClickListener {
             val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_not_implemented, null)
-            val mBuilder = AlertDialog.Builder(context!!, R.style.DialogTheme)
-                    .setView(mDialogView)
-            val  mAlertDialog = mBuilder.show()
+            val mBuilder = context?.let { it1 ->
+                AlertDialog.Builder(it1, R.style.DialogTheme)
+                        .setView(mDialogView)
+            }
+            val mAlertDialog = mBuilder?.show()
             mDialogView.dialogCancelBtn.setOnClickListener {
-                mAlertDialog.dismiss()
+                mAlertDialog?.dismiss()
             }
         }
 
         view.add_media_button.setOnClickListener {
             val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_not_implemented, null)
-            val mBuilder = AlertDialog.Builder(context!!, R.style.DialogTheme)
-                    .setView(mDialogView)
-            val  mAlertDialog = mBuilder.show()
+            val mBuilder = context?.let { it1 ->
+                AlertDialog.Builder(it1, R.style.DialogTheme)
+                        .setView(mDialogView)
+            }
+            val mAlertDialog = mBuilder?.show()
             mDialogView.dialogCancelBtn.setOnClickListener {
-                mAlertDialog.dismiss()
+                mAlertDialog?.dismiss()
             }
 
             mDialogView.dialogLearnMoreButton.setOnClickListener {

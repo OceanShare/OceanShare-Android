@@ -15,16 +15,16 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import android.widget.Toast
 import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginResult
+import com.google.android.gms.auth.api.Auth
+import com.google.firebase.auth.FirebaseAuth
 import com.oceanshare.oceanshare.MainActivity
 import com.oceanshare.oceanshare.R
 import com.oceanshare.oceanshare.utils.hideKeyboard
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
-import com.facebook.FacebookException
-import com.facebook.login.LoginResult
-import com.facebook.FacebookCallback
-import com.google.android.gms.auth.api.Auth
-import com.google.firebase.auth.FirebaseAuth
 
 class LoginFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
@@ -134,8 +134,8 @@ class LoginFragment : Fragment() {
             if (rootView.email.text.isEmpty() || rootView.email.text.isBlank()) {
                 Toast.makeText(context, R.string.enter_email, Toast.LENGTH_LONG).show()
             } else {
-                fbAuth!!.sendPasswordResetEmail(rootView.email.text.toString())
-                        .addOnCompleteListener { task ->
+                fbAuth?.sendPasswordResetEmail(rootView.email.text.toString())
+                        ?.addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 Toast.makeText(context, R.string.info_link_send, Toast.LENGTH_LONG).show()
                             } else {
@@ -173,14 +173,18 @@ class LoginFragment : Fragment() {
 
         // Check for a valid email address.
         AuthenticationHelper.isEmailValid(context, emailStr)?.also { error ->
-            if (!cancel) { focusView = email }
+            if (!cancel) {
+                focusView = email
+            }
             email_til.error = error
             cancel = true
         }
 
         // Check for a valid password, if the user entered one.
         AuthenticationHelper.isPasswordValid(context, passwordStr)?.also { error ->
-            if (!cancel) { focusView = password }
+            if (!cancel) {
+                focusView = password
+            }
             password_til.error = error
             cancel = true
         }
@@ -192,8 +196,8 @@ class LoginFragment : Fragment() {
             email_login_button.startAnimation()
             fbAuth.signInWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(activity as Activity) { task ->
                 if (task.isSuccessful) {
-                    val user = fbAuth!!.currentUser
-                    if (user!!.isEmailVerified) {
+                    val user = fbAuth.currentUser
+                    if (user != null && user.isEmailVerified) {
                         connectUserAndRedirectToHomePage()
                     } else {
                         Toast.makeText(context, R.string.error_confirm_account, Toast.LENGTH_LONG).show()
