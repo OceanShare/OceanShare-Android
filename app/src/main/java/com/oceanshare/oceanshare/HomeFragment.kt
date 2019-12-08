@@ -353,7 +353,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                                 && isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
                                         p0.child("location").child("longitude").value.toString().toDouble()))
                                 && getMarkerDistance(p0.child("location").child("latitude").value.toString().toDouble(),
-                                        p0.child("location").child("longitude").value.toString().toDouble(),
+                                        p0.child("location").child("longitude").value.toString().toDouble()g,
                                         originLocation.latitude, originLocation.longitude) < 20000) {
 
                             val userLatitude = p0.child("location").child("latitude").value.toString().toDouble()
