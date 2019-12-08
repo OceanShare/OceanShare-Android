@@ -94,8 +94,6 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
             database = FirebaseDatabase.getInstance().reference
 
-            initMarker()
-            initUsers()
             enableLocation()
 
             map.addOnMapClickListener {
@@ -144,6 +142,8 @@ class HomeFragment : Fragment(), LocationEngineListener {
             Handler().postDelayed({
                 (activity as MainActivity).showBottomNavigationView()
                 splashScreen.animate().alpha(0.0f)
+                initMarker()
+                initUsers()
             }, 2000)
         }
 
@@ -160,6 +160,18 @@ class HomeFragment : Fragment(), LocationEngineListener {
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(position), 1000)
             }
         }
+    }
+
+    private fun getMarkerDistance(lat1: Double, long1: Double, lat2: Double, long2: Double) : Float {
+        val location1 = Location("")
+        location1.latitude = lat1
+        location1.longitude = long1
+
+        val location2 = Location("")
+        location2.latitude = lat2
+        location2.longitude = long2
+
+        return location1.distanceTo(location2)
     }
 
     private fun getHour(): String {
@@ -222,19 +234,21 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
-                        if (!markerHashMap.containsKey(key) && p0.exists() && p0.child("groupId").exists()) {
 
-                            val markerLatitude = p0.child("latitude").value.toString().toDouble()
-                            val markerLongitude = p0.child("longitude").value.toString().toDouble()
-                            val groupId = p0.child("groupId").value.toString().toInt()
-                            val markerDesc = p0.child("description").value.toString()
-                            val markerTime = p0.child("time").value.toString()
-                            val markerUser = p0.child("user").value.toString()
-                            val markerUsername = "Joseph"
-                            val upvote = p0.child("upvote").value.toString().toInt()
-                            val downvote = p0.child("downvote").value.toString().toInt()
-                            val contributor = p0.child("contributors").value.toString()
-                            val timestamp = p0.child("timestamp").value.toString().toLong()
+                        val markerLatitude = p0.child("latitude").value.toString().toDouble()
+                        val markerLongitude = p0.child("longitude").value.toString().toDouble()
+                        val groupId = p0.child("groupId").value.toString().toInt()
+                        val markerDesc = p0.child("description").value.toString()
+                        val markerTime = p0.child("time").value.toString()
+                        val markerUser = p0.child("user").value.toString()
+                        val markerUsername = "Joseph"
+                        val upvote = p0.child("upvote").value.toString().toInt()
+                        val downvote = p0.child("downvote").value.toString().toInt()
+                        val contributor = p0.child("contributors").value.toString()
+                        val timestamp = p0.child("timestamp").value.toString().toLong()
+
+                        if (!markerHashMap.containsKey(key) && p0.exists() && p0.child("groupId").exists()
+                                && getMarkerDistance(markerLatitude, markerLongitude, originLocation.latitude, originLocation.longitude) < 20000) {
 
                             val userVotes = fillLikedArray(contributor)
 
@@ -333,10 +347,14 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
+
                         if (!userHashMap.containsKey(key) && p0.exists() && p0.child("location").exists()
                                 && p0.child("preferences").child("user_active").value.toString().toBoolean()
                                 && isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
-                                        p0.child("location").child("longitude").value.toString().toDouble()))) {
+                                        p0.child("location").child("longitude").value.toString().toDouble()))
+                                && getMarkerDistance(p0.child("location").child("latitude").value.toString().toDouble(),
+                                        p0.child("location").child("longitude").value.toString().toDouble(),
+                                        originLocation.latitude, originLocation.longitude) < 20000) {
 
                             val userLatitude = p0.child("location").child("latitude").value.toString().toDouble()
                             val userLongitude = p0.child("location").child("longitude").value.toString().toDouble()
