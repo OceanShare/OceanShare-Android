@@ -18,18 +18,23 @@ import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
-import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
+import com.oceanshare.oceanshare.MainActivity
 import com.oceanshare.oceanshare.R
 import com.oceanshare.oceanshare.utils.hideKeyboard
 import kotlinx.android.synthetic.main.fragment_register.*
 import kotlinx.android.synthetic.main.fragment_register.view.*
+import timber.log.Timber
 
 class RegisterFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
 
-    private var fbAuth = FirebaseAuth.getInstance()
+    private var fbAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private var mCallback: Callback? = null
 
     interface Callback {
@@ -62,13 +67,34 @@ class RegisterFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         FacebookAuthentication.callbackManager?.onActivityResult(requestCode, resultCode, data)
 
+
         if (requestCode == GoogleAuthentication.RC_SIGN_IN) {
-            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
-            if (result.isSuccess) {
-                Toast.makeText(activity, "Google ça marche fdp", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(activity, R.string.error_auth_failed, Toast.LENGTH_SHORT).show()
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                val account = task.getResult(ApiException::class.java)
+                firebaseAuthWithGoogle(account!!)
+            } catch (e: ApiException) {
+                Timber.e("Google sign in failed")
             }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
+        activity?.let {
+            fbAuth.signInWithCredential(credential)
+                    .addOnCompleteListener(it) { task ->
+                        if (task.isSuccessful) {
+                            val uid = FirebaseAuth.getInstance().currentUser?.uid
+                            if (uid != null) {
+                                setupUserPreferences(uid)
+                            }
+                            connectUserAndRedirectToHomePage()
+                        } else {
+                            Timber.w(task.exception, "signInWithCredential:failure")
+                        }
+                    }
         }
     }
 
@@ -79,12 +105,19 @@ class RegisterFragment : Fragment() {
 
         rootView.facebook_login_button.registerCallback(FacebookAuthentication.callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
-                Toast.makeText(activity, "Facebook ça marche fdp", Toast.LENGTH_SHORT).show()
+                connectUserAndRedirectToHomePage()
             }
 
             override fun onCancel() {}
             override fun onError(exception: FacebookException) {}
         })
+    }
+
+    fun connectUserAndRedirectToHomePage() {
+        email_register_button.dispose()
+        val mainActivityIntent = Intent(activity, MainActivity::class.java)
+        startActivity(mainActivityIntent)
+        activity?.finish()
     }
 
     private fun setupRegistrationForm(rootView: View) {
@@ -127,6 +160,14 @@ class RegisterFragment : Fragment() {
                 rootView.password_confirmation_til.isPasswordVisibilityToggleEnabled = rootView.password_confirmation.text.isNotEmpty()
             }
         })
+    }
+
+    private fun setupUserPreferences(uid: String) {
+        val database = FirebaseDatabase.getInstance().reference
+        database.child("users").child(uid).child("preferences").child("boatId").setValue(0)
+        database.child("users").child(uid).child("preferences").child("ghost_mode").setValue(false)
+        database.child("users").child(uid).child("preferences").child("show_picture").setValue(false)
+        database.child("users").child(uid).child("preferences").child("user_active").setValue(false)
     }
 
     override fun onAttach(context: Context) {
@@ -190,16 +231,12 @@ class RegisterFragment : Fragment() {
 
             fbAuth.createUserWithEmailAndPassword(emailStr, passwordStr).addOnCompleteListener(activity as Activity) { task ->
                 if (task.isSuccessful) {
-                    val user = fbAuth?.currentUser
+                    val user = fbAuth.currentUser
                     user?.sendEmailVerification()?.addOnCompleteListener(activity as Activity) { mailTask ->
                         if (mailTask.isSuccessful) {
                             val uid = FirebaseAuth.getInstance().currentUser?.uid
-                            val database = FirebaseDatabase.getInstance().reference
                             if (uid != null) {
-                                database.child("users").child(uid).child("preferences").child("boatId").setValue(0)
-                                database.child("users").child(uid).child("preferences").child("ghost_mode").setValue(false)
-                                database.child("users").child(uid).child("preferences").child("show_picture").setValue(false)
-                                database.child("users").child(uid).child("preferences").child("user_active").setValue(false)
+                                setupUserPreferences(uid)
                             }
                             Toast.makeText(context, R.string.info_mail_confirm, Toast.LENGTH_LONG).show()
                             email_register_button.dispose()
