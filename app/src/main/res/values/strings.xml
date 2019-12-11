@@ -129,6 +129,8 @@
     <string name="marker_edition_description">Vous pouvez modifier la description de votre évenement ou le supprimer.</string>
     <string name="save">Save</string>
     <string name="mapbox_style" translatable="false">mapbox://styles/oceanshare06/ck36dulje0m7c1cpih4atqiab</string>
+    <string name="subscription">Subscription</string>
+    <string name="hello_profile">Hello %1$s !</string>
     <string-array name="segments">
         <item>Celsius</item>
         <item>Fahrenheit</item>

@@ -1,14 +1,23 @@
 package com.oceanshare.oceanshare
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.facebook.AccessToken
+import com.facebook.GraphRequest
+import com.facebook.HttpMethod
+import com.facebook.login.LoginManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.oceanshare.oceanshare.authentication.AuthenticationActivity
+import com.oceanshare.oceanshare.authentication.GoogleAuthentication
 import com.oceanshare.oceanshare.authentication.User
 import kotlinx.android.synthetic.main.activity_preferences.*
 
 class PreferencesActivity : AppCompatActivity() {
 
+    private var fbAuth = FirebaseAuth.getInstance()
     private var database: DatabaseReference = FirebaseDatabase.getInstance().reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +52,10 @@ class PreferencesActivity : AppCompatActivity() {
         temperatureSegmentedControl.addOnSegmentClickListener {
             // TODO: Save this in local storage
             // TODO: Create preferences in Firebase at account creation
+        }
+
+        logoutButton.setOnClickListener {
+            logout()
         }
     }
 
@@ -125,5 +138,38 @@ class PreferencesActivity : AppCompatActivity() {
         if (uid != null) {
             database.child("users").child(uid).child("preferences").child("boatId").setValue(boatId)
         }
+    }
+
+
+    private fun logout() {
+        logoutButton.startAnimation()
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        fbAuth.signOut()
+
+        when {
+            AccessToken.getCurrentAccessToken() != null -> logoutFromFacebook()
+            account != null -> logoutFromGoogle()
+            else -> redirectToConnection()
+        }
+    }
+
+    private fun logoutFromGoogle() {
+        GoogleAuthentication.logout()
+        redirectToConnection()
+    }
+
+    private fun logoutFromFacebook() {
+        GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, GraphRequest.Callback {
+            LoginManager.getInstance().logOut()
+            AccessToken.setCurrentAccessToken(null)
+            redirectToConnection()
+        }).executeAsync()
+    }
+
+    private fun redirectToConnection() {
+        val authenticationIntent = Intent(this, AuthenticationActivity::class.java)
+        startActivity(authenticationIntent)
+        logoutButton.dispose()
+        this.finish()
     }
 }

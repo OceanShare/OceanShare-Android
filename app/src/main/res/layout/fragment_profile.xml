@@ -24,6 +24,7 @@
         android:layout_below="@id/background"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="-85dp">
+
         <android.support.v7.widget.CardView
             android:layout_width="160dp"
             android:layout_height="160dp"
@@ -31,14 +32,16 @@
             android:elevation="0dp"
             android:gravity="center"
             app:cardCornerRadius="90dp">
+
             <ImageView
                 android:id="@+id/meteoImage"
-                android:src="@drawable/profile_picture_placeholder"
                 android:layout_width="140dp"
                 android:layout_height="140dp"
-                android:elevation="12dp"
                 android:layout_gravity="center"
-                android:scaleType="centerCrop" />
+                android:elevation="12dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/profile_picture_placeholder"
+                tools:ignore="ContentDescription" />
         </android.support.v7.widget.CardView>
     </LinearLayout>
 
@@ -215,54 +218,19 @@
     </LinearLayout>
 
     <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
-        android:id="@+id/logout_button"
+        android:id="@+id/subscriptionButton"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
         android:layout_marginTop="@dimen/regular_margin"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="100dp"
         android:background="@drawable/round_blue_button"
         android:elevation="10dp"
-        android:text="@string/action_logout"
+        android:text="@string/subscription"
         android:textColor="@color/white"
         app:initialCornerAngle="100dp"
         app:spinning_bar_color="@color/white"
         app:spinning_bar_padding="6dp"
         app:spinning_bar_width="4dp" />
-    <!--
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#f5f8fd"
-        android:layout_below="@id/bottom"
-        android:fillViewport="true">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:background="#f5f8fd"
-            android:clipToPadding="false"
-            android:padding="@dimen/regular_padding">
-
-            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
-                android:id="@+id/logout_button"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/regular_margin"
-                android:layout_marginBottom="80dp"
-                android:background="@drawable/request_button"
-                android:elevation="10dp"
-                android:text="@string/action_logout"
-                android:textColor="@color/white"
-                android:layout_alignParentBottom="true"
-                app:initialCornerAngle="100dp"
-                app:spinning_bar_color="@color/white"
-                app:spinning_bar_padding="6dp"
-                app:spinning_bar_width="4dp" />
-
-        </RelativeLayout>
-    </ScrollView>
-    -->
 </RelativeLayout>

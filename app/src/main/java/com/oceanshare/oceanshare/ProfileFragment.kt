@@ -9,23 +9,14 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.facebook.AccessToken
-import com.facebook.GraphRequest
-import com.facebook.HttpMethod
-import com.facebook.login.LoginManager
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.oceanshare.oceanshare.authentication.AuthenticationActivity
-import com.oceanshare.oceanshare.authentication.GoogleAuthentication
 import com.oceanshare.oceanshare.authentication.User
 import kotlinx.android.synthetic.main.dialog_not_implemented.view.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
 
 class ProfileFragment : Fragment() {
-
-    private var fbAuth = FirebaseAuth.getInstance()
     private var mDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -43,7 +34,7 @@ class ProfileFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val user = dataSnapshot.getValue(User::class.java)
                 if (user?.name != null) {
-                    username_text_view.text = "Bonjour " + user.name + " !"
+                    username_text_view.text = String.format(resources.getString(R.string.hello_profile), user.name)
                 }
                 if (user?.ship_name != null) {
                     ship_name_text_view.text = user.ship_name
@@ -60,8 +51,8 @@ class ProfileFragment : Fragment() {
             mDatabase.child("users").child(uid).addListenerForSingleValueEvent(userListener)
         }
 
-        view.logout_button.setOnClickListener {
-            logout()
+        view.subscriptionButton.setOnClickListener {
+            // TODO: Here
         }
 
         view.settings_button.setOnClickListener {
@@ -91,37 +82,5 @@ class ProfileFragment : Fragment() {
             val settingsIntent = Intent(activity, SettingsActivity::class.java)
             startActivity(settingsIntent)
         }
-    }
-
-    private fun logout() {
-        logout_button.startAnimation()
-        val account = GoogleSignIn.getLastSignedInAccount(activity)
-        fbAuth.signOut()
-
-        when {
-            AccessToken.getCurrentAccessToken() != null -> logoutFromFacebook()
-            account != null -> logoutFromGoogle()
-            else -> redirectToConnection()
-        }
-    }
-
-    private fun logoutFromGoogle() {
-        GoogleAuthentication.logout()
-        redirectToConnection()
-    }
-
-    private fun logoutFromFacebook() {
-        GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, GraphRequest.Callback {
-            LoginManager.getInstance().logOut()
-            AccessToken.setCurrentAccessToken(null)
-            redirectToConnection()
-        }).executeAsync()
-    }
-
-    private fun redirectToConnection() {
-        val authenticationIntent = Intent(activity, AuthenticationActivity::class.java)
-        startActivity(authenticationIntent)
-        logout_button.dispose()
-        activity?.finish()
     }
 }
