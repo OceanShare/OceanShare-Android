@@ -18,6 +18,7 @@ class GoogleAuthentication {
 
         fun instantiateGoogleSignInClient(activity: Activity) {
             val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken("508733132694-6h35b5qrvhsuor5f3vstingh0tkaae0c.apps.googleusercontent.com")
                     .requestEmail()
                     .build()
             mGoogleSignInClient = GoogleSignIn.getClient(activity, googleSignInOptions)
