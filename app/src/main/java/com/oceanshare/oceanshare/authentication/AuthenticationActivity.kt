@@ -110,7 +110,13 @@ class AuthenticationActivity : AppCompatActivity(),
 
     private fun isUserIsAlreadyConnected(currentUser: FirebaseUser?): Boolean {
         GoogleAuthentication.instantiateGoogleSignInClient(this)
-        return FacebookAuthentication.isConnected(this) || GoogleAuthentication.isConnected(this) || currentUser != null
+        if (currentUser == null) {
+            return false
+        }
+        if (!currentUser.isEmailVerified) {
+            return false
+        }
+        return FacebookAuthentication.isConnected(this) || GoogleAuthentication.isConnected(this)
     }
 
     private fun setupSectionsPagerAdapter() {

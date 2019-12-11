@@ -131,6 +131,7 @@
     <string name="mapbox_style" translatable="false">mapbox://styles/oceanshare06/ck36dulje0m7c1cpih4atqiab</string>
     <string name="subscription">Subscription</string>
     <string name="hello_profile">Hello %1$s !</string>
+    <string name="marker_put_by">"Put by : %1$s"</string>
     <string-array name="segments">
         <item>Celsius</item>
         <item>Fahrenheit</item>

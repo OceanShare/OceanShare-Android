@@ -85,9 +85,9 @@ interface IWeatherApi {
     @GET("api/weather")
     suspend fun getWeather(@Query("lat") lat: String?, @Query("lng") lng: String?): FullWeather
 
-    companion object{
+    companion object {
 
-        operator fun invoke() : IWeatherApi {
+        operator fun invoke(): IWeatherApi {
 
             val url = "https://oceanshare.cleverapps.io"
             val retrofit = Retrofit.Builder()
@@ -100,7 +100,7 @@ interface IWeatherApi {
 
             val service = retrofit.create(IWeatherApi::class.java)
 
-            return  service
+            return service
         }
     }
 }

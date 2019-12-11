@@ -201,6 +201,7 @@ class LoginFragment : Fragment() {
                         connectUserAndRedirectToHomePage()
                     } else {
                         Toast.makeText(context, R.string.error_confirm_account, Toast.LENGTH_LONG).show()
+                        fbAuth.signOut()
                         email_login_button.revertAnimation()
                     }
                 } else {

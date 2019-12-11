@@ -120,6 +120,7 @@
     <string name="what_is_happening">Que se passe-t-il ?</string>
     <string name="subscription">Abonnement</string>
     <string name="hello_profile">Bonjour %1$s !</string>
+    <string name="marker_put_by">"Posé par : %1$s"</string>
     <string-array name="segments">
         <item>Celsius</item>
         <item>Fahrenheit</item>

@@ -12,6 +12,13 @@ class WeatherConverter {
         return "-- °C"
     }
 
+    fun getFTemperature(temp: Double?): String {
+        temp?.let {
+            return (it.roundToInt().toString() + "°F")
+        }
+        return "-- °F"
+    }
+
     fun getTime(timestamp: Long?): String {
         timestamp?.let {
             val sdf = SimpleDateFormat("HH:mm")

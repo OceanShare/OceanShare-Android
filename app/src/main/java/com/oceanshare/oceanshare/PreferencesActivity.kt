@@ -1,5 +1,6 @@
 package com.oceanshare.oceanshare
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -50,8 +51,15 @@ class PreferencesActivity : AppCompatActivity() {
         }
 
         temperatureSegmentedControl.addOnSegmentClickListener {
-            // TODO: Save this in local storage
-            // TODO: Create preferences in Firebase at account creation
+            val sharedPref = getSharedPreferences("OCEANSHARE_SHARED_PREFERENCES", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                if (it.segmentData.toString() == "Celsius") {
+                    putInt("temperature_preferences", 0)
+                } else {
+                    putInt("temperature_preferences", 1)
+                }
+                commit()
+            }
         }
 
         logoutButton.setOnClickListener {
@@ -60,7 +68,8 @@ class PreferencesActivity : AppCompatActivity() {
     }
 
     private fun setupPreferences() {
-        temperatureSegmentedControl.setSelectedSegment(0)
+        val sharedPref = getSharedPreferences("OCEANSHARE_SHARED_PREFERENCES", Context.MODE_PRIVATE)
+        temperatureSegmentedControl.setSelectedSegment(sharedPref.getInt("temperature_preferences", 0))
 
         val userListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
