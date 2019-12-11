@@ -51,11 +51,12 @@ class AuthenticationActivity : AppCompatActivity(),
     public override fun onStart() {
         super.onStart()
 
-        showPermissionRequestDialog()
-        if (isUserIsAlreadyConnected(fbAuth.currentUser)) {
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && isUserIsAlreadyConnected(fbAuth.currentUser)) {
             redirectToHomePage()
+        } else {
+            showPermissionRequestDialog()
         }
-
         setupSectionsPagerAdapter()
         KeyboardVisibilityEvent.setEventListener(this) { isOpen ->
             if (isOpen) {
@@ -147,13 +148,12 @@ class AuthenticationActivity : AppCompatActivity(),
 
     private fun isUserIsAlreadyConnected(currentUser: FirebaseUser?): Boolean {
         GoogleAuthentication.instantiateGoogleSignInClient(this)
-        if (currentUser == null) {
-            return false
+        if (currentUser != null) {
+            if (!currentUser.isEmailVerified) {
+                return false
+            }
         }
-        if (!currentUser.isEmailVerified) {
-            return false
-        }
-        return FacebookAuthentication.isConnected(this) || GoogleAuthentication.isConnected(this)
+        return FacebookAuthentication.isConnected(this) || GoogleAuthentication.isConnected(this) || currentUser != null
     }
 
     private fun setupSectionsPagerAdapter() {
