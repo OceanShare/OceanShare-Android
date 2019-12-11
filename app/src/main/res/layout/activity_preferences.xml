@@ -41,7 +41,7 @@
         android:textStyle="bold" />
 
     <segmented_control.widget.custom.android.com.segmentedcontrol.SegmentedControl
-        android:id="@+id/segmented_control"
+        android:id="@+id/temperatureSegmentedControl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -73,6 +73,7 @@
             android:textStyle="bold" />
 
         <Switch
+            android:id="@+id/showPictureSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -102,6 +103,7 @@
             android:textStyle="bold" />
 
         <Switch
+            android:id="@+id/ghostModeSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"

@@ -1,7 +1,7 @@
 package com.oceanshare.oceanshare
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.oceanshare.oceanshare.authentication.User
@@ -20,13 +20,13 @@ class SettingsActivity : AppCompatActivity() {
 
         settings_back_button.setOnClickListener {
             if (name_edit_text.text.isNotEmpty()) {
-                saveUsername(mDatabase, name_edit_text.text.toString())
+                saveUsername(name_edit_text.text.toString())
             }
             if (email_edit_text.text.isNotEmpty()) {
-                saveEmail(mDatabase, email_edit_text.text.toString())
+                saveEmail(email_edit_text.text.toString())
             }
             if (ship_name_edit_text.text.isNotEmpty()) {
-                saveShipName(mDatabase, ship_name_edit_text.text.toString())
+                saveShipName(ship_name_edit_text.text.toString())
             }
             this.finish()
         }
@@ -46,8 +46,8 @@ class SettingsActivity : AppCompatActivity() {
                 if (FirebaseAuth.getInstance().currentUser?.email != null) {
                     email_edit_text.setText(FirebaseAuth.getInstance().currentUser?.email)
                 }
-                if (user?.shipName != null) {
-                    ship_name_edit_text.setText(user.shipName)
+                if (user?.ship_name != null) {
+                    ship_name_edit_text.setText(user.ship_name)
                 }
             }
 
@@ -62,27 +62,27 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveUsername(firebaseData: DatabaseReference, username: String) {
+    private fun saveUsername(username: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val uid = currentUser?.uid
         if (uid != null) {
-            firebaseData.child("users").child(uid).child("name").setValue(username)
+            mDatabase.child("users").child(uid).child("name").setValue(username)
         }
     }
 
-    private fun saveShipName(firebaseData: DatabaseReference, shipName: String) {
+    private fun saveShipName(shipName: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val uid = currentUser?.uid
         if (uid != null) {
-            firebaseData.child("users").child(uid).child("shipName").setValue(shipName)
+            mDatabase.child("users").child(uid).child("ship_name").setValue(shipName)
         }
     }
 
-    private fun saveEmail(firebaseData: DatabaseReference, email: String) {
+    private fun saveEmail(email: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val uid = currentUser?.uid
         if (uid != null) {
-            firebaseData.child("users").child(uid).child("email").setValue(email)
+            mDatabase.child("users").child(uid).child("email").setValue(email)
         }
     }
 }

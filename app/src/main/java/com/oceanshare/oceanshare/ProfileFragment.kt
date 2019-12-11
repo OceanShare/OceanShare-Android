@@ -45,8 +45,8 @@ class ProfileFragment : Fragment() {
                 if (user?.name != null) {
                     username_text_view.text = "Bonjour " + user.name + " !"
                 }
-                if (user?.shipName != null) {
-                    ship_name_text_view.text = user.shipName
+                if (user?.ship_name != null) {
+                    ship_name_text_view.text = user.ship_name
                 }
             }
 
