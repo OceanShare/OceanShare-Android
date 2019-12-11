@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.oceanshare.oceanshare.utils.isConnectedToNetwork
 import kotlinx.android.synthetic.main.fragment_meteo.*
 
 class MeteoFragment : Fragment() {
@@ -20,6 +21,9 @@ class MeteoFragment : Fragment() {
     }
 
     suspend fun fetchMeteo(location: Location) {
+        if (context == null || !context!!.isConnectedToNetwork()) {
+            return
+        }
         val meteo = apiService.getWeather(location.latitude.toString(), location.longitude.toString())
         meteo.weather?.weather?.get(0)?.let { analyseDescription(it) }?.let { meteoImage.setImageResource(it) }
         val sharedPref = activity?.getSharedPreferences("OCEANSHARE_SHARED_PREFERENCES", Context.MODE_PRIVATE)
