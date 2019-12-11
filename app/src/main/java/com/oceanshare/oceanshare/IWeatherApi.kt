@@ -88,7 +88,6 @@ interface IWeatherApi {
     companion object {
 
         operator fun invoke(): IWeatherApi {
-
             val url = "https://oceanshare.cleverapps.io"
             val retrofit = Retrofit.Builder()
                     .baseUrl(url)
@@ -98,9 +97,7 @@ interface IWeatherApi {
             val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
 
-            val service = retrofit.create(IWeatherApi::class.java)
-
-            return service
+            return retrofit.create(IWeatherApi::class.java)
         }
     }
 }

@@ -30,6 +30,7 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.oceanshare.oceanshare.utils.isConnectedToNetwork
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.marker_entry.view.*
 import kotlinx.android.synthetic.main.marker_manager.*
@@ -124,9 +125,11 @@ class HomeFragment : Fragment(), LocationEngineListener {
                     currentMarker = null
                 } else if (isWeatherMarker) {
                     GlobalScope.launch(Dispatchers.Main) {
-                        val weatherResponse = apiService.getWeather(it.latitude.toString(),
-                                it.longitude.toString())
-                        setupWeatherMarkerScreen(weatherResponse)
+                        if (context != null && context!!.isConnectedToNetwork()) {
+                            val weatherResponse = apiService.getWeather(it.latitude.toString(),
+                                    it.longitude.toString())
+                            setupWeatherMarkerScreen(weatherResponse)
+                        }
                     }
                     isWeatherMarker = false
                 }
@@ -162,7 +165,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         }
     }
 
-    private fun getMarkerDistance(lat1: Double, long1: Double, lat2: Double, long2: Double) : Float {
+    private fun getMarkerDistance(lat1: Double, long1: Double, lat2: Double, long2: Double): Float {
         val location1 = Location("")
         location1.latitude = lat1
         location1.longitude = long1
@@ -362,7 +365,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                             val userShipName = p0.child("ship_name").value.toString()
                             val userActive = p0.child("preferences").child("user_active").value.toString().toBoolean()
 
-                            println("Latitude: " + userLatitude + ", Longitude: " + userLongitude + ", LatLng: " + LatLng(userLatitude,userLongitude)  + ", isOnWater: " + isOnWater(LatLng(userLatitude,userLongitude)))
+                            println("Latitude: " + userLatitude + ", Longitude: " + userLongitude + ", LatLng: " + LatLng(userLatitude, userLongitude) + ", isOnWater: " + isOnWater(LatLng(userLatitude, userLongitude)))
 
                             val iconFactory = context?.let { IconFactory.getInstance(it) }
                             val icon = findMarkerIconMap(9)?.let { iconFactory?.fromResource(it) }
@@ -371,7 +374,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                                     .position(LatLng(userLatitude, userLongitude))
                                     .icon(icon)).id
 
-                            userHashMap[key] = UserData( markerId, userName, userLatitude, userLongitude,
+                            userHashMap[key] = UserData(markerId, userName, userLatitude, userLongitude,
                                     userShipName, userActive)
                         }
                     }
@@ -409,22 +412,20 @@ class HomeFragment : Fragment(), LocationEngineListener {
                                     .icon(icon)).id
 
                             if (userHashMap.containsKey(key) &&
-                                    (userHashMap[key]?.longitude != userLongitude || userHashMap[key]?.latitude != userLatitude))
-                            {
+                                    (userHashMap[key]?.longitude != userLongitude || userHashMap[key]?.latitude != userLatitude)) {
                                 map.getAnnotation(userHashMap[key]?.markerId!!)?.remove()
 
                                 userHashMap[key]?.longitude = userLongitude
                                 userHashMap[key]?.latitude = userLatitude
                                 userHashMap[key]?.markerId = markerId
                             } else {
-                                userHashMap[key] = UserData( markerId, userName, userLatitude, userLongitude,
+                                userHashMap[key] = UserData(markerId, userName, userLatitude, userLongitude,
                                         userShipName, userActive)
                             }
-                        }
-                        else if (userHashMap.containsKey(key) && p0.exists() &&
+                        } else if (userHashMap.containsKey(key) && p0.exists() &&
                                 (!p0.child("preferences").child("user_active").value.toString().toBoolean()
                                         || !isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
-                                        p0.child("location").child("longitude").value.toString().toDouble()))))  {
+                                        p0.child("location").child("longitude").value.toString().toDouble())))) {
                             map.getAnnotation(userHashMap[key]?.markerId!!)?.remove()
                             userHashMap.remove(key)
                         }
@@ -700,7 +701,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         }
     }
 
-    private fun isOnWater(it : LatLng) : Boolean {
+    private fun isOnWater(it: LatLng): Boolean {
         val pixel = map.projection.toScreenLocation(it)
         val features = map.queryRenderedFeatures(pixel, "water")
 
