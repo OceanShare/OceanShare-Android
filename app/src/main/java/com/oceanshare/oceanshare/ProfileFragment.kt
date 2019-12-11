@@ -65,15 +65,8 @@ class ProfileFragment : Fragment() {
         }
 
         view.settings_button.setOnClickListener {
-            val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_not_implemented, null)
-            val mBuilder = context?.let { it1 ->
-                AlertDialog.Builder(it1, R.style.DialogTheme)
-                        .setView(mDialogView)
-            }
-            val mAlertDialog = mBuilder?.show()
-            mDialogView.dialogCancelBtn.setOnClickListener {
-                mAlertDialog?.dismiss()
-            }
+            val settingsIntent = Intent(activity, PreferencesActivity::class.java)
+            startActivity(settingsIntent)
         }
 
         view.add_media_button.setOnClickListener {

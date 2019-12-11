@@ -82,6 +82,9 @@ dependencies {
 
     // View pager indocators
     implementation 'com.github.tizisdeepan:dots:1.0.1'
+
+    // Segmented control
+    implementation 'com.github.RobertApikyan:SegmentedControl:1.2.0'
 }
 
 // Firebase
