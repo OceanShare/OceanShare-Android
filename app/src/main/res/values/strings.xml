@@ -132,6 +132,8 @@
     <string name="subscription">Subscription</string>
     <string name="hello_profile">Hello %1$s !</string>
     <string name="marker_put_by">"Put by : %1$s"</string>
+    <string name="dialog_we_have_problem">We have a problem</string>
+    <string name="dialog_we_need_location">The OceanShare application requires location permission to work, do you want to enable it?</string>
     <string-array name="segments">
         <item>Celsius</item>
         <item>Fahrenheit</item>

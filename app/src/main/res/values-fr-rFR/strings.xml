@@ -121,6 +121,8 @@
     <string name="subscription">Abonnement</string>
     <string name="hello_profile">Bonjour %1$s !</string>
     <string name="marker_put_by">"Posé par : %1$s"</string>
+    <string name="dialog_we_have_problem">Nous avons un problème</string>
+    <string name="dialog_we_need_location">L\'application OceanShare requiert la permission de localisation pour fonctionner, voulez-vous l\'activer ?</string>
     <string-array name="segments">
         <item>Celsius</item>
         <item>Fahrenheit</item>
