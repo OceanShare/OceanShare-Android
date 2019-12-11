@@ -2,6 +2,7 @@ package com.oceanshare.oceanshare.authentication
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,6 +14,11 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import android.widget.Toast
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginResult
+import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.oceanshare.oceanshare.R
@@ -38,9 +44,47 @@ class RegisterFragment : Fragment() {
 
         // Set up the register form
         setupRegistrationForm(rootView)
+        setupGoogleConnection(rootView)
+        setupFacebookConnection(rootView)
         mCallback = activity as Callback?
 
         return rootView
+    }
+
+    private fun setupGoogleConnection(rootView: View) {
+        rootView.google_login_button.setOnClickListener {
+            val signInIntent = GoogleAuthentication.mGoogleSignInClient?.signInIntent
+            startActivityForResult(signInIntent, GoogleAuthentication.RC_SIGN_IN)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        FacebookAuthentication.callbackManager?.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == GoogleAuthentication.RC_SIGN_IN) {
+            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+            if (result.isSuccess) {
+                Toast.makeText(activity, "Google ça marche fdp", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(activity, R.string.error_auth_failed, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupFacebookConnection(rootView: View) {
+        FacebookAuthentication.callbackManager = CallbackManager.Factory.create()
+        rootView.facebook_login_button.setReadPermissions("email", "public_profile", "user_friends")
+        rootView.facebook_login_button.fragment = this
+
+        rootView.facebook_login_button.registerCallback(FacebookAuthentication.callbackManager, object : FacebookCallback<LoginResult> {
+            override fun onSuccess(loginResult: LoginResult) {
+                Toast.makeText(activity, "Facebook ça marche fdp", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onCancel() {}
+            override fun onError(exception: FacebookException) {}
+        })
     }
 
     private fun setupRegistrationForm(rootView: View) {
@@ -54,6 +98,10 @@ class RegisterFragment : Fragment() {
 
         rootView.email_register_button.setOnClickListener {
             attemptRegister()
+        }
+
+        rootView.true_facebook_login_button.setOnClickListener {
+            rootView.facebook_login_button.performClick()
         }
 
         // rootView.name.background.alpha = 80
@@ -100,20 +148,12 @@ class RegisterFragment : Fragment() {
 
         resetFieldsErrors()
         // Store values at the time of the register attempt.
-        // val nameStr = name.text.toString()
         val emailStr = email.text.toString()
         val passwordStr = password.text.toString()
         val passwordConfirmationStr = password_confirmation.text.toString()
 
         var cancel = false
         var focusView: View? = null
-
-        // Check for valid names
-        /*if (nameStr.isEmpty()) {
-            name_til.error = getString(R.string.error_field_required)
-            if (!cancel) { focusView = name }
-            cancel = true
-        }*/
 
         // Check for a valid email address.
         AuthenticationHelper.isEmailValid(context, emailStr)?.also { error ->
