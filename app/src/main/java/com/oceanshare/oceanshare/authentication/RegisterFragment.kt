@@ -14,6 +14,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.oceanshare.oceanshare.R
 import com.oceanshare.oceanshare.utils.hideKeyboard
 import kotlinx.android.synthetic.main.fragment_register.*
@@ -152,6 +153,14 @@ class RegisterFragment : Fragment() {
                     val user = fbAuth?.currentUser
                     user?.sendEmailVerification()?.addOnCompleteListener(activity as Activity) { mailTask ->
                         if (mailTask.isSuccessful) {
+                            val uid = FirebaseAuth.getInstance().currentUser?.uid
+                            val database = FirebaseDatabase.getInstance().reference
+                            if (uid != null) {
+                                database.child("users").child(uid).child("preferences").child("boatId").setValue(0)
+                                database.child("users").child(uid).child("preferences").child("ghost_mode").setValue(false)
+                                database.child("users").child(uid).child("preferences").child("show_picture").setValue(false)
+                                database.child("users").child(uid).child("preferences").child("user_active").setValue(false)
+                            }
                             Toast.makeText(context, R.string.info_mail_confirm, Toast.LENGTH_LONG).show()
                             email_register_button.dispose()
                             fbAuth.signOut()

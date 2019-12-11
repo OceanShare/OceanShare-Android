@@ -1,5 +1,6 @@
 package com.oceanshare.oceanshare
 
+import android.content.Context
 import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -21,7 +22,13 @@ class MeteoFragment : Fragment() {
     suspend fun fetchMeteo(location: Location) {
         val meteo = apiService.getWeather(location.latitude.toString(), location.longitude.toString())
         meteo.weather?.weather?.get(0)?.let { analyseDescription(it) }?.let { meteoImage.setImageResource(it) }
-        meteoTemp.text = weatherConverter.getTemperature(meteo.weather?.main?.temp)
+        val sharedPref = activity?.getSharedPreferences("OCEANSHARE_SHARED_PREFERENCES", Context.MODE_PRIVATE)
+                ?: return
+        if (sharedPref.getInt("temperature_preferences", 0) == 0) {
+            meteoTemp.text = weatherConverter.getTemperature(meteo.weather?.main?.temp)
+        } else {
+            meteoTemp.text = weatherConverter.getFTemperature(meteo.weather?.main?.temp)
+        }
         meteo.weather?.weather?.let {
             meteoDescription.text = it[0].description?.capitalize()
         }

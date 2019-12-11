@@ -571,7 +571,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
             markerManagerVoteButtons.visibility = View.GONE
 
         } else {
-            markerManagerOwnMarker.text = "Posé par : " + markerInformation?.username
+            markerManagerOwnMarker.text = String.format(resources.getString(R.string.marker_put_by), markerInformation?.username)
             markerManagerOwnMarker.visibility = View.VISIBLE
             markerManagerEditButton.visibility = View.INVISIBLE
             markerManagerVoteButtons.visibility = View.VISIBLE
@@ -669,7 +669,13 @@ class HomeFragment : Fragment(), LocationEngineListener {
         val convert = WeatherConverter()
 
         weatherResponse.weather?.weather?.get(0)?.id?.let { convert.getWeatherIcon(it) }?.let { weatherMarker.weatherMarkerIcon.setImageResource(it) }
-        weatherMarker.temperatureTextView.text = convert.getTemperature(weatherResponse.weather?.main?.temp)
+        val sharedPref = activity?.getSharedPreferences("OCEANSHARE_SHARED_PREFERENCES", Context.MODE_PRIVATE)
+                ?: return
+        if (sharedPref.getInt("temperature_preferences", 0) == 0) {
+            weatherMarker.temperatureTextView.text = convert.getTemperature(weatherResponse.weather?.main?.temp)
+        } else {
+            weatherMarker.temperatureTextView.text = convert.getFTemperature(weatherResponse.weather?.main?.temp)
+        }
         weatherMarker.descriptionTextView.text = weatherResponse.weather?.weather?.get(0)?.description
         weatherMarker.latitudeTextView.text = weatherResponse.weather?.coord?.lat.toString()
         weatherMarker.longitudeTextView.text = weatherResponse.weather?.coord?.lon.toString()
