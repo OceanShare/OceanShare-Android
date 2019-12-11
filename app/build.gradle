@@ -77,6 +77,12 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.beust:klaxon:5.0.1'
 
+    //STRIPE
+    implementation 'com.stripe:stripe-android:10.4.2'
+
+    //OKHTTP
+    implementation 'com.squareup.okhttp3:okhttp:4.2.1'
+
     // Keyboard state
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.3.0'
 
