@@ -28,6 +28,7 @@ import java.io.IOException
 class StripeActivity : AppCompatActivity() {
 
     private val backendUrl = "https://us-central1-oceanshare-1519985626980.cloudfunctions.net/"
+    private val publishableKey = "pk_test_aKG5XmyrMWd17loRBt4W45Vd00nDvn7UF1"
     private val httpClient = OkHttpClient()
     private lateinit var stripe: Stripe
 
@@ -37,7 +38,7 @@ class StripeActivity : AppCompatActivity() {
 
         // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
         // ⚠️ Don't forget to switch this to your live-mode publishable key before publishing your app
-        PaymentConfiguration.init("pk_test_aKG5XmyrMWd17loRBt4W45Vd00nDvn7UF1") // Get your key here: https://stripe.com/docs/keys#obtain-api-keys
+        PaymentConfiguration.init(publishableKey) // Get your key here: https://stripe.com/docs/keys#obtain-api-keys
 
         // Hook up the pay button to the card widget and stripe instance
         val payButton: Button = findViewById(R.id.payButton)
