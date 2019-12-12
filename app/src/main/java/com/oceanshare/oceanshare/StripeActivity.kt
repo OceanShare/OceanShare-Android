@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.widget.Button
 import com.google.gson.GsonBuilder
 import com.stripe.android.ApiResultCallback
 import com.stripe.android.PaymentConfiguration
@@ -13,6 +14,7 @@ import com.stripe.android.PaymentIntentResult
 import com.stripe.android.Stripe
 import com.stripe.android.model.ConfirmPaymentIntentParams
 import com.stripe.android.model.StripeIntent
+import com.stripe.android.model.Token
 import com.stripe.android.view.CardInputWidget
 import kotlinx.android.synthetic.main.activity_stripe.*
 import java.lang.ref.WeakReference
@@ -25,19 +27,74 @@ import java.io.IOException
 
 class StripeActivity : AppCompatActivity() {
 
-    private var context: Context? = null
-
     private val backendUrl = "https://us-central1-oceanshare-1519985626980.cloudfunctions.net/"
-    private val publishableKey = "pk_test_aKG5XmyrMWd17loRBt4W45Vd00nDvn7UF1"
     private val httpClient = OkHttpClient()
-    private lateinit var paymentIntentClientSecret: String
     private lateinit var stripe: Stripe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context = this
-        PaymentConfiguration.init(publishableKey)
-        startCheckout()
+        setContentView(R.layout.activity_stripe)
+
+        // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
+        // ⚠️ Don't forget to switch this to your live-mode publishable key before publishing your app
+        PaymentConfiguration.init("pk_test_aKG5XmyrMWd17loRBt4W45Vd00nDvn7UF1") // Get your key here: https://stripe.com/docs/keys#obtain-api-keys
+
+        // Hook up the pay button to the card widget and stripe instance
+        val payButton: Button = findViewById(R.id.payButton)
+        val weakActivity = WeakReference<Activity>(this)
+        payButton.setOnClickListener {
+            // Get the card details from the card widget
+            val cardInputWidget =
+                    findViewById<CardInputWidget>(R.id.cardInputWidget)
+            cardInputWidget.card?.let { card ->
+                // Create a Stripe Token from the card details
+                stripe = Stripe(applicationContext, PaymentConfiguration.getInstance().publishableKey)
+                stripe.createToken(card, object: ApiResultCallback<Token> {
+                    override fun onSuccess(result: Token) {
+                        // Send the Token identifier to the server
+                        val mediaType = "application/json; charset=utf-8".toMediaType()
+                        val json = """
+                            {
+                                "token": "${result.id}",
+                                "amount":3555,
+                                "currency":"EUR"
+                            }
+                            """
+                        val body = json.toRequestBody(mediaType)
+                        val request = Request.Builder()
+                                .url(backendUrl + "charge/")
+                                .post(body)
+                                .build()
+                        httpClient.newCall(request)
+                                .enqueue(object: Callback {
+                                    override fun onFailure(call: Call, e: IOException) {
+                                        displayAlert(weakActivity.get(), "Failed to decode response from server", "Error: $e")
+                                    }
+
+                                    override fun onResponse(call: Call, response: Response) {
+                                        if (!response.isSuccessful) {
+                                            displayAlert(weakActivity.get(), "Failed to decode response from server", "Error: $response")
+                                        } else {
+                                            val responseData = response.body?.string()
+                                            var responseJSON = JSONObject(responseData)
+                                            val error = responseJSON.optString("error", null)
+                                            if (error != null) {
+                                                displayAlert(weakActivity.get(), "Payment failed", error)
+                                            } else {
+                                                displayAlert(weakActivity.get(), "Success", "Payment succeeded!", true)
+                                            }
+                                        }
+                                    }
+                                })
+                    }
+
+                    override fun onError(e: java.lang.Exception) {
+                        displayAlert(weakActivity.get(), "Error", e.localizedMessage)
+                    }
+                })
+            }
+
+        }
     }
 
     private fun displayAlert(activity: Activity?, title: String, message: String, restartDemo: Boolean = false) {
@@ -53,90 +110,14 @@ class StripeActivity : AppCompatActivity() {
                     val cardInputWidget =
                             findViewById<CardInputWidget>(R.id.cardInputWidget)
                     cardInputWidget.clear()
-                    startCheckout()
                 }
-            } else {
+            }
+            else {
                 builder.setPositiveButton("Ok", null)
             }
             val dialog = builder.create()
             dialog.show()
         }
-    }
-
-    private fun startCheckout() {
-        val weakActivity = WeakReference<Activity>(this)
-        val mediaType = "application/json; charset=utf-8".toMediaType()
-        val json = """
-            {
-                "currency":"euro",
-                "items": [
-                    {"id":"photo_subscription"}
-                ]
-            }
-            """
-        val body = json.toRequestBody(mediaType)
-        val request = Request.Builder()
-                .url(backendUrl + "create-payment-intent")
-                .post(body)
-                .build()
-        httpClient.newCall(request)
-                .enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        displayAlert(weakActivity.get(), "Failed to load page", "Error: $e")
-                    }
-
-                    override fun onResponse(call: Call, response: Response) {
-                        if (!response.isSuccessful) {
-                            displayAlert(weakActivity.get(), "Failed to load page", "Error: $response")
-                        } else {
-                            val responseData = response.body?.string()
-                            var json = JSONObject(responseData)
-
-                            // The response from the server includes the Stripe publishable key and
-                            // PaymentIntent details.
-                            // For added security, our sample app gets the publishable key from the server
-                            paymentIntentClientSecret = json.getString("clientSecret")
-
-                            // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
-                            stripe = Stripe(applicationContext, publishableKey)
-                        }
-                    }
-                })
-
-        payButton.setOnClickListener {
-            val cardInputWidget =
-                    findViewById<CardInputWidget>(R.id.cardInputWidget)
-            val params = cardInputWidget.paymentMethodCreateParams
-            if (params != null) {
-                val confirmParams = ConfirmPaymentIntentParams
-                        .createWithPaymentMethodCreateParams(params, paymentIntentClientSecret)
-                stripe.confirmPayment(this, confirmParams)
-            }
-        }
-
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        val weakActivity = WeakReference<Activity>(this)
-
-        // Handle the result of stripe.confirmPayment
-        stripe.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
-            override fun onSuccess(result: PaymentIntentResult) {
-                val paymentIntent = result.intent
-                val status = paymentIntent.status
-                if (status == StripeIntent.Status.Succeeded) {
-                    val gson = GsonBuilder().setPrettyPrinting().create()
-                    displayAlert(weakActivity.get(), "Payment succeeded", gson.toJson(paymentIntent), restartDemo = true)
-                } else if (status == StripeIntent.Status.RequiresPaymentMethod) {
-                    displayAlert(weakActivity.get(), "Payment failed", paymentIntent.lastPaymentError?.message ?: "")
-                }
-            }
-
-            override fun onError(e: Exception) {
-                displayAlert(weakActivity.get(), "Payment failed", e.toString())
-            }
-        })
     }
 
 }

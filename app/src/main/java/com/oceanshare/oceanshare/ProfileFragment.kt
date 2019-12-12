@@ -52,7 +52,8 @@ class ProfileFragment : Fragment() {
         }
 
         view.subscriptionButton.setOnClickListener {
-            // TODO: Here
+            val subscriptionIntent = Intent(activity, StripeActivity::class.java)
+            startActivity(subscriptionIntent)
         }
 
         view.settings_button.setOnClickListener {
@@ -82,5 +83,6 @@ class ProfileFragment : Fragment() {
             val settingsIntent = Intent(activity, SettingsActivity::class.java)
             startActivity(settingsIntent)
         }
+
     }
 }
