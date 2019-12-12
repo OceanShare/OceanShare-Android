@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".PreferencesActivity"></activity>
+        <activity android:name=".PreferencesActivity" />
         <activity android:name=".SettingsActivity" />
 
         <meta-data
@@ -54,7 +54,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".authentication.CheckLogActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"

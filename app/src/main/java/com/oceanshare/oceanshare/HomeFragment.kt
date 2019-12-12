@@ -34,7 +34,7 @@ import com.oceanshare.oceanshare.utils.isConnectedToNetwork
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.marker_entry.view.*
 import kotlinx.android.synthetic.main.marker_manager.*
-import kotlinx.android.synthetic.main.marker_manager.exitButton
+import kotlinx.android.synthetic.main.marker_manager.markerManagerExitButton
 import kotlinx.android.synthetic.main.weather_marker.*
 import kotlinx.android.synthetic.main.weather_marker.view.*
 import kotlinx.coroutines.Dispatchers
@@ -692,7 +692,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
             }
         }
 
-        exitButton.setOnClickListener {
+        markerManagerExitButton.setOnClickListener {
             closedMarkerManager()
         }
 
@@ -786,15 +786,15 @@ class HomeFragment : Fragment(), LocationEngineListener {
         }
 
         val markersList = ArrayList<Marker>()
-        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.marker_menu_medusa, R.drawable.marker_map_medusa, 0, ""))
-        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.marker_menu_diver, R.drawable.marker_map_diver, 1, ""))
-        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.marker_menu_waste, R.drawable.marker_map_waste, 2, ""))
-        markersList.add(Marker(getString(R.string.marker_sos), R.drawable.marker_menu_warning, R.drawable.marker_map_warning, 3, ""))
-        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, R.drawable.marker_map_dolphin, 4, ""))
-        markersList.add(Marker(getString(R.string.marker_position), R.drawable.marker_menu_position, R.drawable.marker_map_position, 5, ""))
-        markersList.add(Marker(getString(R.string.marker_buoy), R.drawable.marker_menu_buoy, R.drawable.marker_map_buoy, 6, ""))
-        markersList.add(Marker(getString(R.string.marker_cost_guard), R.drawable.marker_menu_cost_guard, R.drawable.marker_map_cost_guard, 7, ""))
-        markersList.add(Marker(getString(R.string.marker_fishes), R.drawable.marker_menu_fishes, R.drawable.marker_map_fishes, 8, ""))
+        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.marker_menu_medusa, 0, ""))
+        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.marker_menu_diver, 1, ""))
+        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.marker_menu_waste, 2, ""))
+        markersList.add(Marker(getString(R.string.marker_sos), R.drawable.marker_menu_warning, 3, ""))
+        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, 4, ""))
+        markersList.add(Marker(getString(R.string.marker_position), R.drawable.marker_menu_position, 5, ""))
+        markersList.add(Marker(getString(R.string.marker_buoy), R.drawable.marker_menu_buoy, 6, ""))
+        markersList.add(Marker(getString(R.string.marker_cost_guard), R.drawable.marker_menu_cost_guard, 7, ""))
+        markersList.add(Marker(getString(R.string.marker_fishes), R.drawable.marker_menu_fishes, 8, ""))
         val adapter = context?.let { MarkerAdapter(it, markersList) }
 
         markerGridView.adapter = adapter

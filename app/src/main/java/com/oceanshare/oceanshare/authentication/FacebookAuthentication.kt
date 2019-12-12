@@ -4,7 +4,6 @@ import android.app.Activity
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.login.LoginManager
-import java.util.*
 
 class FacebookAuthentication {
 
@@ -15,7 +14,7 @@ class FacebookAuthentication {
             val accessToken = AccessToken.getCurrentAccessToken()
 
             if (accessToken != null && !accessToken.isExpired) {
-                LoginManager.getInstance().logInWithReadPermissions(activity, Arrays.asList("public_profile"))
+                LoginManager.getInstance().logInWithReadPermissions(activity, listOf("public_profile"))
                 return true
             }
             return false
