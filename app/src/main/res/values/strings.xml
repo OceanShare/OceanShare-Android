@@ -94,6 +94,7 @@
     <string name="validation_marker_added">Thank you for your contribution</string>
     <string name="validation_marker_deleted">You marker has been removed</string>
     <string name="validation_marker_edited">Your marker has been edited</string>
+    <string name="validation_marker_selected">You have selected the %1$s marker</string>
     <string name="seconds">seconds ago</string>
     <string name="minutes">minutes ago</string>
     <string name="marker_placed">Placed</string>
