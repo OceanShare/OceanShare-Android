@@ -519,8 +519,8 @@ class HomeFragment : Fragment(), LocationEngineListener {
         markerImage[4] = R.drawable.marker_map_dolphin
         markerImage[5] = R.drawable.marker_map_position
         markerImage[6] = R.drawable.marker_map_buoy
-        markerImage[7] = R.drawable.marker_map_cost_guard
-        markerImage[8] = R.drawable.marker_map_fishes
+        markerImage[7] = R.drawable.marker_map_guards
+        markerImage[8] = R.drawable.marker_map_fish
         markerImage[9] = R.drawable.mini_yatcht
 
         return markerImage[groupId]
