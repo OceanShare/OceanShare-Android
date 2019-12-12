@@ -1,12 +1,12 @@
 package com.oceanshare.oceanshare
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +44,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
+enum class NotificationType {
+    ERROR, NEUTRAL, SUCCESS
+}
+
 class HomeFragment : Fragment(), LocationEngineListener {
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
@@ -74,13 +78,38 @@ class HomeFragment : Fragment(), LocationEngineListener {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    private fun showDialogWith(message: String) {
-        val builder = context?.let { AlertDialog.Builder(it) }
-        builder?.setTitle(R.string.error)
-        builder?.setMessage(message)
-        builder?.setPositiveButton("Ok") { _, _ -> }
-        val dialog: AlertDialog? = builder?.create()
-        dialog?.show()
+    private fun showNotificationPanel(type: NotificationType, message: String, shouldHide: Boolean = true, image: Drawable? = null) {
+        when (type) {
+            NotificationType.ERROR -> {
+                notificationPanel.background = resources.getDrawable(R.drawable.notification_error_background, activity?.theme)
+            }
+            NotificationType.NEUTRAL -> {
+                notificationPanel.background = resources.getDrawable(R.drawable.notification_neutral_background, activity?.theme)
+            }
+            NotificationType.SUCCESS -> {
+                notificationPanel.background = resources.getDrawable(R.drawable.notification_success_background, activity?.theme)
+            }
+        }
+        notificationText.text = message
+        if (image != null) {
+            notificationImage.visibility = View.VISIBLE
+            notificationImage.setImageDrawable(image)
+        } else {
+            notificationImage.visibility = View.INVISIBLE
+        }
+        notificationPanel.animate().alpha(1.0f)
+        if (shouldHide) {
+            Handler().postDelayed({
+                hideNotificationPanel()
+                if (currentMarker != null && type == NotificationType.ERROR) {
+                    showNotificationPanel(NotificationType.NEUTRAL, String.format(getString(R.string.validation_marker_selected), currentMarker!!.name), shouldHide = false, image = resources.getDrawable(currentMarker!!.image, activity?.theme))
+                }
+            }, 3000)
+        }
+    }
+
+    private fun hideNotificationPanel() {
+        notificationPanel.animate().alpha(0.0f)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -101,11 +130,11 @@ class HomeFragment : Fragment(), LocationEngineListener {
                 if ((currentMarker != null) && !isEditingMarkerDescription) {
 
                     if (isOnWater(it)) {
-                        showDialogWith(getString(R.string.error_marker_land))
+                        showNotificationPanel(NotificationType.ERROR, getString(R.string.error_marker_land))
                         return@addOnMapClickListener
                     }
                     if (it.distanceTo(LatLng(originLocation.latitude, originLocation.longitude)) > 4000) {
-                        showDialogWith(getString(R.string.error_marker_too_far))
+                        showNotificationPanel(NotificationType.ERROR, getString(R.string.error_marker_too_far))
                         return@addOnMapClickListener
                     }
 
@@ -117,9 +146,10 @@ class HomeFragment : Fragment(), LocationEngineListener {
                                         fbAuth.currentUser?.email.toString(), getTimeStamp())
                             }
                         }
+                        showNotificationPanel(NotificationType.SUCCESS, getString(R.string.validation_marker_added))
                         database.child("markers").push().setValue(storedMarker)
                     } else {
-                        showDialogWith(getString(R.string.error_marker_limit))
+                        showNotificationPanel(NotificationType.ERROR, getString(R.string.error_marker_limit))
                     }
 
                     currentMarker = null
@@ -152,6 +182,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
         setupFadeAnimations()
         setupMarkerMenu()
+        notificationPanel.alpha = 0.0f
 
         centerCameraButton.setOnClickListener {
             if (::originLocation.isInitialized) {
@@ -594,7 +625,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
             markerEditionContainer.visibility = View.GONE
             markerManagerDescription.visibility = View.VISIBLE
             markerDescriptionText.text.clear()
-            //showNotification(getString(R.string.validation_marker_edited))
+            showNotificationPanel(NotificationType.SUCCESS, getString(R.string.validation_marker_edited))
         }
 
         cancelMarkerEdition.setOnClickListener {
@@ -607,6 +638,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         removeMarker.setOnClickListener {
             closedMarkerManager()
             database.child("markers").child(getMarkerKey(mark.id)).removeValue()
+            showNotificationPanel(NotificationType.SUCCESS, getString(R.string.validation_marker_deleted))
         }
 
         markerManagerLikeButton.setOnClickListener {
@@ -770,6 +802,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
             markerMenu.startAnimation(fadeOutAnimation)
             markerMenu.visibility = View.GONE
             currentMarker = markersList[position]
+            showNotificationPanel(NotificationType.NEUTRAL, String.format(getString(R.string.validation_marker_selected), markersList[position].name), shouldHide = false, image = resources.getDrawable(markersList[position].image, activity?.theme))
             setupDescriptionScreen()
         }
 
