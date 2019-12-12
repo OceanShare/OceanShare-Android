@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="Preferences"
+            android:text="@string/preferences"
             android:textColor="@color/gradient_end"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -35,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="Temperature display"
+        android:text="@string/temperature_display"
         android:textColor="@color/gradient_end"
         android:textSize="22sp"
         android:textStyle="bold" />
@@ -67,10 +67,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="Show profile picture"
+            android:text="@string/show_profile_picture"
             android:textColor="@color/gradient_end"
             android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="RelativeOverlap" />
 
         <Switch
             android:id="@+id/showPictureSwitch"
@@ -87,7 +88,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="20dp"
-        android:text="Show your profile picture on the map instead of your boat type." />
+        android:text="@string/show_your_profile_picture_on_the_map_instead_of_your_boat_type" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -97,10 +98,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="Ghost mode"
+            android:text="@string/ghost_mode"
             android:textColor="@color/gradient_end"
             android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="RelativeOverlap" />
 
         <Switch
             android:id="@+id/ghostModeSwitch"
@@ -117,14 +119,14 @@
         android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="20dp"
-        android:text="Show your profile picture on the map instead of your boat type." />
+        android:text="@string/become_invisible_on_the_map" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        android:text="Show your boat type"
+        android:text="@string/show_your_boat_type"
         android:textColor="@color/gradient_end"
         android:textSize="22sp"
         android:textStyle="bold" />

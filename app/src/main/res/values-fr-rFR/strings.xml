@@ -1,39 +1,21 @@
 <resources>
-    <!-- Facebook credentials -->
-
-    <!-- MapBox credentials -->
-
     <!-- Titles -->
-    <string name="title_activity_connection">Connection</string>
     <string name="title_activity_main">Activité principale</string>
-    <string name="title_home">Accueil</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Profil</string>
 
     <!-- Strings related to registration and login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Mot de passe</string>
-    <string name="action_settings">Paramètres</string>
     <!-- Errors related to registration and login -->
     <string name="error_field_required">Ce champ est requis</string>
 
 
     <!-- Strings related to registration -->
-    <string name="prompt_name">Nom</string>
     <string name="prompt_password_confirmation">Confirmation du mot de passe</string>
     <string name="action_register">S\'enregistrer</string>
     <!-- Errors related to registration -->
-    <string name="error_email_already_exist">Cet email est déjà utilisé</string>
     <string name="error_email_invalid">Cet email est invalide</string>
     <string name="error_password_too_short">Ce mot de passe est trop court, il doit faire 10 caractères minimum</string>
-    <string name="error_bad_password">Mauvais mot de passe</string>
-    <!--
-    <string name="error_password_missing_special">The password must contain at least one special character</string>
-    <string name="error_password_missing_number">The password must contain at least one number</string>
-    <string name="error_password_missing_capital">The password must contain at least one capital letter</string>
-    -->
     <string name="error_password_confirmation_different">Les mots de passe sont différents</string>
-
 
     <!-- Strings related to login -->
     <string name="action_login">Connection</string>
@@ -46,25 +28,20 @@
     <string name="description_facebook_button">Logo Facebook</string>
 
     <!-- Tmp Strings -->
-    <string name="home_tmp">Accueil - Bientôt</string>
-    <string name="dashboard_tmp">Dashboard - Bientôt</string>
     <string name="placeholder_ship_name">Nom du bateau</string>
     <string name="placeholder_username">Nom d\'utilisateur</string>
     <string name="action_forgot_password">Mot de passe oublié?</string>
     <string name="oceanshare_logo">Logo d\'Oceanshare</string>
     <string name="don_t_have_an_account_register">Vous n\'avez pas de compte? INSCRIVEZ VOUS</string>
-    <string name="logo_placeholder">LOGO</string>
     <string name="error_auth_failed">Echec d\'authentification</string>
     <string name="enter_email">Renseignez votre email dans le champ email avant de cliquer sur ce boutton</string>
     <string name="info_link_send">Un lien vous à été envoyé</string>
     <string name="error_no_account">Il semble que votre adresse email ne corresponde pas à un compte OceanShare</string>
     <string name="error_confirm_account">Vous devez d\'abord confirmer votre adresse en cliquant sur le lien dans l\'email</string>
     <string name="info_mail_confirm">Un email de confirmation vient de vous être envoyé, veuillez vérifier votre email avant de vous connectez</string>
-    <string name="error">Erreur</string>
     <string name="error_marker_land">Vous ne pouvez pas placer de marqueurs sur la terre ferme</string>
     <string name="error_marker_too_far">Vous ne pouvez pas placer de marqueurs si loin</string>
     <string name="error_marker_limit">Vous ne pouvez pas poser plus de 5 marqueurs</string>
-    <string name="error_contextual_menu">Vous ne pouvez pas éditer les marqueurs des autres navigateurs</string>
     <string name="marker_medusa">Méduses</string>
     <string name="marker_diver">Plongeurs</string>
     <string name="marker_waste">Déchets</string>
@@ -77,13 +54,10 @@
     <string name="marker_fishes">Poissons</string>
     <string name="button_settings">PARAMETRES</string>
     <string name="button_add_media">AJOUT PHOTO</string>
-    <string name="button_edit_infos">MODIF INFOS</string>
     <string name="button_settings_description">Icon parametres</string>
     <string name="button_add_media_description">Icon ajout photo</string>
-    <string name="button_edit_infos_description">Icon modif infos</string>
     <string name="dialog_not_implemented_text">Cette fonctionnalité n\'est pas encore disponible, n\'hésitez pas à vous inscrire à notre newsletter pour être au courant des dernières nouveautés.</string>
     <string name="action_dismiss">Fermer</string>
-    <string name="informations">Informations</string>
     <string name="delete_my_account">Supprimer mon compte</string>
     <string name="validation_marker_added">Merci pour votre contribution</string>
     <string name="validation_marker_deleted">"Votre marqueur à été retitré "</string>
@@ -117,7 +91,7 @@
     <string name="nds">Nds</string>
     <string name="marker_creation_description">Vous pouvez ajouter une description optionnelle à votre évenement.</string>
     <string name="marker_edition_description">Vous pouvez modifier la description de votre évenement ou le supprimer.</string>
-    <string name="save">Save</string>
+    <string name="save">Sauvegarder</string>
     <string name="what_is_happening">Que se passe-t-il ?</string>
     <string name="subscription">Abonnement</string>
     <string name="hello_profile">Bonjour %1$s !</string>
@@ -125,6 +99,19 @@
     <string name="dialog_we_have_problem">Nous avons un problème</string>
     <string name="dialog_we_need_location">L\'application OceanShare requiert la permission de localisation pour fonctionner, voulez-vous l\'activer ?</string>
     <string name="meteo_placeholder">--</string>
+    <string name="preferences">Preferences</string>
+    <string name="temperature_display">Affichage de la température</string>
+    <string name="show_profile_picture">Affichez votre photo de profil</string>
+    <string name="show_your_profile_picture_on_the_map_instead_of_your_boat_type">Montrez votre photo de profil à la place de votre bateau sur la carte.</string>
+    <string name="ghost_mode">Mode fantôme</string>
+    <string name="become_invisible_on_the_map">Devenez invisible sur la carte.</string>
+    <string name="show_your_boat_type">Choississez votre bateau</string>
+    <string name="know_more">En savoir plus</string>
+    <string name="xx_seconds_ago">il y a xx secondes</string>
+    <string name="marker">Marqueur</string>
+    <string name="i_am_a_marker">Je suis un marqueur</string>
+    <string name="_0">0</string>
+    <string name="_123456789">123456789</string>
     <string-array name="segments">
         <item>Celsius</item>
         <item>Fahrenheit</item>

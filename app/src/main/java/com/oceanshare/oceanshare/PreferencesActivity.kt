@@ -58,7 +58,7 @@ class PreferencesActivity : AppCompatActivity() {
                 } else {
                     putInt("temperature_preferences", 1)
                 }
-                commit()
+                apply()
             }
         }
 
