@@ -393,8 +393,9 @@ class HomeFragment : Fragment(), LocationEngineListener {
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
 
-                        if (key == fbAuth.currentUser?.uid && p0.child("sub").child("type").exists())
+                        if (key == fbAuth.currentUser?.uid && p0.child("sub").child("type").exists()) {
                             isPremium = true
+                        }
 
                         if (!userHashMap.containsKey(key) && p0.exists() && p0.child("location").exists()
                                 && p0.child("preferences").child("user_active").value.toString().toBoolean()
