@@ -125,4 +125,16 @@
         <item>Celsius</item>
         <item>Fahrenheit</item>
     </string-array>
+    <string name="subscription_one_day_message">Vous allez vous abonner pour un jour! Bonne journée de navigation!</string>
+    <string name="subscription_two_days_message">Vous allez vous abonner pour deux jours! Super pour un week-end entre amis!</string>
+    <string name="subscription_one_month_message">Vous allez vous abonner pour un mois! Un vrai pirate</string>
+    <string name="one_day">1 jour</string>
+    <string name="two_days">2 jours</string>
+    <string name="one_month">1 mois</string>
+    <string name="upgrade_message">Passez à OceanShare premium!</string>
+    <string name="subscription_argument_events">-Chaque évènement OceanShare.</string>
+    <string name="subscription_argument_weather">-La météo partout dans le monde.</string>
+    <string name="subscription_argument_messages">-Envoyez des messages à vos amis.</string>
+    <string name="subscription_argument_harbour">-Toutes les baies et les ports.</string>
+    <string name="payment_successed_message">Vous êtes un membre premium de l\'équipage OceanShare! Ayez un beau jour de plaisance capitaine!</string>
 </resources>
