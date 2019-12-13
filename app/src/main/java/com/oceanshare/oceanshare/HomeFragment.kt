@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,6 +78,15 @@ class HomeFragment : Fragment(), LocationEngineListener {
         activity?.applicationContext?.let { Mapbox.getInstance(it, getString(R.string.mapbox_access_token)) }
         mContext = activity?.applicationContext
         return inflater.inflate(R.layout.fragment_home, container, false)
+    }
+
+    private fun showDialogWith(message: String) {
+        val builder = context?.let { AlertDialog.Builder(it) }
+        builder?.setTitle("Erreur")
+        builder?.setMessage(message)
+        builder?.setPositiveButton("Ok") { _, _ -> }
+        val dialog: AlertDialog? = builder?.create()
+        dialog?.show()
     }
 
     private fun showNotificationPanel(type: NotificationType, message: String, shouldHide: Boolean = true, image: Drawable? = null) {
