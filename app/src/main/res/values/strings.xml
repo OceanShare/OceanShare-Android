@@ -139,4 +139,5 @@
     <string name="subscription_argument_messages">-Messages with your friends.</string>
     <string name="subscription_argument_harbour">-All marinas and harbours.</string>
     <string name="payment_successed_message">You\'re a premium member of the OceanShare crew! Have a stunning sailing journey captain!</string>
+    <string name="already_subscribe">You are a prenium member</string>
 </resources>

@@ -53,8 +53,7 @@ class StripeActivity : AppCompatActivity() {
     }
 
     private fun manageViews() {
-        println("paymenType: " + paymentType.toString())
-        if (paymentType != 0)
+        if (paymentType == 1 || paymentType == 2 || paymentType == 3)
             successedPayment()
         else
             paymentPage()
@@ -67,6 +66,7 @@ class StripeActivity : AppCompatActivity() {
             custom_duration_message.text = getString(R.string.subscription_one_day_message)
             price = 2
             subscribeUser.type = 1
+            subscribeUser.end = System.currentTimeMillis() / 1000 + 86400 //TODO Change to one day
         }
         two_days_offer.setOnClickListener {
             offer_page.visibility = View.GONE
@@ -74,6 +74,7 @@ class StripeActivity : AppCompatActivity() {
             custom_duration_message.text = getString(R.string.subscription_two_days_message)
             price = 3
             subscribeUser.type = 2
+            subscribeUser.end = System.currentTimeMillis() / 1000 + 172800 //TODO Change to two days
         }
         one_month_offer.setOnClickListener {
             offer_page.visibility = View.GONE
@@ -81,6 +82,7 @@ class StripeActivity : AppCompatActivity() {
             custom_duration_message.text = getString(R.string.subscription_one_month_message)
             price = 10
             subscribeUser.type = 3
+            subscribeUser.end = System.currentTimeMillis() / 1000 + 2592000 //TODO Change to real month
         }
     }
 
@@ -96,7 +98,6 @@ class StripeActivity : AppCompatActivity() {
                 inputMethodManager.hideSoftInputFromWindow(View(this).windowToken, 0)
                 cardInputWidget.clear()
                 subscribeUser.start = System.currentTimeMillis() / 1000
-                subscribeUser.end = System.currentTimeMillis() / 1000 + 2592000 //TODO Change to real month
                 database.child("users").child(currentUser).child("sub").setValue(subscribeUser)
 
                 Handler().postDelayed({
