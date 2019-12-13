@@ -136,4 +136,16 @@
         <item>Celsius</item>
         <item>Fahrenheit</item>
     </string-array>
+    <string name="subscription_one_day_message">You\'re going to subscribe for one day! Have a great sailing day!</string>
+    <string name="subscription_two_days_message">You\'re going to subscribe for two days! Awesome for a week-end with friends!</string>
+    <string name="subscription_one_month_message">You\'re going to subscribe for one month! A true pirate!</string>
+    <string name="one_day">1 day</string>
+    <string name="two_days">2 days</string>
+    <string name="one_month">1 month</string>
+    <string name="upgrade_message">Upgrade to Oceanshare premium!</string>
+    <string name="subscription_argument_events">-Every Oceanshare events.</string>
+    <string name="subscription_argument_weather">-Weather, everywhere in the world.</string>
+    <string name="subscription_argument_messages">-Messages with your friends.</string>
+    <string name="subscription_argument_harbour">-All marinas and harbours.</string>
+    <string name="payment_successed_message">You\'re a premium member of the OceanShare crew! Have a stunning sailing journey captain!</string>
 </resources>
