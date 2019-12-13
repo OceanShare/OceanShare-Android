@@ -21,7 +21,9 @@
         android:theme="@style/AppTheme"
         tools:targetApi="n">
 
-        <activity android:name=".StripeActivity"></activity>
+        <activity android:name=".StripeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity android:name=".PreferencesActivity"></activity>
         <activity android:name=".SettingsActivity" />
 
