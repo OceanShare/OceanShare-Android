@@ -1,5 +1,6 @@
 package com.oceanshare.oceanshare
 
+import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -19,6 +20,7 @@ class WeatherConverter {
         return "-- °F"
     }
 
+    @SuppressLint("SimpleDateFormat")
     fun getTime(timestamp: Long?): String {
         timestamp?.let {
             val sdf = SimpleDateFormat("HH:mm")
@@ -108,27 +110,26 @@ class WeatherConverter {
 
     fun getWeatherIcon(weatherId: Int): Int {
         val choosenOne: Int
-        val id = weatherId
 
-        if (id in 0..232) {
+        if (weatherId in 0..232) {
             choosenOne = R.drawable.storm
-        } else if (id in 300..321 || id in 520..531) {
+        } else if (weatherId in 300..321 || weatherId in 520..531) {
             choosenOne = R.drawable.light_rain
-        } else if (id in 500..504) {
+        } else if (weatherId in 500..504) {
             choosenOne = R.drawable.rain
-        } else if (id == 511 || id in 600..601 || id in 615..622) {
+        } else if (weatherId == 511 || weatherId in 600..601 || weatherId in 615..622) {
             choosenOne = R.drawable.snowflake
-        } else if (id in 611..613) {
+        } else if (weatherId in 611..613) {
             choosenOne = R.drawable.hail
-        } else if (id in 701..771) {
+        } else if (weatherId in 701..771) {
             choosenOne = R.drawable.cloud
-        } else if (id == 781) {
+        } else if (weatherId == 781) {
             choosenOne = R.drawable.tornado
-        } else if (id == 800) {
+        } else if (weatherId == 800) {
             choosenOne = R.drawable.sun
-        } else if (id == 801 || id == 802) {
+        } else if (weatherId == 801 || weatherId == 802) {
             choosenOne = R.drawable.cloudy
-        } else if (id == 803 || id == 804) {
+        } else if (weatherId == 803 || weatherId == 804) {
             choosenOne = R.drawable.clouds
         } else {
             choosenOne = R.drawable.thermometer

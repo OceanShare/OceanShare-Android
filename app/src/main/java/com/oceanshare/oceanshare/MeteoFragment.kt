@@ -1,5 +1,6 @@
 package com.oceanshare.oceanshare
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.oceanshare.oceanshare.utils.isConnectedToNetwork
 import kotlinx.android.synthetic.main.fragment_meteo.*
 
 class MeteoFragment : Fragment() {
@@ -19,7 +21,11 @@ class MeteoFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_meteo, container, false)
     }
 
+    @SuppressLint("DefaultLocale")
     suspend fun fetchMeteo(location: Location) {
+        if (context == null || !context!!.isConnectedToNetwork()) {
+            return
+        }
         val meteo = apiService.getWeather(location.latitude.toString(), location.longitude.toString())
         meteo.weather?.weather?.get(0)?.let { analyseDescription(it) }?.let { meteoImage.setImageResource(it) }
         val sharedPref = activity?.getSharedPreferences("OCEANSHARE_SHARED_PREFERENCES", Context.MODE_PRIVATE)
@@ -73,48 +79,5 @@ class MeteoFragment : Fragment() {
         }
         return choosenOne
 
-    }
-
-    private fun analyseWindDirection(degrees: Double): String {
-        val windDirection: String
-
-        if (degrees in 348.75..360.0) {
-            windDirection = "N "
-        } else if (degrees in 0.0..11.25) {
-            windDirection = "N "
-        } else if (11.25 < degrees && degrees <= 33.75) {
-            windDirection = "NNE "
-        } else if (33.75 < degrees && degrees <= 56.25) {
-            windDirection = "NE "
-        } else if (56.25 < degrees && degrees <= 78.75) {
-            windDirection = "ENE "
-        } else if (78.75 < degrees && degrees <= 101.25) {
-            windDirection = "E "
-        } else if (101.25 < degrees && degrees <= 123.75) {
-            windDirection = "ESE "
-        } else if (123.75 < degrees && degrees <= 146.25) {
-            windDirection = "SE "
-        } else if (146.25 < degrees && degrees <= 168.75) {
-            windDirection = "SSE "
-        } else if (168.75 < degrees && degrees <= 191.25) {
-            windDirection = "S "
-        } else if (191.25 < degrees && degrees <= 213.75) {
-            windDirection = "SSW "
-        } else if (213.75 < degrees && degrees <= 236.25) {
-            windDirection = "SW "
-        } else if (236.25 < degrees && degrees <= 258.75) {
-            windDirection = "WSW "
-        } else if (258.75 < degrees && degrees <= 281.25) {
-            windDirection = "W "
-        } else if (281.25 < degrees && degrees <= 303.75) {
-            windDirection = "WNW "
-        } else if (303.75 < degrees && degrees <= 326.25) {
-            windDirection = "NW "
-        } else if (326.25 < degrees && degrees < 348.75) {
-            windDirection = "NNW "
-        } else {
-            windDirection = ""
-        }
-        return windDirection
     }
 }

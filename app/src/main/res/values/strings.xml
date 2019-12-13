@@ -1,44 +1,28 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Facebook credentials -->
     <string name="facebook_app_id" translatable="false">169506053959899</string>
     <string name="fb_login_protocol_scheme" translatable="false">fb169506053959899</string>
 
     <!-- MapBox credentials -->
-
     <string name="mapbox_access_token" translatable="false">pk.eyJ1Ijoib2NlYW5zaGFyZTA2IiwiYSI6ImNqcGZpZXNkcDBiZGEza21sdjlsNDZwd2wifQ.rxDiDLT59nQfaAHEycKskw</string>
 
     <!-- Titles -->
-    <string name="app_name" translatable="false">Oceanshare</string>
-    <string name="title_activity_connection">Connection</string>
+    <string name="app_name" translatable="false" tools:ignore="PrivateResource">Oceanshare</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Profile</string>
 
     <!-- Strings related to registration and login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="action_settings">Settings</string>
     <!-- Errors related to registration and login -->
     <string name="error_field_required">This field is required</string>
 
-
     <!-- Strings related to registration -->
-    <string name="prompt_name">Name</string>
     <string name="prompt_password_confirmation">Password confirmation</string>
     <string name="action_register">Register</string>
     <!-- Errors related to registration -->
-    <string name="error_email_already_exist">This email is already in use</string>
     <string name="error_email_invalid">This email address is invalid</string>
     <string name="error_password_too_short">This password is too short, it must be at least 10 characters long</string>
-    <string name="error_bad_password">Bad password</string>
-    <!--
-    <string name="error_password_missing_special">The password must contain at least one special character</string>
-    <string name="error_password_missing_number">The password must contain at least one number</string>
-    <string name="error_password_missing_capital">The password must contain at least one capital letter</string>
-    -->
     <string name="error_password_confirmation_different">The password don\'t match</string>
-
 
     <!-- Strings related to login -->
     <string name="action_login">Login</string>
@@ -51,25 +35,20 @@
     <string name="description_facebook_button">Facebook logo</string>
 
     <!-- Tmp Strings -->
-    <string name="home_tmp">Home - Coming soon</string>
-    <string name="dashboard_tmp">Dashboard - Coming soon</string>
     <string name="placeholder_ship_name">Ship name</string>
     <string name="placeholder_username">Username</string>
     <string name="action_forgot_password">Forgot password?</string>
     <string name="oceanshare_logo">Oceanshare logo</string>
     <string name="don_t_have_an_account_register">Don\'t have an account? REGISTER</string>
-    <string name="logo_placeholder">LOGO</string>
     <string name="error_auth_failed">Authentication failed</string>
     <string name="enter_email">Put your email in the mail field before click on that button</string>
     <string name="info_link_send">We send you a link</string>
     <string name="error_no_account">Your email address is not an Oceanshare account</string>
     <string name="error_confirm_account">You must confirm your email first by clicking on the link we\'ve send to you</string>
     <string name="info_mail_confirm">We\'ve send to you a confirmation email</string>
-    <string name="error">Error</string>
     <string name="error_marker_land">You can\'t place a marker on the land</string>
     <string name="error_marker_too_far">You can\'t place a marker this far away</string>
     <string name="error_marker_limit">You can\'t set more than 5 markers</string>
-    <string name="error_contextual_menu">You can\'t edit markers of other people</string>
     <string name="marker_medusa">Medusa</string>
     <string name="marker_diver">Diver</string>
     <string name="marker_waste">Waste</string>
@@ -84,16 +63,13 @@
     <string name="button_settings_description">Settings icon</string>
     <string name="button_add_media">ADD MEDIA</string>
     <string name="button_add_media_description">Add media icon</string>
-    <string name="button_edit_infos">EDIT INFOS</string>
-    <string name="button_edit_infos_description">Edit infos icon</string>
     <string name="dialog_not_implemented_text">This feature is not yet available, please check our website and subscribe to our newsletter to know about the future of OceanShare.</string>
     <string name="action_dismiss">Dismiss</string>
-    <string name="button_back" translatable="false"><![CDATA[<]]></string>
-    <string name="informations">Informations</string>
     <string name="delete_my_account">Delete my account</string>
     <string name="validation_marker_added">Thank you for your contribution</string>
     <string name="validation_marker_deleted">You marker has been removed</string>
     <string name="validation_marker_edited">Your marker has been edited</string>
+    <string name="validation_marker_selected">You have selected the %1$s marker</string>
     <string name="seconds">seconds ago</string>
     <string name="minutes">minutes ago</string>
     <string name="marker_placed">Placed</string>
@@ -122,16 +98,31 @@
     <string name="already_know_oceanshare">I already know OceanShare</string>
     <string name="action_ok">OK</string>
     <string name="legals">OceanShare Limited Company (Pty Ltd)</string>
-    <string name="warning_too_fast">La vitesse est limitée à 5nds dans la zone des 300 mètres.</string>
+    <string name="warning_too_fast"> The speed is limited to 5nds in the 300 meters zone.</string>
     <string name="nds">Nds</string>
-    <string name="marker_creation_description">Vous pouvez ajouter une description optionnelle à votre évenement.</string>
+    <string name="marker_creation_description">You can add an optionnal description to your marker</string>
     <string name="what_is_happening">What\'s happening ?</string>
-    <string name="marker_edition_description">Vous pouvez modifier la description de votre évenement ou le supprimer.</string>
+    <string name="marker_edition_description">You can edit the marker description or delete it.</string>
     <string name="save">Save</string>
-    <string name="mapbox_style" translatable="false">mapbox://styles/oceanshare06/ck36dulje0m7c1cpih4atqiab</string>
     <string name="subscription">Subscription</string>
     <string name="hello_profile">Hello %1$s !</string>
     <string name="marker_put_by">"Put by : %1$s"</string>
+    <string name="dialog_we_have_problem">We have a problem</string>
+    <string name="dialog_we_need_location">The OceanShare application requires location permission to work, do you want to enable it?</string>
+    <string name="meteo_placeholder">--</string>
+    <string name="preferences">Preferences</string>
+    <string name="temperature_display">Temperature display</string>
+    <string name="show_profile_picture">Show profile picture</string>
+    <string name="show_your_profile_picture_on_the_map_instead_of_your_boat_type">Show your profile picture on the map instead of your boat type.</string>
+    <string name="ghost_mode">Ghost mode</string>
+    <string name="become_invisible_on_the_map">Become invisible on the map.</string>
+    <string name="show_your_boat_type">Show your boat type</string>
+    <string name="know_more">Know more</string>
+    <string name="xx_seconds_ago">xx seconds ago</string>
+    <string name="marker">Marker</string>
+    <string name="i_am_a_marker">I am a marker</string>
+    <string name="_0">0</string>
+    <string name="_123456789">123456789</string>
     <string-array name="segments">
         <item>Celsius</item>
         <item>Fahrenheit</item>

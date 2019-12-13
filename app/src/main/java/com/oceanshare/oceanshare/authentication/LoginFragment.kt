@@ -74,7 +74,7 @@ class LoginFragment : Fragment() {
 
     private fun setupFacebookConnection(rootView: View) {
         FacebookAuthentication.callbackManager = CallbackManager.Factory.create()
-        rootView.facebook_login_button.setReadPermissions("email", "public_profile", "user_friends")
+        rootView.facebook_login_button.setPermissions("email", "public_profile", "user_friends")
         rootView.facebook_login_button.fragment = this
 
         rootView.facebook_login_button.registerCallback(FacebookAuthentication.callbackManager, object : FacebookCallback<LoginResult> {

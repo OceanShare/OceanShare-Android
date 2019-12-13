@@ -1,12 +1,12 @@
 package com.oceanshare.oceanshare
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,10 +30,11 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.oceanshare.oceanshare.utils.isConnectedToNetwork
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.marker_entry.view.*
 import kotlinx.android.synthetic.main.marker_manager.*
-import kotlinx.android.synthetic.main.marker_manager.exitButton
+import kotlinx.android.synthetic.main.marker_manager.markerManagerExitButton
 import kotlinx.android.synthetic.main.weather_marker.*
 import kotlinx.android.synthetic.main.weather_marker.view.*
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,10 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
+
+enum class NotificationType {
+    ERROR, NEUTRAL, SUCCESS
+}
 
 class HomeFragment : Fragment(), LocationEngineListener {
     private lateinit var mapView: MapView
@@ -74,13 +79,38 @@ class HomeFragment : Fragment(), LocationEngineListener {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    private fun showDialogWith(message: String) {
-        val builder = context?.let { AlertDialog.Builder(it) }
-        builder?.setTitle(R.string.error)
-        builder?.setMessage(message)
-        builder?.setPositiveButton("Ok") { _, _ -> }
-        val dialog: AlertDialog? = builder?.create()
-        dialog?.show()
+    private fun showNotificationPanel(type: NotificationType, message: String, shouldHide: Boolean = true, image: Drawable? = null) {
+        when (type) {
+            NotificationType.ERROR -> {
+                notificationPanel.background = resources.getDrawable(R.drawable.notification_error_background, activity?.theme)
+            }
+            NotificationType.NEUTRAL -> {
+                notificationPanel.background = resources.getDrawable(R.drawable.notification_neutral_background, activity?.theme)
+            }
+            NotificationType.SUCCESS -> {
+                notificationPanel.background = resources.getDrawable(R.drawable.notification_success_background, activity?.theme)
+            }
+        }
+        notificationText.text = message
+        if (image != null) {
+            notificationImage.visibility = View.VISIBLE
+            notificationImage.setImageDrawable(image)
+        } else {
+            notificationImage.visibility = View.INVISIBLE
+        }
+        notificationPanel.animate().alpha(1.0f)
+        if (shouldHide) {
+            Handler().postDelayed({
+                hideNotificationPanel()
+                if (currentMarker != null && type == NotificationType.ERROR) {
+                    showNotificationPanel(NotificationType.NEUTRAL, String.format(getString(R.string.validation_marker_selected), currentMarker!!.name), shouldHide = false, image = resources.getDrawable(currentMarker!!.image, activity?.theme))
+                }
+            }, 3000)
+        }
+    }
+
+    private fun hideNotificationPanel() {
+        notificationPanel.animate().alpha(0.0f)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -101,11 +131,11 @@ class HomeFragment : Fragment(), LocationEngineListener {
                 if ((currentMarker != null) && !isEditingMarkerDescription) {
 
                     if (isOnWater(it)) {
-                        showDialogWith(getString(R.string.error_marker_land))
+                        showNotificationPanel(NotificationType.ERROR, getString(R.string.error_marker_land))
                         return@addOnMapClickListener
                     }
                     if (it.distanceTo(LatLng(originLocation.latitude, originLocation.longitude)) > 4000) {
-                        showDialogWith(getString(R.string.error_marker_too_far))
+                        showNotificationPanel(NotificationType.ERROR, getString(R.string.error_marker_too_far))
                         return@addOnMapClickListener
                     }
 
@@ -117,17 +147,20 @@ class HomeFragment : Fragment(), LocationEngineListener {
                                         fbAuth.currentUser?.email.toString(), getTimeStamp())
                             }
                         }
+                        showNotificationPanel(NotificationType.SUCCESS, getString(R.string.validation_marker_added))
                         database.child("markers").push().setValue(storedMarker)
                     } else {
-                        showDialogWith(getString(R.string.error_marker_limit))
+                        showNotificationPanel(NotificationType.ERROR, getString(R.string.error_marker_limit))
                     }
 
                     currentMarker = null
                 } else if (isWeatherMarker) {
                     GlobalScope.launch(Dispatchers.Main) {
-                        val weatherResponse = apiService.getWeather(it.latitude.toString(),
-                                it.longitude.toString())
-                        setupWeatherMarkerScreen(weatherResponse)
+                        if (context != null && context!!.isConnectedToNetwork()) {
+                            val weatherResponse = apiService.getWeather(it.latitude.toString(),
+                                    it.longitude.toString())
+                            setupWeatherMarkerScreen(weatherResponse)
+                        }
                     }
                     isWeatherMarker = false
                 }
@@ -150,6 +183,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
         setupFadeAnimations()
         setupMarkerMenu()
+        notificationPanel.alpha = 0.0f
 
         centerCameraButton.setOnClickListener {
             if (::originLocation.isInitialized) {
@@ -163,7 +197,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         }
     }
 
-    private fun getMarkerDistance(lat1: Double, long1: Double, lat2: Double, long2: Double) : Float {
+    private fun getMarkerDistance(lat1: Double, long1: Double, lat2: Double, long2: Double): Float {
         val location1 = Location("")
         location1.latitude = lat1
         location1.longitude = long1
@@ -366,7 +400,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                             val userShipName = p0.child("ship_name").value.toString()
                             val userActive = p0.child("preferences").child("user_active").value.toString().toBoolean()
 
-                            println("Latitude: " + userLatitude + ", Longitude: " + userLongitude + ", LatLng: " + LatLng(userLatitude,userLongitude)  + ", isOnWater: " + isOnWater(LatLng(userLatitude,userLongitude)))
+                            println("Latitude: " + userLatitude + ", Longitude: " + userLongitude + ", LatLng: " + LatLng(userLatitude, userLongitude) + ", isOnWater: " + isOnWater(LatLng(userLatitude, userLongitude)))
 
                             val iconFactory = context?.let { IconFactory.getInstance(it) }
                             val icon = findMarkerIconMap(9)?.let { iconFactory?.fromResource(it) }
@@ -375,7 +409,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
                                     .position(LatLng(userLatitude, userLongitude))
                                     .icon(icon)).id
 
-                            userHashMap[key] = UserData( markerId, userName, userLatitude, userLongitude,
+                            userHashMap[key] = UserData(markerId, userName, userLatitude, userLongitude,
                                     userShipName, userActive)
                         }
                     }
@@ -413,22 +447,20 @@ class HomeFragment : Fragment(), LocationEngineListener {
                                     .icon(icon)).id
 
                             if (userHashMap.containsKey(key) &&
-                                    (userHashMap[key]?.longitude != userLongitude || userHashMap[key]?.latitude != userLatitude))
-                            {
+                                    (userHashMap[key]?.longitude != userLongitude || userHashMap[key]?.latitude != userLatitude)) {
                                 map.getAnnotation(userHashMap[key]?.markerId!!)?.remove()
 
                                 userHashMap[key]?.longitude = userLongitude
                                 userHashMap[key]?.latitude = userLatitude
                                 userHashMap[key]?.markerId = markerId
                             } else {
-                                userHashMap[key] = UserData( markerId, userName, userLatitude, userLongitude,
+                                userHashMap[key] = UserData(markerId, userName, userLatitude, userLongitude,
                                         userShipName, userActive)
                             }
-                        }
-                        else if (userHashMap.containsKey(key) && p0.exists() &&
+                        } else if (userHashMap.containsKey(key) && p0.exists() &&
                                 (!p0.child("preferences").child("user_active").value.toString().toBoolean()
                                         || !isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
-                                        p0.child("location").child("longitude").value.toString().toDouble()))))  {
+                                        p0.child("location").child("longitude").value.toString().toDouble())))) {
                             map.getAnnotation(userHashMap[key]?.markerId!!)?.remove()
                             userHashMap.remove(key)
                         }
@@ -491,8 +523,8 @@ class HomeFragment : Fragment(), LocationEngineListener {
         markerImage[4] = R.drawable.marker_map_dolphin
         markerImage[5] = R.drawable.marker_map_position
         markerImage[6] = R.drawable.marker_map_buoy
-        markerImage[7] = R.drawable.marker_map_cost_guard
-        markerImage[8] = R.drawable.marker_map_fishes
+        markerImage[7] = R.drawable.marker_map_guards
+        markerImage[8] = R.drawable.marker_map_fish
         markerImage[9] = R.drawable.mini_yatcht
 
         return markerImage[groupId]
@@ -597,7 +629,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
             markerEditionContainer.visibility = View.GONE
             markerManagerDescription.visibility = View.VISIBLE
             markerDescriptionText.text.clear()
-            //showNotification(getString(R.string.validation_marker_edited))
+            showNotificationPanel(NotificationType.SUCCESS, getString(R.string.validation_marker_edited))
         }
 
         cancelMarkerEdition.setOnClickListener {
@@ -610,6 +642,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         removeMarker.setOnClickListener {
             closedMarkerManager()
             database.child("markers").child(getMarkerKey(mark.id)).removeValue()
+            showNotificationPanel(NotificationType.SUCCESS, getString(R.string.validation_marker_deleted))
         }
 
         markerManagerLikeButton.setOnClickListener {
@@ -663,7 +696,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
             }
         }
 
-        exitButton.setOnClickListener {
+        markerManagerExitButton.setOnClickListener {
             closedMarkerManager()
         }
 
@@ -704,7 +737,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
         }
     }
 
-    private fun isOnWater(it : LatLng) : Boolean {
+    private fun isOnWater(it: LatLng): Boolean {
         val pixel = map.projection.toScreenLocation(it)
         val features = map.queryRenderedFeatures(pixel, "water")
 
@@ -757,15 +790,15 @@ class HomeFragment : Fragment(), LocationEngineListener {
         }
 
         val markersList = ArrayList<Marker>()
-        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.marker_menu_medusa, R.drawable.marker_map_medusa, 0, ""))
-        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.marker_menu_diver, R.drawable.marker_map_diver, 1, ""))
-        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.marker_menu_waste, R.drawable.marker_map_waste, 2, ""))
-        markersList.add(Marker(getString(R.string.marker_sos), R.drawable.marker_menu_warning, R.drawable.marker_map_warning, 3, ""))
-        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, R.drawable.marker_map_dolphin, 4, ""))
-        markersList.add(Marker(getString(R.string.marker_position), R.drawable.marker_menu_position, R.drawable.marker_map_position, 5, ""))
-        markersList.add(Marker(getString(R.string.marker_buoy), R.drawable.marker_menu_buoy, R.drawable.marker_map_buoy, 6, ""))
-        markersList.add(Marker(getString(R.string.marker_cost_guard), R.drawable.marker_menu_cost_guard, R.drawable.marker_map_cost_guard, 7, ""))
-        markersList.add(Marker(getString(R.string.marker_fishes), R.drawable.marker_menu_fishes, R.drawable.marker_map_fishes, 8, ""))
+        markersList.add(Marker(getString(R.string.marker_medusa), R.drawable.marker_menu_medusa, 0, ""))
+        markersList.add(Marker(getString(R.string.marker_diver), R.drawable.marker_menu_diver, 1, ""))
+        markersList.add(Marker(getString(R.string.marker_waste), R.drawable.marker_menu_waste, 2, ""))
+        markersList.add(Marker(getString(R.string.marker_sos), R.drawable.marker_menu_warning, 3, ""))
+        markersList.add(Marker(getString(R.string.marker_dolphin), R.drawable.marker_menu_dolphin, 4, ""))
+        markersList.add(Marker(getString(R.string.marker_position), R.drawable.marker_menu_position, 5, ""))
+        markersList.add(Marker(getString(R.string.marker_buoy), R.drawable.marker_menu_buoy, 6, ""))
+        markersList.add(Marker(getString(R.string.marker_cost_guard), R.drawable.marker_menu_cost_guard, 7, ""))
+        markersList.add(Marker(getString(R.string.marker_fishes), R.drawable.marker_menu_fishes, 8, ""))
         val adapter = context?.let { MarkerAdapter(it, markersList) }
 
         markerGridView.adapter = adapter
@@ -773,6 +806,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
             markerMenu.startAnimation(fadeOutAnimation)
             markerMenu.visibility = View.GONE
             currentMarker = markersList[position]
+            showNotificationPanel(NotificationType.NEUTRAL, String.format(getString(R.string.validation_marker_selected), markersList[position].name), shouldHide = false, image = resources.getDrawable(markersList[position].image, activity?.theme))
             setupDescriptionScreen()
         }
 

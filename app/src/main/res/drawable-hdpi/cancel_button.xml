@@ -3,10 +3,7 @@
     <item android:state_pressed="false" android:state_selected="false">
         <shape android:shape="rectangle">
             <corners android:radius="10dp" />
-            <gradient
-                android:startColor="@color/profile_red_buttons"
-                android:endColor="@color/profile_red_buttons"
-                android:angle="45" />
+            <gradient android:angle="45" android:endColor="@color/profile_red_buttons" android:startColor="@color/profile_red_buttons" />
         </shape>
     </item>
 </selector>

@@ -161,9 +161,8 @@
             android:layout_marginEnd="30dp"
             android:background="@drawable/rounded_edit_text"
             android:hint="@string/what_is_happening"
-            android:importantForAutofill="no"
             android:textAlignment="center"
-            tools:ignore="TextFields" />
+            tools:ignore="Autofill,TextFields" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -223,9 +222,8 @@
             android:layout_marginEnd="30dp"
             android:background="@drawable/rounded_edit_text"
             android:hint="@string/what_is_happening"
-            android:importantForAutofill="no"
             android:textAlignment="center"
-            tools:ignore="TextFields" />
+            tools:ignore="Autofill,TextFields" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -351,4 +349,37 @@
             android:src="@drawable/logo"
             tools:ignore="ContentDescription" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/notificationPanel"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:id="@+id/notificationImage"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="5dp"
+            android:visibility="visible"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/notificationText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="50dp"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
 </FrameLayout>

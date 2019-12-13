@@ -34,5 +34,5 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
     </style>
-    
+
 </resources>

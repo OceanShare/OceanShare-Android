@@ -53,7 +53,7 @@ dependencies {
     implementation 'br.com.simplepass:loading-button-android:1.14.0'
 
     // Facebook SDK (facebook login)
-    implementation 'com.facebook.android:facebook-login:4.37.0'
+    implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
 
     // Google SDK (google login)
     implementation 'com.google.android.gms:play-services-auth:16.0.1'

@@ -9,34 +9,25 @@ import retrofit2.http.Query
 import java.util.*
 
 class UV {
-    var lat: Double? = null
-    var lon: Double? = null
-    var date: Int? = null
-    var date_iso: String? = null
     var value: Double? = null
 }
 
 class WeatherData {
     var coord: Coord? = null
     var weather: ArrayList<WeatherData2>? = null
-    var base: String? = null
     var main: Main? = null
     var wind: Wind? = null
     var clouds: Clouds? = null
-    var dt: Int? = null
     var sys: Sys? = null
-    var timezone: Int? = null
     var visibility: Int? = null
     var id: Int? = null
     var name: String? = null
-    var cod: Int? = null
 }
 
 class WeatherData2 {
     var id: Int? = null
     var main: String? = null
     var description: String? = null
-    var icon: String? = null
 }
 
 class Coord {
@@ -46,12 +37,7 @@ class Coord {
 
 class Main {
     var temp: Double? = null
-    var pressure: Int? = null
     var humidity: Int? = null
-    var temp_min: Double? = null
-    var temp_max: Double? = null
-    var sea_level: Int? = null
-    var grnd_level: Int? = null
 }
 
 class Wind {
@@ -64,14 +50,11 @@ class Clouds {
 }
 
 class FullWeather {
-    var message: String? = null
-    var status: String? = null
     var uv: UV? = null
     var weather: WeatherData? = null
 }
 
 class Sys {
-    var message: Double? = null
     var sunrise: Long? = null
     var sunset: Long? = null
 }
@@ -88,7 +71,6 @@ interface IWeatherApi {
     companion object {
 
         operator fun invoke(): IWeatherApi {
-
             val url = "https://oceanshare.cleverapps.io"
             val retrofit = Retrofit.Builder()
                     .baseUrl(url)
@@ -98,9 +80,7 @@ interface IWeatherApi {
             val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
 
-            val service = retrofit.create(IWeatherApi::class.java)
-
-            return service
+            return retrofit.create(IWeatherApi::class.java)
         }
     }
 }

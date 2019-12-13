@@ -5,14 +5,16 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -35,6 +37,8 @@ class AuthenticationActivity : AppCompatActivity(),
 
     private var fbAuth = FirebaseAuth.getInstance()
 
+    private var locationAlertDialog: AlertDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,10 +49,10 @@ class AuthenticationActivity : AppCompatActivity(),
     public override fun onStart() {
         super.onStart()
 
-        if (isUserIsAlreadyConnected(fbAuth.currentUser)) {
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && isUserIsAlreadyConnected(fbAuth.currentUser)) {
             redirectToHomePage()
         }
-
         setupSectionsPagerAdapter()
         KeyboardVisibilityEvent.setEventListener(this) { isOpen ->
             if (isOpen) {
@@ -71,7 +75,7 @@ class AuthenticationActivity : AppCompatActivity(),
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-                TODO("Do something if user check 'Never ask again'")
+                showPermissionRequestDialog()
             } else {
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION)
@@ -95,10 +99,40 @@ class AuthenticationActivity : AppCompatActivity(),
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    TODO("Do something if user decline")
+                    showPermissionRequestDialog()
                 }
                 return
             }
+        }
+    }
+
+    private fun setupLocationAlertDialog(): AlertDialog {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(resources.getString(R.string.dialog_we_have_problem))
+        builder.setMessage(resources.getString(R.string.dialog_we_need_location))
+
+        builder.setPositiveButton(android.R.string.yes) { _, _ ->
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            val uri = Uri.fromParts("package", packageName, null)
+            intent.data = uri
+            startActivity(intent)
+            locationAlertDialog = null
+        }
+
+        builder.setNegativeButton(android.R.string.no) { _, _ ->
+            locationAlertDialog = null
+            Handler().postDelayed({
+                showPermissionRequestDialog()
+            }, 1000)
+        }
+        return builder.create()
+    }
+
+    private fun showPermissionRequestDialog() {
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && locationAlertDialog == null) {
+            locationAlertDialog = setupLocationAlertDialog()
+            locationAlertDialog?.show()
         }
     }
 
@@ -110,13 +144,12 @@ class AuthenticationActivity : AppCompatActivity(),
 
     private fun isUserIsAlreadyConnected(currentUser: FirebaseUser?): Boolean {
         GoogleAuthentication.instantiateGoogleSignInClient(this)
-        if (currentUser == null) {
-            return false
+        if (currentUser != null) {
+            if (!currentUser.isEmailVerified) {
+                return false
+            }
         }
-        if (!currentUser.isEmailVerified) {
-            return false
-        }
-        return FacebookAuthentication.isConnected(this) || GoogleAuthentication.isConnected(this)
+        return FacebookAuthentication.isConnected(this) || GoogleAuthentication.isConnected(this) || currentUser != null
     }
 
     private fun setupSectionsPagerAdapter() {
@@ -153,22 +186,7 @@ class AuthenticationActivity : AppCompatActivity(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_connection, menu)
         return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-
-        if (id == R.id.action_settings) {
-            return true
-        }
-
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onFragmentInteraction(uri: Uri) {}
