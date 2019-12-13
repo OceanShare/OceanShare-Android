@@ -128,4 +128,5 @@
     <string name="subscription_argument_messages">-Envoyez des messages à vos amis.</string>
     <string name="subscription_argument_harbour">-Toutes les baies et les ports.</string>
     <string name="payment_successed_message">Vous êtes un membre premium de l\'équipage OceanShare! Ayez un beau jour de plaisance capitaine!</string>
+    <string name="already_subscribe">Vous êtes un membre prenium</string>
 </resources>

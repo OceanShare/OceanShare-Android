@@ -18,12 +18,14 @@ import kotlinx.android.synthetic.main.fragment_profile.view.*
 
 class ProfileFragment : Fragment() {
     private var mDatabase: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val currentUser = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
 
         setupProfilePage(rootView)
+        getActualUserData()
 
         return rootView
     }
@@ -85,4 +87,29 @@ class ProfileFragment : Fragment() {
         }
 
     }
+
+    private fun getActualUserData() {
+        mDatabase.child("users").child(currentUser).addChildEventListener(
+                object : ChildEventListener {
+                    override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                        println(p0.child("preferences").value)
+                        if (p0.child("type").exists()) {
+                            subscriptionButton.visibility = View.GONE
+                            already_subcribe.visibility = View.VISIBLE
+                        }
+                    }
+
+                    override fun onChildChanged(p0: DataSnapshot, s: String?) {
+                        if (p0.child("type").exists()) {
+                            subscriptionButton.visibility = View.GONE
+                            already_subcribe.visibility = View.VISIBLE
+                        }
+                    }
+                    override fun onChildRemoved(p0: DataSnapshot) {}
+                    override fun onChildMoved(p0: DataSnapshot, s: String?) {}
+                    override fun onCancelled(p0: DatabaseError) {}
+
+                })
+    }
+
 }

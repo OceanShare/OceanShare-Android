@@ -233,4 +233,18 @@
         app:spinning_bar_color="@color/white"
         app:spinning_bar_padding="6dp"
         app:spinning_bar_width="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:id="@+id/already_subcribe"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="@dimen/regular_margin"
+        android:layout_marginBottom="100dp"
+        android:text="@string/already_subscribe"
+        android:textColor="@color/profile_blue_buttons"
+        android:textSize="20sp"
+        />
 </RelativeLayout>
