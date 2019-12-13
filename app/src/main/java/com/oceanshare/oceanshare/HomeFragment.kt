@@ -56,6 +56,7 @@ class HomeFragment : Fragment(), LocationEngineListener {
     private var locationComponent: LocationComponent? = null
     private var markerHashMap: HashMap<String, MarkerData> = HashMap()
     private var userHashMap: HashMap<String, UserData> = HashMap()
+    private var isPremium : Boolean = false
     private var isEditingMarkerDescription = false
     private var isWeatherMarker = false
     private var apiService = IWeatherApi()
@@ -347,6 +348,9 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         val key = p0.key.toString()
+
+                        if (key == fbAuth.currentUser?.uid && p0.child("sub").child("type").exists())
+                            isPremium = true
 
                         if (!userHashMap.containsKey(key) && p0.exists() && p0.child("location").exists()
                                 && p0.child("preferences").child("user_active").value.toString().toBoolean()
@@ -776,10 +780,17 @@ class HomeFragment : Fragment(), LocationEngineListener {
         meteoMarker.markerImage.setImageResource(R.drawable.marker_menu_meteo)
 
         meteoMarker.setOnClickListener {
-            markerMenu.startAnimation(fadeOutAnimation)
-            markerMenu.visibility = View.GONE
-            map.uiSettings.setAllGesturesEnabled(true)
-            isWeatherMarker = true
+
+            if (isPremium) {
+                markerMenu.startAnimation(fadeOutAnimation)
+                markerMenu.visibility = View.GONE
+                map.uiSettings.setAllGesturesEnabled(true)
+                isWeatherMarker = true
+            } else {
+                showDialogWith("You are not premium, you can't access to this content")
+            }
+
+
         }
     }
 

@@ -1,11 +1,9 @@
 package com.oceanshare.oceanshare
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -36,7 +34,6 @@ class SubscribeUser {
 class StripeActivity : AppCompatActivity() {
 
     private val backendUrl = "https://us-central1-oceanshare-1519985626980.cloudfunctions.net/"
-    private val publishableKey = "pk_test_aKG5XmyrMWd17loRBt4W45Vd00nDvn7UF1"
     private var price  = 0
     private var paymentType  = 0
     private val httpClient = OkHttpClient()
@@ -56,6 +53,7 @@ class StripeActivity : AppCompatActivity() {
     }
 
     private fun manageViews() {
+        println("paymenType: " + paymentType.toString())
         if (paymentType != 0)
             successedPayment()
         else
@@ -115,13 +113,14 @@ class StripeActivity : AppCompatActivity() {
                 object : ChildEventListener {
                     override fun onChildAdded(p0: DataSnapshot, p1: String?) {
                         println(p0.child("preferences").value)
-                        if (p0.child("sub").child("type").exists()) {
-                            println("gros chibrax")
-                            paymentType = p0.child("sub").child("type").value.toString().toInt()
+                        if (p0.child("type").exists()) {
+                            paymentType = p0.child("type").value.toString().toInt()
                         }
                     }
 
-                    override fun onChildChanged(p0: DataSnapshot, s: String?) {}
+                    override fun onChildChanged(p0: DataSnapshot, s: String?) {
+                        paymentType = p0.child("type").value.toString().toInt()
+                    }
                     override fun onChildRemoved(p0: DataSnapshot) {}
                     override fun onChildMoved(p0: DataSnapshot, s: String?) {}
                     override fun onCancelled(p0: DatabaseError) {}
