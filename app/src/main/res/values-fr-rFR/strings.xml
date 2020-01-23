@@ -18,10 +18,10 @@
     <string name="error_password_confirmation_different">Les mots de passe sont différents</string>
 
     <!-- Strings related to login -->
-    <string name="action_login">Connection</string>
+    <string name="action_login">Connexion</string>
 
     <!-- Strings related to profile -->
-    <string name="action_logout">Déconnection</string>
+    <string name="action_logout">Déconnexion</string>
 
     <!-- Content descriptions -->
     <string name="description_google_button">Logo Google</string>
@@ -53,9 +53,9 @@
     <string name="marker_cost_guard">Contrôles</string>
     <string name="marker_fishes">Poissons</string>
     <string name="button_settings">PARAMETRES</string>
-    <string name="button_add_media">AJOUT PHOTO</string>
+    <string name="button_add_media">AJOUTER PHOTO</string>
     <string name="button_settings_description">Icon parametres</string>
-    <string name="button_add_media_description">Icon ajout photo</string>
+    <string name="button_add_media_description">Icone ajout photo</string>
     <string name="dialog_not_implemented_text">Cette fonctionnalité n\'est pas encore disponible, n\'hésitez pas à vous inscrire à notre newsletter pour être au courant des dernières nouveautés.</string>
     <string name="action_dismiss">Fermer</string>
     <string name="delete_my_account">Supprimer mon compte</string>

@@ -15,7 +15,7 @@ class WeatherConverter {
 
     fun getFTemperature(temp: Double?): String {
         temp?.let {
-            return (it.roundToInt().toString() + "°F")
+            return ((it * 9 / 5 - 459.67).roundToInt().toString() + "°F")
         }
         return "-- °F"
     }

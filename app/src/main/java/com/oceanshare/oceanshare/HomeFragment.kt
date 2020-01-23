@@ -177,7 +177,8 @@ class HomeFragment : Fragment(), LocationEngineListener {
             }
 
             map.setOnMarkerClickListener {
-                setupEditingMarkerMenu(it)
+                if (it.title != "broken")
+                    setupEditingMarkerMenu(it)
                 true
             }
         }
@@ -397,16 +398,12 @@ class HomeFragment : Fragment(), LocationEngineListener {
                             isPremium = true
                         }
 
-                        if (!userHashMap.containsKey(key) && p0.exists() && p0.child("location").exists()
-                                && p0.child("preferences").child("user_active").value.toString().toBoolean()
-                                && isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
-                                        p0.child("location").child("longitude").value.toString().toDouble()))
-                                && getMarkerDistance(p0.child("location").child("latitude").value.toString().toDouble(),
+                        if (!userHashMap.containsKey(key) && p0.exists() /*&& getMarkerDistance(p0.child("location").child("latitude").value.toString().toDouble(),
                                         p0.child("location").child("longitude").value.toString().toDouble(),
-                                        originLocation.latitude, originLocation.longitude) < 20000) {
+                                        originLocation.latitude, originLocation.longitude) < 20000*/) {
 
-                            val userLatitude = p0.child("location").child("latitude").value.toString().toDouble()
-                            val userLongitude = p0.child("location").child("longitude").value.toString().toDouble()
+                            var userLatitude : Double = 0.0
+                            var userLongitude : Double = 0.0
                             val userName = p0.child("name").value.toString()
                             val userShipName = p0.child("ship_name").value.toString()
                             val userActive = p0.child("preferences").child("user_active").value.toString().toBoolean()
@@ -415,10 +412,19 @@ class HomeFragment : Fragment(), LocationEngineListener {
 
                             val iconFactory = context?.let { IconFactory.getInstance(it) }
                             val icon = findMarkerIconMap(9)?.let { iconFactory?.fromResource(it) }
+                            var markerId : Long = 1200
 
-                            val markerId = map.addMarker(MarkerOptions()
-                                    .position(LatLng(userLatitude, userLongitude))
-                                    .icon(icon)).id
+                            if (p0.child("location").exists()
+                                    && p0.child("preferences").child("user_active").value.toString().toBoolean()
+                                    && isOnWater(LatLng(p0.child("location").child("latitude").value.toString().toDouble(),
+                                            p0.child("location").child("longitude").value.toString().toDouble()))) {
+                                userLatitude = p0.child("location").child("latitude").value.toString().toDouble()
+                                userLongitude = p0.child("location").child("longitude").value.toString().toDouble()
+                                markerId = map.addMarker(MarkerOptions()
+                                        .position(LatLng(userLatitude, userLongitude))
+                                        .title("broken")
+                                        .icon(icon)).id
+                            }
 
                             userHashMap[key] = UserData(markerId, userName, userLatitude, userLongitude,
                                     userShipName, userActive)
@@ -618,7 +624,9 @@ class HomeFragment : Fragment(), LocationEngineListener {
             markerManagerVoteButtons.visibility = View.GONE
 
         } else {
-            markerManagerOwnMarker.text = String.format(resources.getString(R.string.marker_put_by), markerInformation?.username)
+            println("chibreuser " + markerInformation!!.user)
+            println("chibre " + userHashMap[markerInformation!!.user]?.name)
+            markerManagerOwnMarker.text = String.format(resources.getString(R.string.marker_put_by), userHashMap[markerInformation!!.user]?.name)
             markerManagerOwnMarker.visibility = View.VISIBLE
             markerManagerEditButton.visibility = View.INVISIBLE
             markerManagerVoteButtons.visibility = View.VISIBLE
